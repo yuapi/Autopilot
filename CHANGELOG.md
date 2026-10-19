@@ -11,6 +11,7 @@
 - 통합 정책(`.autopilot/CONFIG.md`, 사람이 정하고 Claude는 읽기만): `local`(기본)·`branch`(작업 브랜치 push)·`pr`(PR 생성, `merge: auto`면 검증 후 머지), `release: auto`는 문서화된 릴리스 절차가 있을 때만. 레포 관례 우선, 막히면 우회 없이 local로 폴백
 - 긴 실행: Phase 0에서 LOG는 최근 20개, BACKLOG는 열린 작업과 최근 완료 10행만 읽음. `scripts/archive.sh`가 완료 행 50개·LOG 300개 초과분을 아카이브로 옮김(내용 보존), 중복 확인은 아카이브 grep
 - Phase 0 작업 트리 정리가 `.autopilot/` 미커밋 상태(직전 실패의 attempts·LOG)까지 stash해 무한 재시도가 재발하던 버그 수정. local 모드 실패 시 상태만 커밋
+- 스킬 description을 현재 기능(직접 실행 탐색·시나리오·이슈 트래커·제안·통합 정책) 기준으로 갱신하고 호출 문구 추가. validate.sh가 description 1024자 제한 검사
 
 ## 1.7.0 — 2026-10-19
 - 검증 실패 롤백이 `.autopilot/`까지 되돌려 attempts가 사라지고 같은 작업을 무한 재시도하던 버그 수정. 실패 후 세션 연속 모드는 Phase 0으로 복귀

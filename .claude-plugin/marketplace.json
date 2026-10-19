@@ -8,7 +8,7 @@
     {
       "name": "autopilot",
       "source": "./plugins/autopilot",
-      "description": "Autonomous dev loop that discovers, implements, verifies and logs one task at a time until .autopilot/STOP appears"
+      "description": "Autonomous dev loop that finds, implements, verifies and records the next task by itself (code analysis, exploratory runs, user scenarios, issue tracker), proposes what it must not do alone, and can push, open PRs, merge and release when configured"
     }
   ]
 }

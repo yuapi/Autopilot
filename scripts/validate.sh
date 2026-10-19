@@ -34,10 +34,14 @@ name="$(printf '%s\n' "$fm" | sed -n 's/^name:[[:space:]]*//p' | head -1)"
 if [ -z "$name" ]; then bad "name 없음"
 elif [ "$name" != "autopilot" ]; then bad "name이 autopilot이 아님: $name"
 else ok "name: $name"; fi
-if printf '%s\n' "$fm" | grep -q '^description:[[:space:]]*[^[:space:]]'; then
-  ok "description 존재"
-else
+desc="$(printf '%s\n' "$fm" | sed -n 's/^description:[[:space:]]*//p' | head -1)"
+desc_len="$(printf '%s' "$desc" | python3 -c 'import sys; print(len(sys.stdin.read()))')"
+if [ -z "$desc" ]; then
   bad "description 없음"
+elif [ "$desc_len" -gt 1024 ]; then
+  bad "description이 1024자를 넘음 ($desc_len자)"
+else
+  ok "description 존재 (${desc_len}자)"
 fi
 
 echo "[3] 버전 일치"
