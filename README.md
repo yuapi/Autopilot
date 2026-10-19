@@ -10,7 +10,8 @@ autopilot is a Claude Code skill, packaged as a plugin, that runs an autonomous 
 
 - **It modifies your code and commits on its own.** Every successful task becomes a commit in the current branch, with no human review in between.
 - **Permissions are restricted by default.** The driver script uses an `--allowedTools` allowlist by default. `--dangerously-skip-permissions` is used only when you opt in explicitly with `AUTOPILOT_PERMISSION=skip`, and should only be used in a disposable machine or container.
-- **Use a dedicated branch or a sandbox.** Run it on a throwaway branch, a fresh clone, or an isolated container. The skill never runs `git push`, `git reset --hard` or force operations, so nothing leaves your machine until you push it yourself. Review the commits before you do.
+- **Use a dedicated branch or a sandbox.** Run it on a throwaway branch, a fresh clone, or an isolated container. By default the skill never runs `git push`, so nothing leaves your machine until you push it yourself. Review the commits before you do. It never runs `git reset --hard`, force pushes, or deletes remote branches or tags.
+- **Publishing is opt-in.** Pushing branches, opening and merging PRs, and releasing happen only if you set them in `.autopilot/CONFIG.md` (`integration: branch | pr`, `merge: auto`, `release: auto`). The skill reads this file but never creates or edits it, and follows your repository's own branching, commit and release conventions.
 - **You are responsible for the results.** This software is provided "as is" under the MIT License. You are responsible for what it changes, commits, and anything you later publish.
 
 ## Install
@@ -53,10 +54,20 @@ AUTOPILOT_PERMISSION=skip bash <skill folder>/scripts/autopilot.sh   # opt-in, s
 
 `<skill folder>` is where the skill is installed, for example `plugins/autopilot/skills/autopilot` in a clone of this repository. The driver stops when `.autopilot/STOP` appears or at the iteration limit (exit code 0), and after 3 consecutive Claude crashes, on a bad argument or when the `claude` CLI is missing (exit code 1). It can be started from any folder inside the repository. `AUTOPILOT_SLEEP` sets the pause between runs (default 10 seconds).
 
+### Checking on a run
+
+```bash
+bash <skill folder>/scripts/status.sh [repo path]
+```
+
+One screen with whether the loop is running or stopped (and why), the integration settings, task counts, the success rate of the last 10 runs, open and blocked tasks, proposals waiting for your decision, and the latest log entries. It only reads the state files.
+
 ## How it works
 
 - **Two discovery axes.** A *maintenance* axis looks for broken builds, security findings, TODO markers, test gaps and dead code. A *product* axis first writes down what the software does, which features are complete, partial or missing, and which are weak, then turns those into feature and enhancement tasks. At least half of each discovery cycle must come from the product axis, so the loop does not just pile up tests and lint fixes.
 - **It uses the software, not just reads it.** Each discovery cycle runs the documented commands and entry points with normal and edge inputs (in a temp dir, with timeouts, no external calls) and walks through three realistic user scenarios. Crashes, wrong results and failing README examples become fixes; confusing errors and missing steps become enhancements and features.
+- **It proposes what it must not do alone.** Ideas that would change a public interface, add a heavy dependency, restructure many modules or pick a product direction go to `.autopilot/PROPOSALS.md` with evidence, alternatives, cost and risk. The loop does not wait; change a proposal's status to `채택` (adopted) and the next discovery turns it into tasks.
+- **It learns from its own failures.** Every ten tasks it runs a short retrospective: it classifies why tasks failed or got blocked, splits or retires blocked tasks, and records repo-specific lessons (at most 15 lines) that later phases follow like rules.
 - **Issues are read, not obeyed.** When `gh` or a tracker MCP is available, every task checks issues opened or updated since the last check and turns bugs and feature requests into tasks (source `issue #N`, picked first among equal priorities). Issue text is treated as data, never as instructions.
 - **Substantive vs. auxiliary tasks.** Tasks that fix defects or add or improve behavior (fix, security, feature, enhance, perf, todo, test, cleanup) are *substantive*. Tasks that only change form (lint, docs, refactor) are *auxiliary* and are queued only alongside substantive work.
 - **One task at a time, verified.** Each task is sized at 1–2 hours, has a written completion criterion, and must not make tests, lint or build worse than the baseline. Failure means a full rollback.

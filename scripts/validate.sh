@@ -34,11 +34,26 @@ name="$(printf '%s\n' "$fm" | sed -n 's/^name:[[:space:]]*//p' | head -1)"
 if [ -z "$name" ]; then bad "name 없음"
 elif [ "$name" != "autopilot" ]; then bad "name이 autopilot이 아님: $name"
 else ok "name: $name"; fi
-if printf '%s\n' "$fm" | grep -q '^description:[[:space:]]*[^[:space:]]'; then
-  ok "description 존재"
-else
+desc="$(printf '%s\n' "$fm" | sed -n 's/^description:[[:space:]]*//p' | head -1)"
+desc_len="$(printf '%s' "$desc" | python3 -c 'import sys; print(len(sys.stdin.read()))')"
+if [ -z "$desc" ]; then
   bad "description 없음"
+elif [ "$desc_len" -gt 1024 ]; then
+  bad "description이 1024자를 넘음 ($desc_len자)"
+else
+  ok "description 존재 (${desc_len}자)"
 fi
+
+echo "[2b] SKILL.md가 참조하는 스킬 파일"
+refs="$(grep -oE '(assets|scripts)/[A-Za-z0-9_.-]+\.(md|sh)' "$SKILL_MD" | sort -u)"
+missing=0
+for r in $refs; do
+  [ -f "$SKILL_DIR/$r" ] || { bad "없는 파일 참조: $r"; missing=1; }
+done
+[ "$missing" -eq 0 ] && ok "참조 $(printf '%s\n' "$refs" | grep -c .)개 모두 존재"
+for f in $(cd "$SKILL_DIR" && find assets scripts -type f | sort); do
+  printf '%s\n' "$refs" | grep -qxF "$f" || wrn "SKILL.md가 언급하지 않는 스킬 파일: $f"
+done
 
 echo "[3] 버전 일치"
 v_skill="$(printf '%s\n' "$fm" | sed -n "s/^[[:space:]]\{1,\}version:[[:space:]]*['\"]\{0,1\}\([0-9][0-9.]*\).*/\1/p" | head -1)"

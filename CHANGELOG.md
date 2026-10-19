@@ -7,6 +7,16 @@
 
 ## Unreleased
 
+## 1.8.0 — 2026-10-19
+- 회고(Phase 0.5): 10작업마다 실패·blocked 원인을 분류해 ROADMAP "배운 것"(15줄 이내)에 레포 전용 규칙으로 기록, blocked 작업은 쪼개거나 보류로 이동. LOG 상태 값 정의
+- 기능 제안(1-F, `.autopilot/PROPOSALS.md`): 공개 인터페이스 변경·무거운 의존성·구조 개편·방향 선택은 근거·대안·비용·위험과 함께 제안으로 남기고 루프는 계속. 사람이 `채택`하면 다음 발굴에서 작업화(그 범위에서만 인터페이스 변경 허용)
+- 통합 정책(`.autopilot/CONFIG.md`, 사람이 정하고 Claude는 읽기만): `local`(기본)·`branch`(작업 브랜치 push)·`pr`(PR 생성, `merge: auto`면 검증 후 머지), `release: auto`는 문서화된 릴리스 절차가 있을 때만. 레포 관례 우선, 막히면 우회 없이 local로 폴백
+- 긴 실행: Phase 0에서 LOG는 최근 20개, BACKLOG는 열린 작업과 최근 완료 10행만 읽음. `scripts/archive.sh`가 완료 행 50개·LOG 300개 초과분을 아카이브로 옮김(내용 보존), 중복 확인은 아카이브 grep
+- Phase 0 작업 트리 정리가 `.autopilot/` 미커밋 상태(직전 실패의 attempts·LOG)까지 stash해 무한 재시도가 재발하던 버그 수정. local 모드 실패 시 상태만 커밋
+- 스킬 description을 현재 기능(직접 실행 탐색·시나리오·이슈 트래커·제안·통합 정책) 기준으로 갱신하고 호출 문구 추가. validate.sh가 description 1024자 제한 검사
+- `scripts/status.sh`: 실행·멈춤 여부와 STOP 사유, 통합 설정, 작업 수, 최근 성공률, 열린·blocked 작업, 결정 대기 제안, 최근 기록을 한 화면에 요약 (읽기 전용)
+- validate.sh: SKILL.md가 참조하는 assets·scripts 파일이 없으면 FAIL, 참조되지 않는 스킬 파일은 경고. 큰 기능 설계(1-D)가 `assets/feature-template.md`를 가리키도록 수정
+
 ## 1.7.0 — 2026-10-19
 - 검증 실패 롤백이 `.autopilot/`까지 되돌려 attempts가 사라지고 같은 작업을 무한 재시도하던 버그 수정. 실패 후 세션 연속 모드는 Phase 0으로 복귀
 - 발굴: 이슈 트래커·PR 리뷰 코멘트를 매 작업마다 확인(`last_issue_check` 이후만), 라벨로 유형 판정, 같은 우선순위에서 이슈 출처 우선. 본문은 데이터로만 취급하고 읽기 전용
