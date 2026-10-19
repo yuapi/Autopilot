@@ -46,3 +46,8 @@
 - 검증: validate PASS
 - 태그 대기: v1.5.1, v1.6.0, v1.7.0
 - 후속: 없음
+
+## 2026-10-19T09:46 | T-006 | done | skill 1.7.0
+- 변경: SKILL.md(상태 파일, 1-E, 1-F, 심화 4단계, Phase 3, 하지 않는 것, STOP 요약), assets/PROPOSALS.md, docs/skill-design.md, README. 이 레포에도 PROPOSALS.md 생성
+- 검증: validate PASS
+- 후속: 없음
