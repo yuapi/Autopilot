@@ -7,7 +7,8 @@ root="$(git -C "$target" rev-parse --show-toplevel 2>/dev/null || (cd "$target" 
 cd "$root"
 [ -d .autopilot ] || { echo "[status] $root 에 .autopilot/ 이 없습니다. 아직 autopilot을 실행하지 않은 레포입니다." >&2; exit 1; }
 python3 - "$root" << 'PY'
-import os, re, sys
+import os, re, signal, sys
+signal.signal(signal.SIGPIPE, signal.SIG_DFL)  # `| head` 등으로 출력이 끊겨도 오류 없이 종료
 root = sys.argv[1]; A = ".autopilot"
 def read(p):
     try: return open(os.path.join(A, p), encoding="utf-8").read()
