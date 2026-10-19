@@ -6,6 +6,8 @@
 - PATCH: 드라이버 수정, 문구 정리, 버그 수정
 
 ## Unreleased
+
+## 1.6.0 — 2026-10-19
 - 레포 규칙 개정: Claude가 git flow(feature → develop → release → main)로 자율 개발·릴리스. 버전은 release 브랜치에서 올리고 feature는 `## Unreleased`에 기록
 - bump.sh: `## Unreleased`를 새 버전 섹션으로 전환, 실패 시 파일을 바꾸지 않음
 - release.sh: `git archive`로 커밋된 내용만 패키징, `--catch-up`(밀린 태그 일괄 처리)·`--dry-run` 추가
