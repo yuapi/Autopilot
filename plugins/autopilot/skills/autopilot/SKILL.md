@@ -351,6 +351,14 @@ bash <스킬 폴더>/scripts/autopilot.sh 20       # 20회만
 
 기본은 `--allowedTools` 허용 목록 모드. 전용 컨테이너면 `AUTOPILOT_PERMISSION=skip`.
 
+## 상태 확인 (사람용)
+
+```
+bash <스킬 폴더>/scripts/status.sh [레포 경로]
+```
+
+실행 중·멈춤 여부와 STOP 사유, 통합 설정, 작업 수(open·진행·완료·blocked), 최근 10회 성공률, 열린 작업, 사람 확인이 필요한 blocked 작업, 결정 대기 제안, 최근 기록을 한 화면에 보여준다. 상태 파일은 읽기만 한다. 사람이 "autopilot 상태 알려줘"라고 하면 이것을 실행해 보여준다.
+
 ## 레포의 Stop 훅과 충돌 시
 
 레포에 "미추적 파일을 커밋하라"는 Stop 훅이 있으면 이 스킬의 Phase 4 롤백(`git clean`)과 Phase 5 커밋이 그 요구를 자연히 충족한다. `.autopilot/` 실행 산출물(STOP, RUN, .hook-state, driver-logs)은 Phase 0(세션 연속)과 드라이버가 `.gitignore`에 넣는다.

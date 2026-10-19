@@ -24,4 +24,4 @@ next_id: 19
 | T-015 | docs | done | 1 | "반복 차단 규칙 (유일한 중단 조건)" 문구를 최종 중단 기준과 맞게 수정 | 모순 문구 0건 | 정적 검토 | 2026-10-19 |
 | T-016 | enhance | done | 1 | frontmatter description을 현재 기능(이슈·제안·PR 통합·심화 발굴) 기준으로 갱신해 호출 조건 개선 | 1024자 이내, validate PASS | 약한 것 | 2026-10-19 |
 | T-017 | test | open | 0 | validate.sh: SKILL.md가 참조하는 `assets/`·`scripts/` 파일이 실제로 있는지 검사 | 없는 파일을 참조하면 FAIL하는 테스트 | 빠진 것 | |
-| T-018 | feature | open | 0 | `scripts/status.sh`: 완료·실패·blocked 수, 열린 작업, 최근 LOG, 결정 대기 제안, STOP 사유를 한 화면에 요약 | tests/test_status.sh 통과, README 반영 | 시나리오 2 | |
+| T-018 | feature | done | 1 | `scripts/status.sh`: 완료·실패·blocked 수, 열린 작업, 최근 LOG, 결정 대기 제안, STOP 사유를 한 화면에 요약 | tests/test_status.sh 통과, README 반영 | 시나리오 2 | 2026-10-19 |

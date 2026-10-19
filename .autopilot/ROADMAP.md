@@ -24,11 +24,10 @@ last_retro: 2026-10-19
 | 드라이버 모드 | 완성 | scripts/autopilot.sh, tests/test_driver.sh |
 | 통합 정책 (local/branch/pr, 자동 머지·릴리스) | 완성 | SKILL.md 통합 정책, assets/CONFIG.md |
 | 긴 실행 컨텍스트 관리 | 완성 | scripts/archive.sh |
-| 실행 결과 요약 보기 | 없음 | 상태 파일을 직접 열어야 함 |
+| 실행 결과 요약 보기 | 완성 | scripts/status.sh |
 | 레포 도구 (validate/bump/release/tests) | 완성 | scripts/, tests/ (88개) |
 
 ### 빠진 것
-- 실행 결과 요약 명령: 밤새 돌린 뒤 사람이 완료·실패·blocked·제안·중단 사유를 한눈에 볼 수단 (시나리오 2)
 - SKILL.md가 참조하는 파일(assets·scripts)이 실제로 있는지 검사: 빠지면 스킬이 깨지는데 validate가 모름
 
 ### 약한 것

@@ -80,3 +80,8 @@
 - 변경: SKILL.md frontmatter, marketplace.json·plugin.json description, scripts/validate.sh, tests/test_scripts.sh
 - 검증: validate PASS (377자), 1100자 description FAIL 테스트
 - 후속: 없음
+
+## 2026-10-19T09:55 | T-018 | done | skill 1.7.0
+- 변경: scripts/status.sh, tests/test_status.sh, SKILL.md(상태 확인), README
+- 검증: validate PASS, test_status 15 통과, 이 레포에서 실행 확인
+- 후속: 없음
