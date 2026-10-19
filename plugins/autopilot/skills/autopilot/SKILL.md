@@ -205,7 +205,7 @@ fix > security > feature(진행 중인 것) > enhance > feature(신규) > perf >
 1. Phase 0에서 찾은 테스트·린트·빌드를 전부 다시 실행.
 2. 베이스라인보다 나빠진 게 하나라도 있으면 **실패**.
 3. 작업의 완료 기준을 충족하지 않으면 **실패**.
-4. 실패 시: `git checkout -- . && git clean -fd` (단, `.autopilot/`은 제외), BACKLOG 상태를 `open`으로 되돌림, LOG에 실패 사유 기록, 종료.
+4. 실패 시: `git checkout -- . ':!.autopilot' && git clean -fd -e .autopilot`로 작업 변경만 되돌린다. `.autopilot/`까지 되돌리면 Phase 2에서 올린 `attempts`가 사라져 같은 작업을 끝없이 재시도하므로 반드시 제외한다. BACKLOG 상태를 `open`으로 되돌리고(attempts는 유지) LOG에 실패 사유를 기록한다. 드라이버 모드면 종료, 세션 연속 모드면 Phase 0으로 돌아간다.
 
 ### Phase 5 — 기록
 
