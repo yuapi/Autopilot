@@ -28,7 +28,7 @@ last_retro: 2026-10-19
 | 레포 도구 (validate/bump/release/tests) | 완성 | scripts/, tests/ (88개) |
 
 ### 빠진 것
-- SKILL.md가 참조하는 파일(assets·scripts)이 실제로 있는지 검사: 빠지면 스킬이 깨지는데 validate가 모름
+
 
 ### 약한 것
 - Phase 0의 `git stash`가 `.autopilot/`의 미커밋 상태(실패한 작업의 attempts·LOG)까지 치워 무한 재시도가 다른 경로로 재발

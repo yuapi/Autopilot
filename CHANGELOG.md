@@ -13,6 +13,7 @@
 - Phase 0 작업 트리 정리가 `.autopilot/` 미커밋 상태(직전 실패의 attempts·LOG)까지 stash해 무한 재시도가 재발하던 버그 수정. local 모드 실패 시 상태만 커밋
 - 스킬 description을 현재 기능(직접 실행 탐색·시나리오·이슈 트래커·제안·통합 정책) 기준으로 갱신하고 호출 문구 추가. validate.sh가 description 1024자 제한 검사
 - `scripts/status.sh`: 실행·멈춤 여부와 STOP 사유, 통합 설정, 작업 수, 최근 성공률, 열린·blocked 작업, 결정 대기 제안, 최근 기록을 한 화면에 요약 (읽기 전용)
+- validate.sh: SKILL.md가 참조하는 assets·scripts 파일이 없으면 FAIL, 참조되지 않는 스킬 파일은 경고. 큰 기능 설계(1-D)가 `assets/feature-template.md`를 가리키도록 수정
 
 ## 1.7.0 — 2026-10-19
 - 검증 실패 롤백이 `.autopilot/`까지 되돌려 attempts가 사라지고 같은 작업을 무한 재시도하던 버그 수정. 실패 후 세션 연속 모드는 Phase 0으로 복귀
