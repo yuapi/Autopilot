@@ -134,7 +134,7 @@ ROADMAP의 `last_retro` 이후 LOG 항목(done·failed·blocked)이 10개 이상
 #### 1-D. 큰 기능 다루기
 
 작업 하나는 1~2시간 분량이지만 기능은 그보다 클 수 있다. 큰 기능은:
-1. `.autopilot/features/<slug>.md`에 설계를 쓴다 — 목적, 인터페이스(새 명령·엔드포인트·옵션), 데이터 흐름, 단계 분해, 각 단계의 완료 기준.
+1. `.autopilot/features/<slug>.md`에 `assets/feature-template.md` 형식으로 설계를 쓴다 — 목적, 인터페이스(새 명령·엔드포인트·옵션), 데이터 흐름, 단계 분해, 각 단계의 완료 기준.
 2. 단계마다 BACKLOG 작업을 만든다. ID는 `T-NNN`, 작업 설명에 `[feat:<slug> 2/5]`처럼 진행 표기.
 3. 단계 순서대로만 선택된다 (앞 단계가 `done`이어야 다음 단계 `open`).
 4. 마지막 단계 완료 기준에 "기능 전체 통합 테스트 + README 반영"을 포함한다.
