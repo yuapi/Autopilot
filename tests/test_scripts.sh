@@ -16,6 +16,10 @@ d="$(sandbox)"
 printf '#!/usr/bin/env bash\nif then\n' > "$d/scripts/broken.sh"
 check_not "validate: 문법 오류 스크립트 FAIL" bash "$d/scripts/validate.sh"
 
+d="$(sandbox)"
+python3 -c 'import re,sys; p=sys.argv[1]; s=open(p).read(); open(p,"w").write(re.sub(r"^description: .*$", "description: "+"가"*1100, s, count=1, flags=re.M))' "$d/$SKILL_REL/SKILL.md"
+check_not "validate: description 1024자 초과 FAIL" bash "$d/scripts/validate.sh"
+
 # --- bump: Unreleased 항목을 버전 섹션으로
 d="$(sandbox)"; cur="$(ver_of "$d")"; new="$(next_minor "$cur")"
 python3 - "$d/CHANGELOG.md" <<'PY'
