@@ -10,6 +10,7 @@
 - bump.sh: `## Unreleased`를 새 버전 섹션으로 전환, 실패 시 파일을 바꾸지 않음
 - release.sh: `git archive`로 커밋된 내용만 패키징, `--catch-up`(밀린 태그 일괄 처리)·`--dry-run` 추가
 - validate.sh: `tests/` 실행, 테스트 스크립트 문법 검사
+- Stop 훅: `.autopilot/RUN`이 있을 때만 동작, `$CLAUDE_PROJECT_DIR` 기준 실행, 진척 없이 3회 연속 막으면 STOP을 남기고 해제. 세션 연속 모드 Phase 0에서 `.gitignore`에 실행 산출물 추가, 재호출 시 STOP 정리
 
 ## 1.5.1 — 2026-10-19
 - 플러그인 마켓플레이스 구조로 재편, description 수정, 오픈소스 문서 추가

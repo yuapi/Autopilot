@@ -36,7 +36,7 @@ Claude Code 세션에서:
 
 ### 세션 연속 모드 (기본)
 
-세션에서 "autopilot 실행해" 같이 요청한다. `.autopilot/STOP`이 생길 때까지 같은 세션에서 작업을 연달아 수행한다. 처음 진입할 때 세션이 일찍 끝나지 않도록 Stop 훅(`.claude/hooks/autopilot-stop.sh`)을 설치한다. 터미널이 없는 클라우드 세션에서는 이 모드만 쓸 수 있다.
+세션에서 "autopilot 실행해" 같이 요청한다. `.autopilot/STOP`이 생길 때까지 같은 세션에서 작업을 연달아 수행한다. 처음 진입할 때 `.autopilot/RUN`을 만들고 세션이 일찍 끝나지 않도록 Stop 훅(`.claude/hooks/autopilot-stop.sh`)을 설치한다. 훅은 RUN이 있을 때만 동작하므로 평소 세션은 막지 않으며, 진척 없이 3회 연속 막히면 스스로 STOP을 남기고 풀린다. 터미널이 없는 클라우드 세션에서는 이 모드만 쓸 수 있다.
 
 멈추기: `touch .autopilot/STOP`
 
