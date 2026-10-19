@@ -85,3 +85,9 @@
 - 변경: scripts/status.sh, tests/test_status.sh, SKILL.md(상태 확인), README
 - 검증: validate PASS, test_status 15 통과, 이 레포에서 실행 확인
 - 후속: 없음
+
+## 2026-10-19T09:57 | T-017 | done | skill 1.7.0
+- 변경: scripts/validate.sh, tests/test_scripts.sh, SKILL.md 1-D
+- 검증: validate PASS(참조 10개). 참조 파일 삭제 시 FAIL, 미참조 템플릿은 WARN 확인
+- 발견: feature-template.md가 SKILL.md에서 한 번도 언급되지 않아 쓰이지 않고 있었음
+- 후속: 큐 비어 있음 → 재발굴
