@@ -32,7 +32,11 @@ rm -f "$out"
 echo "[release] 패키지: $out"
 
 git tag -a "$tag" -m "autopilot $ver"
-git push origin "$tag"
+if ! git push origin "$tag"; then
+  git tag -d "$tag" >/dev/null
+  echo "[release] 태그 push 실패. 로컬 태그 $tag 를 지웠습니다. 원인을 해결한 뒤 다시 실행하세요." >&2
+  exit 1
+fi
 
 notes="$(awk -v v="$ver" '$0 ~ "^## "v"( |$)"{f=1; next} f && /^## /{exit} f' CHANGELOG.md)"
 if command -v gh >/dev/null 2>&1; then
