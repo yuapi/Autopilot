@@ -9,7 +9,7 @@ next_minor() { python3 -c 'import sys; a,b,c=map(int,sys.argv[1].split(".")); pr
 # --- validate
 d="$(sandbox)"
 check "validate: 현재 레포 PASS" bash "$d/scripts/validate.sh"
-sed -i 's/| skill [0-9.]*/| skill 0.0.1/' "$d/$SKILL_REL/SKILL.md"
+sedi 's/| skill [0-9.]*/| skill 0.0.1/' "$d/$SKILL_REL/SKILL.md"
 check_not "validate: LOG 예시 버전 불일치 FAIL" bash "$d/scripts/validate.sh"
 
 d="$(sandbox)"
@@ -53,7 +53,7 @@ check "bump: 요약으로 새 섹션" grep -q "^- 요약 항목" "$d/CHANGELOG.m
 
 # --- bump: 따옴표 붙은 버전 보존
 d="$(sandbox)"; cur="$(ver_of "$d")"; new="$(next_patch "$cur")"
-sed -i -E "s/^(  version: )['\"]?$cur['\"]?/\1'$cur'/" "$d/$SKILL_REL/SKILL.md"
+sedi -E "s/^(  version: )['\"]?$cur['\"]?/\1'$cur'/" "$d/$SKILL_REL/SKILL.md"
 check "validate: 따옴표 버전 PASS" bash "$d/scripts/validate.sh"
 check "bump: 따옴표 버전" bash "$d/scripts/bump.sh" patch "x"
 check "bump: 따옴표 유지" grep -q "^  version: '$new'" "$d/$SKILL_REL/SKILL.md"

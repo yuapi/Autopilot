@@ -11,6 +11,16 @@ MARKET_JSON=".claude-plugin/marketplace.json"
 CHECKLIST="docs/open-source-checklist.md"
 
 fail=0; warn=0
+
+# timeout이 없는 환경(macOS 기본)을 위한 대체: timeout → gtimeout → perl alarm
+with_timeout() {
+  local secs="$1"; shift
+  if command -v timeout >/dev/null 2>&1; then timeout "$secs" "$@"
+  elif command -v gtimeout >/dev/null 2>&1; then gtimeout "$secs" "$@"
+  elif command -v perl >/dev/null 2>&1; then perl -e 'alarm shift; exec @ARGV or exit 127' "$secs" "$@"
+  else "$@"
+  fi
+}
 ok()   { echo "  OK    $*"; }
 bad()  { echo "  FAIL  $*"; fail=$((fail + 1)); }
 wrn()  { echo "  WARN  $*"; warn=$((warn + 1)); }
@@ -122,7 +132,7 @@ if [ -n "${AUTOPILOT_IN_TESTS:-}" ]; then
 else
   for t in tests/test_*.sh; do
     [ -f "$t" ] || continue
-    if out="$(timeout "${AUTOPILOT_TEST_TIMEOUT:-300}" bash "$t" 2>&1)"; then
+    if out="$(with_timeout "${AUTOPILOT_TEST_TIMEOUT:-300}" bash "$t" 2>&1)"; then
       ok "$t ($(printf '%s\n' "$out" | grep -c '^  ok') 통과)"
     else
       printf '%s\n' "$out" | grep -v '^  ok' | sed 's/^/        /'
