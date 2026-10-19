@@ -1,0 +1,17 @@
+{
+  "name": "autopilot",
+  "version": "1.5.1",
+  "description": "Autonomous development loop skill: discovers, selects, implements, verifies and records the next task by itself, continuing until .autopilot/STOP exists",
+  "author": {
+    "name": "yuapi"
+  },
+  "keywords": [
+    "autopilot",
+    "autonomous",
+    "agent-loop",
+    "backlog",
+    "skill"
+  ],
+  "license": "MIT",
+  "repository": "https://github.com/yuapi/Autopilot"
+}

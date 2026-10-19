@@ -1,0 +1,14 @@
+{
+  "name": "autopilot-marketplace",
+  "description": "Marketplace for the autopilot autonomous development loop plugin",
+  "owner": {
+    "name": "yuapi"
+  },
+  "plugins": [
+    {
+      "name": "autopilot",
+      "source": "./plugins/autopilot",
+      "description": "Autonomous dev loop that discovers, implements, verifies and logs one task at a time until .autopilot/STOP appears"
+    }
+  ]
+}
