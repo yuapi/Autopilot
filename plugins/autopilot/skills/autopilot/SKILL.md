@@ -72,7 +72,7 @@ description: 사람 개입 없이 다음 개발 작업을 스스로 발굴·선�
 | 축 | 소스 | 방법 | 유형 |
 |---|---|---|---|
 | 유지보수 | 깨진 상태 | 베이스라인 실패 테스트·빌드 | `fix` |
-| 유지보수 | 보안 | `security-audit`, `quantakrypto` MCP | `security` |
+| 유지보수 | 보안 | ① 의존성 취약점: 이미 설치됐거나 패키지 매니저 내장 도구만 (`npm audit`, `pnpm audit`, `pip-audit`, `cargo audit`, `govulncheck`, `bundle audit` 등). 세션에 보안 스캔 스킬·MCP가 있으면 함께 사용 ② 정적 패턴: 하드코딩된 비밀값, 셸·SQL 문자열 결합, `eval`/`exec`, 검증 없는 역직렬화, TLS 검증 끄기 ③ 도구가 없으면 ②만 하고 LOG에 "감사 도구 없음" | `security` |
 | 유지보수 | 코드 마커 | `TODO`, `FIXME`, `HACK`, `XXX`, `NotImplementedError`, `pass # stub` | `todo` |
 | 제품 | 미완성 기능 | 기능 지도에서 "부분"·"스텁" | `feature` |
 | 제품 | 빠진 기능 | 기능 지도 "빠진 것" | `feature` |
