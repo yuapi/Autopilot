@@ -6,6 +6,7 @@
 - PATCH: 드라이버 수정, 문구 정리, 버그 수정
 
 ## Unreleased
+- status.sh: 출력을 `head` 등으로 자를 때 BrokenPipeError 트레이스가 나오던 문제 수정
 
 ## 1.8.1 — 2026-10-19
 - macOS 기본 환경 호환: release.sh의 `tac`, validate.sh·테스트의 `timeout`(gtimeout·perl 대체), 테스트의 GNU `sed -i` 제거. tac·timeout 없는 PATH로 검증하는 tests/test_portability.sh
