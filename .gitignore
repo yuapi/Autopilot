@@ -1,2 +1,8 @@
 dist/
 .DS_Store
+
+# autopilot 실행 산출물
+.autopilot/STOP
+.autopilot/RUN
+.autopilot/driver-logs/
+.autopilot/.hook-state
