@@ -19,6 +19,22 @@ sandbox() {
   echo "$d"
 }
 
+# GNU/BSD 공통 sed 제자리 편집: sedi [-E] '<식>' <파일>
+sedi() {
+  local f="${!#}" n=$(($# - 1))
+  sed "${@:1:$n}" "$f" > "$f.sedi.tmp" && mv "$f.sedi.tmp" "$f"
+}
+
+# timeout이 없는 환경(macOS 기본)용
+with_timeout() {
+  local secs="$1"; shift
+  if command -v timeout >/dev/null 2>&1; then timeout "$secs" "$@"
+  elif command -v gtimeout >/dev/null 2>&1; then gtimeout "$secs" "$@"
+  elif command -v perl >/dev/null 2>&1; then perl -e 'alarm shift; exec @ARGV or exit 127' "$secs" "$@"
+  else "$@"
+  fi
+}
+
 finish() {
   echo "  -- $PASS 통과, $FAIL 실패"
   [ "$FAIL" -eq 0 ]

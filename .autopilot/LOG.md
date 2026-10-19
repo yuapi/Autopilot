@@ -91,3 +91,11 @@
 - 검증: validate PASS(참조 10개). 참조 파일 삭제 시 FAIL, 미참조 템플릿은 WARN 확인
 - 발견: feature-template.md가 SKILL.md에서 한 번도 언급되지 않아 쓰이지 않고 있었음
 - 후속: 큐 비어 있음 → 재발굴
+
+## 2026-10-19T10:02 | - | discover | skill 1.8.0
+- 큐 비어 심화 발굴 4단계 수행(ROADMAP 심화 발굴 참조). 추가: T-019(fix) T-020(enhance)
+
+## 2026-10-19T10:02 | T-019 | done | skill 1.8.0
+- 변경: scripts/release.sh, scripts/validate.sh, tests/lib.sh, tests/test_driver.sh, tests/test_scripts.sh, tests/test_portability.sh
+- 검증: validate PASS(테스트 118개). 수정 전 release.sh는 tac 없는 PATH에서 catch-up 실패(2건) 재현
+- 후속: 없음
