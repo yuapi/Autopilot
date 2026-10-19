@@ -34,3 +34,9 @@
 - 변경: SKILL.md(실질 작업 판정), assets/ROADMAP.md, docs/skill-design.md, README
 - 검증: validate PASS
 - 후속: 없음
+
+## 2026-10-19T09:43 | T-011 | done | skill 1.6.0
+- 변경: SKILL.md Phase 0-3, docs/skill-design.md
+- 함께 수정: Phase 4 롤백이 .autopilot까지 되돌려 attempts가 사라지던 버그(무한 재시도), 실패 후 세션 연속 모드에서 멈추던 문제. tests/test_skill_rules.sh (수정 전 2건 실패 재현)
+- 검증: validate PASS
+- 후속: 없음

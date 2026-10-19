@@ -48,7 +48,11 @@ description: 사람 개입 없이 다음 개발 작업을 스스로 발굴·선�
    - `.autopilot/RUN`을 만들고, Stop 훅을 설치한다 (아래 "Stop 훅 설치" 참조). 이미 설치되어 있으면 건너뛴다.
 1. `.autopilot/` 세 파일을 읽는다. 없으면 템플릿으로 만든다.
 2. `git status`가 깨끗한지 확인. 아니면 `git stash`로 치우고 LOG에 기록.
-3. 베이스라인 확보: 테스트·린트·빌드 명령을 찾아 실행하고 현재 통과/실패 수를 기록. 명령은 `package.json`, `Makefile`, `pyproject.toml`, CI 설정 순으로 탐색.
+3. 베이스라인 확보: 테스트·린트·빌드 명령을 찾아 실행하고 현재 통과/실패 수를 기록한다.
+   - 찾는 순서: ROADMAP "유지보수 상태"에 기록된 명령(있으면 재사용) → 레포 문서(`CLAUDE.md`, `CONTRIBUTING.md`, README의 개발 절차) → 태스크 러너(`Makefile`, `justfile`, `Taskfile.yml`, `package.json` scripts) → 생태계 설정(`pyproject.toml`/`tox.ini`/`noxfile.py`, `go.mod` → `go test ./...`·`go vet ./...`, `Cargo.toml` → `cargo test`·`cargo clippy`, `build.gradle`/`pom.xml`, `Gemfile`, `composer.json`, `*.sln`/`*.csproj` → `dotnet test`, `deno.json`, `mix.exs`) → CI 설정(`.github/workflows` 등의 실행 단계). 셸 스크립트 위주 레포는 `bash -n`과(설치돼 있으면) `shellcheck`.
+   - 찾은 명령과 소요 시간을 ROADMAP "유지보수 상태"에 쓴다. 다음 작업은 다시 찾지 않고 재사용한다.
+   - 실패한 테스트는 한 번 더 돌린다. 결과가 바뀌면 불안정(flaky)으로 ROADMAP에 기록하고 Phase 4 비교에서 제외한다. 불안정 테스트 자체는 `fix` 작업 후보다.
+   - **검증 수단이 하나도 없으면** 생태계 표준 테스트 러너와 스모크 테스트 하나를 만드는 `test` 작업을 최우선으로 큐에 넣는다(`fix` 다음, 사이클당 `test` 개수 제한에서 제외). 그 전까지는 모든 작업의 완료 기준에 "실행해서 확인하는 명령과 기대 결과"를 쓴다.
 
 ### Phase 1 — 발굴 (조건부)
 
@@ -205,7 +209,7 @@ fix > security > feature(진행 중인 것) > enhance > feature(신규) > perf >
 1. Phase 0에서 찾은 테스트·린트·빌드를 전부 다시 실행.
 2. 베이스라인보다 나빠진 게 하나라도 있으면 **실패**.
 3. 작업의 완료 기준을 충족하지 않으면 **실패**.
-4. 실패 시: `git checkout -- . && git clean -fd` (단, `.autopilot/`은 제외), BACKLOG 상태를 `open`으로 되돌림, LOG에 실패 사유 기록, 종료.
+4. 실패 시: `git checkout -- . ':!.autopilot' && git clean -fd -e .autopilot`로 작업 변경만 되돌린다. `.autopilot/`까지 되돌리면 Phase 2에서 올린 `attempts`가 사라져 같은 작업을 끝없이 재시도하므로 반드시 제외한다. BACKLOG 상태를 `open`으로 되돌리고(attempts는 유지) LOG에 실패 사유를 기록한다. 드라이버 모드면 종료, 세션 연속 모드면 Phase 0으로 돌아간다.
 
 ### Phase 5 — 기록
 
