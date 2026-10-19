@@ -16,7 +16,7 @@ plugin = "plugins/autopilot/.claude-plugin/plugin.json"
 log = "CHANGELOG.md"
 
 s = open(skill, encoding="utf-8").read()
-m = re.search(r"^metadata:\n\s+version:\s*(\d+)\.(\d+)\.(\d+)\s*$", s, re.M)
+m = re.search(r"^metadata:\n\s+version:\s*['\"]?(\d+)\.(\d+)\.(\d+)['\"]?\s*$", s, re.M)
 if not m:
     sys.exit("SKILL.md에서 metadata.version을 찾지 못함")
 a, b, c = map(int, m.groups())
@@ -31,7 +31,7 @@ def sub(pattern, repl, text, label):
     return out
 
 esc = re.escape(cur)
-s = sub(rf"(^metadata:\n\s+version:\s*){esc}", rf"\g<1>{new}", s, "metadata.version")
+s = sub(rf"(^metadata:\n\s+version:\s*['\"]?){esc}", rf"\g<1>{new}", s, "metadata.version")
 s = sub(rf"\*\*버전 {esc}\*\*", f"**버전 {new}**", s, "본문 **버전**")
 s = sub(rf"skill {esc}\b", f"skill {new}", s, "LOG 형식 skill 버전")
 open(skill, "w", encoding="utf-8").write(s)
