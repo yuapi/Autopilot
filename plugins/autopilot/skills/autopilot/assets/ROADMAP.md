@@ -1,6 +1,7 @@
 # ROADMAP (autopilot 자동 생성)
 
 last_scan: (아직 없음)
+last_issue_check: (아직 없음)
 
 ## 제품
 
