@@ -1,13 +1,13 @@
 ---
 name: autopilot
 metadata:
-  version: 1.6.0
+  version: 1.7.0
 description: 사람 개입 없이 다음 개발 작업을 스스로 발굴·선택·구현·검증·기록하는 자율 루프. .autopilot/STOP 파일이 생길 때까지 같은 세션에서 계속 이어가며, 터미널이 있으면 드라이버 모드로도 실행할 수 있다. "autopilot", "자율 개발", "다음 작업 알아서", "무인 루프"라는 말이 나오거나 드라이버가 호출하면 반드시 이 스킬의 절차를 그대로 따를 것.
 ---
 
 # Autopilot — 자율 개발 루프
 
-**버전 1.6.0** — 변경 이력은 레포 루트 `CHANGELOG.md`. 매 실행 LOG 항목 첫 줄에 이 버전을 기록한다.
+**버전 1.7.0** — 변경 이력은 레포 루트 `CHANGELOG.md`. 매 실행 LOG 항목 첫 줄에 이 버전을 기록한다.
 
 ## 실행 모드 — 먼저 판별한다
 
@@ -223,7 +223,7 @@ fix > security > feature(진행 중인 것) > enhance > feature(신규) > perf >
 ## LOG 형식
 
 ```
-## 2026-10-01T14:30 | T-042 | done | skill 1.6.0
+## 2026-10-01T14:30 | T-042 | done | skill 1.7.0
 - 변경: src/auth/token.py, tests/test_token.py
 - 검증: test 128→131 pass, lint 0 err
 - 후속: T-051 추가 (refresh 실패 시 재시도)
