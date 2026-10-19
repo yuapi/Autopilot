@@ -9,7 +9,7 @@ next_id: 13
 |---|---|---|---|---|---|---|---|
 | T-001 | fix | done | 1 | Stop 훅을 실행 중일 때만 활성화(`.autopilot/RUN` 마커), `$CLAUDE_PROJECT_DIR` 기준 동작, LOG 진척 없이 연속 차단되면 STOP을 쓰고 해제 | 훅 테스트: RUN 없음→통과, RUN+STOP 없음→block, 진척 없는 N회→STOP 생성·통과 | 약한 것 | 2026-10-19 |
 | T-002 | fix | done | 1 | 세션 연속 모드 Phase 0에서 `.gitignore`에 STOP·RUN·driver-logs·훅 상태 파일 보장 | SKILL.md 규칙 + 드라이버와 같은 항목 | 약한 것 | 2026-10-19 |
-| T-003 | fix | open | 0 | 보안 발굴 소스를 조직 전용 MCP 이름에서 생태계 표준 도구(npm audit, pip-audit, cargo audit, govulncheck 등)로 일반화 | SKILL.md에 특정 조직 MCP가 필수로 남지 않음 | 공개 체크리스트 | |
+| T-003 | fix | done | 1 | 보안 발굴 소스를 조직 전용 MCP 이름에서 생태계 표준 도구(npm audit, pip-audit, cargo audit, govulncheck 등)로 일반화 | SKILL.md에 특정 조직 MCP가 필수로 남지 않음 | 공개 체크리스트 | 2026-10-19 |
 | T-004 | enhance | open | 0 | 발굴 소스에 이슈 트래커·PR 리뷰 코멘트 추가 (gh/MCP가 있을 때 읽기 전용, 라벨로 유형 매핑) | SKILL.md 1-B 표와 우선순위 반영 | 빠진 것 | |
 | T-005 | feature | open | 0 | 탐색적 실행·사용 시나리오 점검 발굴 단계 추가 (진입점 실행, 경계 입력, 오류 메시지 품질) | SKILL.md 1-A/1-B 반영, 결과가 fix/enhance 작업으로 이어지는 규칙 | 빠진 것 | |
 | T-006 | feature | open | 0 | 기능 제안 기록 `.autopilot/PROPOSALS.md` (근거·영향·위험), 규칙 안이면 작업화, 밖이면 사람 판단 대기 | 템플릿 + SKILL.md 규칙 | 빠진 것 | |

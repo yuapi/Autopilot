@@ -8,3 +8,8 @@
 - 변경: assets/autopilot-stop.sh, SKILL.md(Phase 0·Stop 훅·중단), scripts/autopilot.sh, docs/skill-design.md, README, tests/test_hook.sh
 - 검증: validate PASS, test_hook 17 통과
 - 후속: 없음
+
+## 2026-10-19T09:33 | T-003 | done | skill 1.5.1
+- 변경: SKILL.md 1-B 보안 행
+- 검증: validate PASS, 레포 전체에서 조직 전용 MCP 이름 0건
+- 후속: 없음
