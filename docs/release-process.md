@@ -25,12 +25,12 @@ feature/<topic> ──PR──▶ develop ──▶ release/<ver> ──PR──
 3. 작업 트리가 깨끗한지 확인
 4. 태그 `v<ver>`가 아직 없는지 확인
 5. 커밋된 내용으로 `dist/autopilot-<ver>.skill` 생성 (`git archive`)
-6. `git tag -a v<ver>` → `git push origin v<ver>`. 실패하면 로컬 태그를 지우고 종료
+6. `git tag -a v<ver>` → `git push origin v<ver>`. 실패하면 로컬 태그를 지우고, `gh`에 이 레포 쓰기 권한이 있으면 `gh release create --target <커밋>`으로 GitHub에서 태그와 Release를 함께 만든다. 그것도 안 되면 종료
 7. `gh`가 있으면 CHANGELOG의 해당 섹션을 노트로 `gh release create` + `.skill` 첨부
 
 ## 밀린 태그 한 번에 만들기
 
-태그 push가 막힌 환경(예: 클라우드 세션)에서 릴리스하면 `main`에는 버전이 들어갔지만 태그가 없는 상태가 된다. 태그를 push할 수 있는 곳에서:
+태그 push도 `gh`도 쓸 수 없는 환경에서 릴리스하면 `main`에는 버전이 들어갔지만 태그가 없는 상태가 된다. 태그를 push할 수 있거나 쓰기 권한이 있는 `gh`가 있는 곳에서:
 
 ```bash
 git checkout main && git pull

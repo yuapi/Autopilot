@@ -35,7 +35,7 @@
 2. `git checkout -b release/<ver> origin/develop` → `bash scripts/bump.sh <kind>` (Unreleased 항목이 새 버전 섹션이 된다) → validate → 커밋·push
 3. PR `release/<ver>` → `main` 생성·머지, 이어서 PR `main` → `develop` 역병합 생성·머지
 4. `main`을 받아 `bash scripts/release.sh` 실행 (태그·`.skill` 패키지·GitHub Release)
-5. 태그 push가 권한 정책에 막히면 우회하지 않는다. LOG에 "태그 대기"로 남기고 다음 작업을 계속한다. 사람이 로컬에서 `bash scripts/release.sh --catch-up`으로 밀린 태그를 한 번에 만든다.
+5. git 태그 push가 막힌 환경(클라우드 세션)에서는 `release.sh`가 환경의 `GH_TOKEN`(사람이 넣어 둔 PAT)으로 GitHub API를 써서 태그와 Release를 만든다. `gh`도 쓸 수 없으면 우회하지 않고 LOG에 "태그 대기"로 남긴 뒤 다음 작업을 계속한다. 밀린 릴리스는 `bash scripts/release.sh --catch-up`으로 한 번에 처리한다.
 
 ## 커밋 규칙 (Conventional Commits)
 
