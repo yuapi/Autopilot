@@ -7,6 +7,7 @@
 
 ## 1.5.1 — 2026-10-19
 - 플러그인 마켓플레이스 구조로 재편, description 수정, 오픈소스 문서 추가
+- validate.sh: LOG 예시 버전·레포 scripts/ 문법 검사 추가, bump.sh: 따옴표 붙은 버전 지원, release.sh: 태그 push 실패 시 로컬 태그 정리
 
 ## 1.5.0 — 2026-10-02
 - 세션 연속 모드 신설(기본): 터미널 없는 클라우드 세션에서 STOP까지 같은 세션에서 작업을 계속 이어감. Claude가 Stop 훅을 직접 설치(assets/autopilot-stop.sh). 드라이버 모드는 AUTOPILOT_DRIVER=1로 판별
