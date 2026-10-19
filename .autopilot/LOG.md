@@ -75,3 +75,8 @@
 - 변경: SKILL.md(Phase 0-2, Phase 4, 반복 차단 규칙 제목), tests/test_skill_rules.sh
 - 검증: validate PASS. 기존 git stash가 attempts 1→0으로 되돌림을 재현, 새 명령은 유지
 - 후속: 없음
+
+## 2026-10-19T09:54 | T-016 | done | skill 1.7.0
+- 변경: SKILL.md frontmatter, marketplace.json·plugin.json description, scripts/validate.sh, tests/test_scripts.sh
+- 검증: validate PASS (377자), 1100자 description FAIL 테스트
+- 후속: 없음
