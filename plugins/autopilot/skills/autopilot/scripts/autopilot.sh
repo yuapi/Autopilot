@@ -4,23 +4,41 @@
 #   cd <레포 루트> && bash <스킬 폴더>/scripts/autopilot.sh [최대 반복, 기본 무제한]
 #
 # 종료 조건:
-#   - .autopilot/STOP 파일 존재 (Claude가 생성)
-#   - claude 프로세스 연속 3회 비정상 종료
-#   - 최대 반복 도달 (인자로 준 경우)
+#   - .autopilot/STOP 파일 존재 (Claude가 생성)          → 종료 코드 0
+#   - 최대 반복 도달 (인자로 준 경우)                      → 0
+#   - claude 프로세스 연속 3회 비정상 종료                 → 1
+#   - 잘못된 인자, git 레포 밖, claude CLI 없음            → 1
+#
+# 환경변수:
+#   AUTOPILOT_SLEEP  반복 사이 대기 초 (기본 10)
 #
 # 권한 모드 (환경변수 AUTOPILOT_PERMISSION):
 #   allowlist (기본) : --allowedTools 로 필요한 도구만 허용. root에서도 동작.
 #   skip             : --dangerously-skip-permissions. 전용 머신·컨테이너 전용. root에서는 거부될 수 있음.
 
 set -u
-if [ ! -d .git ]; then
-  echo "[driver] 레포 루트(.git이 있는 디렉토리)에서 실행하세요." >&2
+MAX_ITER="${1:-0}"
+case "$MAX_ITER" in
+  ''|*[!0-9]*) echo "[driver] 최대 반복은 0 이상의 정수여야 합니다 (0 = 무제한): $MAX_ITER" >&2; exit 1;;
+esac
+MAX_ITER=$((10#$MAX_ITER))
+SLEEP_BETWEEN="${AUTOPILOT_SLEEP:-10}"
+case "$SLEEP_BETWEEN" in
+  ''|*[!0-9]*) echo "[driver] AUTOPILOT_SLEEP은 0 이상의 정수여야 합니다: $SLEEP_BETWEEN" >&2; exit 1;;
+esac
+
+root="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+  echo "[driver] git 레포 안에서 실행하세요." >&2
+  exit 1
+}
+cd "$root" || exit 1
+
+if ! command -v claude >/dev/null 2>&1; then
+  echo "[driver] claude CLI를 찾을 수 없습니다. Claude Code를 설치하고 PATH를 확인하세요." >&2
   exit 1
 fi
 
-MAX_ITER="${1:-0}"
 MAX_CONSECUTIVE_CRASH=3
-SLEEP_BETWEEN=10
 LOG_DIR=".autopilot/driver-logs"
 mkdir -p "$LOG_DIR"
 
@@ -57,17 +75,18 @@ while :; do
 
   iter=$((iter + 1))
   ts="$(date +%Y%m%d-%H%M%S)"
+  log="$LOG_DIR/$ts-$(printf '%04d' "$iter").log"
   echo "[driver] #$iter 시작 $ts"
 
-  if AUTOPILOT_DRIVER=1 claude -p "$PROMPT" "${PERM_ARGS[@]}" > "$LOG_DIR/$ts.log" 2>&1; then
+  if AUTOPILOT_DRIVER=1 claude -p "$PROMPT" "${PERM_ARGS[@]}" > "$log" 2>&1; then
     crash=0
   else
     crash=$((crash + 1))
-    echo "[driver] claude 비정상 종료 ($crash/$MAX_CONSECUTIVE_CRASH). 로그: $LOG_DIR/$ts.log"
+    echo "[driver] claude 비정상 종료 ($crash/$MAX_CONSECUTIVE_CRASH). 로그: $log"
     if [ "$crash" -ge "$MAX_CONSECUTIVE_CRASH" ]; then
-      echo "[driver] 연속 크래시 한도 초과. 종료."
-      break
+      echo "[driver] 연속 크래시 한도 초과. 종료." >&2
+      exit 1
     fi
   fi
-  sleep "$SLEEP_BETWEEN"
+  [ -f .autopilot/STOP ] || sleep "$SLEEP_BETWEEN"
 done

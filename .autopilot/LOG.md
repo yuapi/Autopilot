@@ -13,3 +13,30 @@
 - 변경: SKILL.md 1-B 보안 행
 - 검증: validate PASS, 레포 전체에서 조직 전용 MCP 이름 0건
 - 후속: 없음
+
+## 2026-10-19T09:35 | T-004 | done | skill 1.6.0
+- 변경: SKILL.md(Phase 1 조건, 1-B, 1-C, 1-E 신설, Phase 2 정렬, Phase 5 커밋), assets/ROADMAP.md, docs/skill-design.md, README
+- 검증: validate PASS
+- 태그 대기: v1.5.1, v1.6.0 (클라우드 세션 태그 push 403). 로컬에서 release.sh --catch-up 필요
+- 후속: 없음
+
+## 2026-10-19T09:37 | T-005 | done | skill 1.6.0
+- 변경: SKILL.md(1-A 5·6, 탐색적 실행 규칙, 1-B), assets/ROADMAP.md, docs/skill-design.md, README
+- 검증: validate PASS. 이 레포에 적용해 드라이버 결함 5건 관찰
+- 후속: T-013 추가 (드라이버 결함)
+
+## 2026-10-19T09:40 | T-013,T-012 | done | skill 1.6.0
+- 변경: scripts/autopilot.sh, tests/test_driver.sh, scripts/validate.sh, README
+- 검증: validate PASS, test_driver 22 통과. 수정 전 드라이버로 돌리면 숫자 아닌 인자에서 무한 반복으로 타임아웃(결함 재현)
+- 후속: 없음
+
+## 2026-10-19T09:41 | T-007 | done | skill 1.6.0
+- 변경: SKILL.md(실질 작업 판정), assets/ROADMAP.md, docs/skill-design.md, README
+- 검증: validate PASS
+- 후속: 없음
+
+## 2026-10-19T09:43 | T-011 | done | skill 1.6.0
+- 변경: SKILL.md Phase 0-3, docs/skill-design.md
+- 함께 수정: Phase 4 롤백이 .autopilot까지 되돌려 attempts가 사라지던 버그(무한 재시도), 실패 후 세션 연속 모드에서 멈추던 문제. tests/test_skill_rules.sh (수정 전 2건 실패 재현)
+- 검증: validate PASS
+- 후속: 없음
