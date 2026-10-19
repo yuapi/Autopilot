@@ -29,3 +29,8 @@
 - 변경: scripts/autopilot.sh, tests/test_driver.sh, scripts/validate.sh, README
 - 검증: validate PASS, test_driver 22 통과. 수정 전 드라이버로 돌리면 숫자 아닌 인자에서 무한 반복으로 타임아웃(결함 재현)
 - 후속: 없음
+
+## 2026-10-19T09:41 | T-007 | done | skill 1.6.0
+- 변경: SKILL.md(실질 작업 판정), assets/ROADMAP.md, docs/skill-design.md, README
+- 검증: validate PASS
+- 후속: 없음
