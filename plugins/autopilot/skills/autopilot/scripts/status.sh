@@ -27,6 +27,11 @@ elif os.path.exists(os.path.join(A, "RUN")):
 else:
     print("실행: 대기 (RUN·STOP 없음)")
 
+hook = ".claude/hooks/autopilot-stop.sh"
+if os.path.exists(hook) and ".autopilot/RUN" not in open(hook, encoding="utf-8", errors="replace").read():
+    print("경고: 구버전(1.5.x) Stop 훅이 설치되어 있습니다. STOP이 없으면 autopilot을 돌리지 않는 평소 세션도 끝나지 않습니다.")
+    print(f"  교체: 스킬의 assets/autopilot-stop.sh 내용으로 {hook} 를 덮어쓰거나, 임시로 .autopilot/STOP 을 만드세요.")
+
 cfg = dict(re.findall(r"^(integration|merge|release):\s*([^\s#]+)", read("CONFIG.md"), re.M))
 print("통합: " + (", ".join(f"{k}={v}" for k, v in cfg.items()) if cfg else "local (CONFIG 없음)"))
 

@@ -47,6 +47,13 @@ check "STOP 있으면 멈춤과 사유 첫 줄" grep -q "실행: 멈춤 — 최�
 check "STOP 전체 내용 표시" grep -q "사이클: 3회" <<<"$out"
 check "하위 폴더에서도 레포 루트 기준" grep -q "autopilot 상태 — $d" <<<"$out"
 
+mkdir -p "$d/.claude/hooks"
+cp "$REPO/$SKILL_REL/assets/autopilot-stop.sh" "$d/.claude/hooks/autopilot-stop.sh"
+check_not "새 훅이면 구버전 경고 없음" bash -c "bash '$ST' '$d' | grep -q '구버전'"
+printf '#!/usr/bin/env bash\nif [ -f .autopilot/STOP ]; then exit 0; fi\necho block\n' > "$d/.claude/hooks/autopilot-stop.sh"
+check "구버전 훅이면 경고와 교체 안내" bash -c "bash '$ST' '$d' | grep -q '구버전(1.5.x) Stop 훅'"
+rm -rf "$d/.claude"
+
 rm "$d/.autopilot/CONFIG.md"
 check "CONFIG 없으면 local" bash -c "bash '$ST' '$d' | grep -q 'local (CONFIG 없음)'"
 e="$(mktemp -d "$TMPROOT/e.XXXX")"
