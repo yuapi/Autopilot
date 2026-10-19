@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 19
+next_id: 21
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -25,3 +25,5 @@ next_id: 19
 | T-016 | enhance | done | 1 | frontmatter description을 현재 기능(이슈·제안·PR 통합·심화 발굴) 기준으로 갱신해 호출 조건 개선 | 1024자 이내, validate PASS | 약한 것 | 2026-10-19 |
 | T-017 | test | done | 1 | validate.sh: SKILL.md가 참조하는 `assets/`·`scripts/` 파일이 실제로 있는지 검사 | 없는 파일을 참조하면 FAIL하는 테스트 | 빠진 것 | 2026-10-19 |
 | T-018 | feature | done | 1 | `scripts/status.sh`: 완료·실패·blocked 수, 열린 작업, 최근 LOG, 결정 대기 제안, STOP 사유를 한 화면에 요약 | tests/test_status.sh 통과, README 반영 | 시나리오 2 | 2026-10-19 |
+| T-019 | fix | done | 1 | macOS 기본 환경 호환: release.sh의 `tac`, validate.sh·테스트의 `timeout`, 테스트의 GNU `sed -i` 제거 | tac·timeout 없는 PATH에서 catch-up·validate 테스트 통과 | 심화 발굴 3 이식성 | 2026-10-19 |
+| T-020 | enhance | open | 0 | status.sh가 구버전(1.5.x) Stop 훅 설치를 감지해 경고하고 교체 방법 안내, README에 업그레이드 절 | 테스트: RUN 검사 없는 훅이면 경고, 새 훅이면 경고 없음 | 심화 발굴 3 업그레이드 | |
