@@ -15,7 +15,7 @@ next_id: 14
 | T-006 | feature | done | 1 | 기능 제안 기록 `.autopilot/PROPOSALS.md` (근거·영향·위험), 규칙 안이면 작업화, 밖이면 사람 판단 대기 | 템플릿 + SKILL.md 규칙 | 빠진 것 | 2026-10-19 |
 | T-007 | enhance | done | 1 | 최종 중단 전 발굴 심화 단계(정적 → 실행·시나리오 → 이슈·제안 검토) 모두 수행해야 실질 0개 판정 | SKILL.md 중단 판정 조건 갱신, skill-design.md 근거 | 약한 것 | 2026-10-19 |
 | T-008 | feature | done | 1 | 통합 정책 `.autopilot/CONFIG.md`: local(기본)/branch/pr, release off/auto. 레포의 CONTRIBUTING·CLAUDE.md 관례 우선 | 템플릿 + SKILL.md Phase 5 분기, 기본값은 기존 동작 유지 | 빠진 것 | 2026-10-19 |
-| T-009 | perf | open | 0 | 긴 실행 컨텍스트: LOG는 최근 20개만 읽기, done 50개 초과 시 BACKLOG 아카이브 | SKILL.md Phase 0 규칙 | 약한 것 | |
+| T-009 | perf | done | 1 | 긴 실행 컨텍스트: LOG는 최근 20개만 읽기, done 50개 초과 시 BACKLOG 아카이브 | SKILL.md Phase 0 규칙 | 약한 것 | 2026-10-19 |
 | T-010 | enhance | done | 1 | 10작업마다 회고: 실패·blocked 원인 → ROADMAP "배운 것"·발굴 규칙 보정 | SKILL.md 규칙 + ROADMAP 템플릿 섹션 | 빠진 것 | 2026-10-19 |
 | T-011 | enhance | done | 1 | 베이스라인 명령 탐색 확대(go/cargo/gradle/justfile/tox 등), 테스트 없는 레포는 최소 하네스 구축을 첫 작업으로 | SKILL.md Phase 0·1 반영 | 약한 것 | 2026-10-19 |
 | T-012 | test | done | 1 | 드라이버 스크립트 테스트 (가짜 claude로 STOP·반복 한도·연속 크래시 종료 검증) | tests/test_driver.sh 통과 | 테스트 공백 | 2026-10-19 |

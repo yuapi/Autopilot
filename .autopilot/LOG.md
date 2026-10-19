@@ -56,3 +56,8 @@
 - 변경: SKILL.md(상태 파일, Phase 0·5, 통합 정책 절, 하지 않는 것, 템플릿), assets/CONFIG.md, docs/skill-design.md, README, tests/test_skill_rules.sh. 이 레포에 CONFIG.md(pr/auto) 생성
 - 검증: validate PASS
 - 후속: 없음
+
+## 2026-10-19T09:50 | T-009 | done | skill 1.7.0
+- 변경: SKILL.md(Phase 0-1, 발굴 규칙), scripts/archive.sh, tests/test_archive.sh, docs/skill-design.md
+- 검증: validate PASS, test_archive 16 통과(행·항목 손실 없음, 재실행 이어 붙이기)
+- 후속: 큐 비어 있음 → 재발굴
