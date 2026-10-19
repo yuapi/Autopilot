@@ -42,8 +42,14 @@ first_commit_with_version() {
   done
 }
 
+# gh가 있고 이 레포에 push 권한이 있는지 (gh auth status는 레포 한정 토큰에서 실패할 수 있어 쓰지 않는다)
+gh_can_write() {
+  command -v gh >/dev/null 2>&1 || return 1
+  [ "$(gh api 'repos/{owner}/{repo}' --jq '.permissions.push' 2>/dev/null)" = "true" ]
+}
+
 release_one() {
-  local ver="$1" commit="$2" tag="v$1" out notes
+  local ver="$1" commit="$2" tag="v$1" out notes sha
   if [ "$dry" -eq 1 ]; then
     echo "[release] (dry-run) $tag ← $(git rev-parse --short "$commit")"
     return
@@ -54,19 +60,30 @@ release_one() {
   git archive --format=zip --prefix=autopilot/ -o "$out" "$commit:plugins/autopilot/skills/autopilot"
   echo "[release] 패키지: $out ($(git rev-parse --short "$commit"))"
 
+  notes="$(git show "$commit:CHANGELOG.md" | awk -v v="$ver" '$0 ~ "^## "v"( |$)"{f=1; next} f && /^## /{exit} f')"
+  sha="$(git rev-parse "$commit^{commit}")"
+
   git tag -a "$tag" -m "autopilot $ver" "$commit"
   if ! git push origin "$tag"; then
     git tag -d "$tag" >/dev/null
-    echo "[release] 태그 push 실패. 로컬 태그 $tag 를 지웠습니다. 원인을 해결한 뒤 다시 실행하세요." >&2
+    # git으로 태그를 올릴 수 없는 환경(예: 브랜치 push만 허용하는 클라우드 세션)에서는
+    # 쓰기 권한이 있는 gh로 GitHub에 태그와 Release를 한 번에 만든다
+    if gh_can_write; then
+      echo "[release] 태그 push 실패 → GitHub API로 태그 $tag 와 Release를 만듭니다 ($(git rev-parse --short "$sha"))"
+      gh release create "$tag" "$out" --target "$sha" --title "autopilot $ver" --notes "$notes"
+      git fetch -q --tags origin 2>/dev/null || true
+      echo "[release] GitHub Release $tag 생성 완료"
+      return
+    fi
+    echo "[release] 태그 push 실패. 로컬 태그 $tag 를 지웠습니다. 쓰기 권한이 있는 gh(GH_TOKEN)가 있으면 API로 대신 만들 수 있습니다." >&2
     exit 1
   fi
 
-  notes="$(git show "$commit:CHANGELOG.md" | awk -v v="$ver" '$0 ~ "^## "v"( |$)"{f=1; next} f && /^## /{exit} f')"
-  if command -v gh >/dev/null 2>&1; then
+  if gh_can_write; then
     gh release create "$tag" "$out" --title "autopilot $ver" --notes "$notes"
     echo "[release] GitHub Release $tag 생성 완료"
   else
-    echo "[release] gh CLI가 없습니다. GitHub → Releases → $tag 로 Release를 만들고 $out 를 첨부하세요."
+    echo "[release] gh CLI가 없거나 쓰기 권한이 없습니다. GitHub → Releases → $tag 로 Release를 만들고 $out 를 첨부하세요."
   fi
 }
 
