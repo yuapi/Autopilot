@@ -34,4 +34,4 @@ bash scripts/bump.sh <major|minor|patch> "<변경 요약>"
 - **plugin.json `version`** — Claude Code가 플러그인 업데이트 여부를 이 값으로 판단한다. 바뀌지 않으면 사용자는 새 스킬을 받지 못하고, 잘못 바뀌면 같은 내용이 다른 버전으로 배포된다.
 - **CHANGELOG 최상단** — 릴리스 노트(`release.sh` 가 이 섹션을 GitHub Release 본문으로 쓴다)와 `.skill` 파일 이름이 이 번호를 따른다.
 
-하나라도 어긋나면 "LOG에 찍힌 버전 ≠ 설치된 버전 ≠ 릴리스 노트" 가 되어 버그 재현이 불가능해진다. `validate.sh` 가 네 값(본문 표기 포함)을 비교해 다르면 FAIL 한다.
+하나라도 어긋나면 "LOG에 찍힌 버전 ≠ 설치된 버전 ≠ 릴리스 노트" 가 되어 버그 재현이 불가능해진다. `validate.sh` 가 다섯 값(본문 표기·LOG 예시 포함)을 비교해 다르면 FAIL 한다.

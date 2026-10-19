@@ -41,12 +41,13 @@ else
 fi
 
 echo "[3] 버전 일치"
-v_skill="$(printf '%s\n' "$fm" | sed -n 's/^[[:space:]]\{1,\}version:[[:space:]]*//p' | head -1)"
+v_skill="$(printf '%s\n' "$fm" | sed -n "s/^[[:space:]]\{1,\}version:[[:space:]]*['\"]\{0,1\}\([0-9][0-9.]*\).*/\1/p" | head -1)"
 v_plugin="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("version",""))' "$PLUGIN_JSON" 2>/dev/null)"
 v_log="$(sed -n 's/^## \([0-9][0-9.]*\).*/\1/p' CHANGELOG.md | head -1)"
 v_body="$(sed -n 's/^\*\*버전 \([0-9][0-9.]*\)\*\*.*/\1/p' "$SKILL_MD" | head -1)"
-echo "        SKILL.md metadata.version=$v_skill  본문=$v_body  plugin.json=$v_plugin  CHANGELOG=$v_log"
-if [ -n "$v_skill" ] && [ "$v_skill" = "$v_plugin" ] && [ "$v_skill" = "$v_log" ] && [ "$v_skill" = "$v_body" ]; then
+v_example="$(grep -m1 -oE '\| skill [0-9]+\.[0-9]+\.[0-9]+' "$SKILL_MD" | grep -oE '[0-9.]+$')"
+echo "        SKILL.md metadata.version=$v_skill  본문=$v_body  LOG예시=$v_example  plugin.json=$v_plugin  CHANGELOG=$v_log"
+if [ -n "$v_skill" ] && [ "$v_skill" = "$v_plugin" ] && [ "$v_skill" = "$v_log" ] && [ "$v_skill" = "$v_body" ] && [ "$v_skill" = "$v_example" ]; then
   ok "버전 일치: $v_skill"
 else
   bad "버전 불일치"
@@ -55,7 +56,7 @@ fi
 echo "[4] 셸 스크립트 문법 (bash -n)"
 while IFS= read -r f; do
   if bash -n "$f" 2>/dev/null; then ok "$f"; else bad "$f 문법 오류"; fi
-done < <(find "$SKILL_DIR" -name '*.sh' -type f | sort)
+done < <(find scripts "$SKILL_DIR" -name '*.sh' -type f | sort)
 
 echo "[5] claude plugin validate"
 if command -v claude >/dev/null 2>&1; then
