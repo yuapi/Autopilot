@@ -13,3 +13,9 @@
 - 변경: SKILL.md 1-B 보안 행
 - 검증: validate PASS, 레포 전체에서 조직 전용 MCP 이름 0건
 - 후속: 없음
+
+## 2026-10-19T09:35 | T-004 | done | skill 1.6.0
+- 변경: SKILL.md(Phase 1 조건, 1-B, 1-C, 1-E 신설, Phase 2 정렬, Phase 5 커밋), assets/ROADMAP.md, docs/skill-design.md, README
+- 검증: validate PASS
+- 태그 대기: v1.5.1, v1.6.0 (클라우드 세션 태그 push 403). 로컬에서 release.sh --catch-up 필요
+- 후속: 없음
