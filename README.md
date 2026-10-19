@@ -73,6 +73,10 @@ One screen with whether the loop is running or stopped (and why), the integratio
 - **One task at a time, verified.** Each task is sized at 1–2 hours, has a written completion criterion, and must not make tests, lint or build worse than the baseline. Failure means a full rollback.
 - **Final stop conditions.** The loop stops for good when (a) re-discovery finds zero substantive tasks even after four deepening passes (static review, running the software with fresh scenarios, a quality-attribute checklist, and a full re-read of issues and earlier rejections), (b) 7 of the last 10 runs failed, or (c) a human creates `.autopilot/STOP`. Tasks that fail 3 times are marked `blocked` and skipped.
 
+## Upgrading from 1.5.x
+
+1.5.x installed a Stop hook that blocks *every* session in the repository while `.autopilot/STOP` is missing, including sessions that are not running autopilot. From 1.6.0 the hook only acts while `.autopilot/RUN` exists. Running the skill again replaces the old hook automatically; until then `scripts/status.sh` warns about it, and you can replace `.claude/hooks/autopilot-stop.sh` with `assets/autopilot-stop.sh` yourself or create `.autopilot/STOP` as a stopgap.
+
 ## Repository layout
 
 ```
