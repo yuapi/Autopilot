@@ -19,3 +19,8 @@
 - 검증: validate PASS
 - 태그 대기: v1.5.1, v1.6.0 (클라우드 세션 태그 push 403). 로컬에서 release.sh --catch-up 필요
 - 후속: 없음
+
+## 2026-10-19T09:37 | T-005 | done | skill 1.6.0
+- 변경: SKILL.md(1-A 5·6, 탐색적 실행 규칙, 1-B), assets/ROADMAP.md, docs/skill-design.md, README
+- 검증: validate PASS. 이 레포에 적용해 드라이버 결함 5건 관찰
+- 후속: T-013 추가 (드라이버 결함)
