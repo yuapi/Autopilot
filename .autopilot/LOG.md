@@ -24,3 +24,8 @@
 - 변경: SKILL.md(1-A 5·6, 탐색적 실행 규칙, 1-B), assets/ROADMAP.md, docs/skill-design.md, README
 - 검증: validate PASS. 이 레포에 적용해 드라이버 결함 5건 관찰
 - 후속: T-013 추가 (드라이버 결함)
+
+## 2026-10-19T09:40 | T-013,T-012 | done | skill 1.6.0
+- 변경: scripts/autopilot.sh, tests/test_driver.sh, scripts/validate.sh, README
+- 검증: validate PASS, test_driver 22 통과. 수정 전 드라이버로 돌리면 숫자 아닌 인자에서 무한 반복으로 타임아웃(결함 재현)
+- 후속: 없음
