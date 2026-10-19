@@ -6,6 +6,8 @@
 - PATCH: 드라이버 수정, 문구 정리, 버그 수정
 
 ## Unreleased
+
+## 1.8.1 — 2026-10-19
 - macOS 기본 환경 호환: release.sh의 `tac`, validate.sh·테스트의 `timeout`(gtimeout·perl 대체), 테스트의 GNU `sed -i` 제거. tac·timeout 없는 PATH로 검증하는 tests/test_portability.sh
 - status.sh가 구버전(1.5.x) Stop 훅 설치를 감지해 경고하고 교체 방법 안내. README에 1.5.x 업그레이드 절
 
