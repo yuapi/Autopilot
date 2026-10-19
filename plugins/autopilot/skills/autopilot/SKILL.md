@@ -54,7 +54,7 @@ description: 사람 개입 없이 다음 개발 작업을 스스로 발굴·선�
    - BACKLOG: 머리말과 `open`·`in_progress` 행, 그리고 최근 완료 10행. 나머지는 필요할 때 grep으로 찾는다.
    - LOG: 마지막 20개 항목만. 반복 실패·같은 파일 규칙에 필요한 것은 이 범위 안에 있다. 회고는 `last_retro` 이후 항목을 읽는다.
    - 정리: `bash <스킬 폴더>/scripts/archive.sh`를 실행한다. BACKLOG의 `done`·`blocked` 행이 50개를 넘으면 오래된 것부터 `BACKLOG.archive.md`로, LOG 항목이 300개를 넘으면 오래된 것부터 `LOG.archive.md`로 옮긴다(내용은 그대로, 아카이브는 지우지 않음). 스크립트를 쓸 수 없으면 같은 규칙으로 직접 옮긴다.
-2. `git status`가 깨끗한지 확인. 아니면 `git stash`로 치우고 LOG에 기록.
+2. 작업 트리 확인: `.autopilot/` 밖에 변경이 있으면 `git stash push -u -m autopilot-phase0 -- . ':!.autopilot'`로 치우고 LOG에 기록한다. `.autopilot/`의 미커밋 변경은 직전 작업의 상태(attempts·실패 기록)이므로 치우지 않는다.
 3. 베이스라인 확보: 테스트·린트·빌드 명령을 찾아 실행하고 현재 통과/실패 수를 기록한다.
    - 찾는 순서: ROADMAP "유지보수 상태"에 기록된 명령(있으면 재사용) → 레포 문서(`CLAUDE.md`, `CONTRIBUTING.md`, README의 개발 절차) → 태스크 러너(`Makefile`, `justfile`, `Taskfile.yml`, `package.json` scripts) → 생태계 설정(`pyproject.toml`/`tox.ini`/`noxfile.py`, `go.mod` → `go test ./...`·`go vet ./...`, `Cargo.toml` → `cargo test`·`cargo clippy`, `build.gradle`/`pom.xml`, `Gemfile`, `composer.json`, `*.sln`/`*.csproj` → `dotnet test`, `deno.json`, `mix.exs`) → CI 설정(`.github/workflows` 등의 실행 단계). 셸 스크립트 위주 레포는 `bash -n`과(설치돼 있으면) `shellcheck`.
    - 찾은 명령과 소요 시간을 ROADMAP "유지보수 상태"에 쓴다. 다음 작업은 다시 찾지 않고 재사용한다.
@@ -228,7 +228,7 @@ fix > security > feature(진행 중인 것) > enhance > feature(신규) > perf >
 
 같은 우선순위면 이슈 출처(`issue #N`)인 것, 그다음 `attempts`가 적은 것, 그다음 ID가 작은 것.
 
-**반복 차단 규칙** (유일한 중단 조건):
+**반복 차단 규칙** (작업 단위의 차단. 루프 전체를 멈추는 것은 마지막 항목과 위 최종 중단 조건뿐):
 - `attempts >= 3` → 상태를 `blocked`로 바꾸고 선택에서 제외
 - 직전 5개 LOG 항목이 같은 파일만 건드렸으면 그 파일 관련 작업은 이번에 제외
 - 직전 10회 중 7회 이상 실패면 `.autopilot/STOP` 생성 후 종료 (내용: "반복 실패", 실패한 작업 ID 목록)
@@ -249,7 +249,7 @@ fix > security > feature(진행 중인 것) > enhance > feature(신규) > perf >
 1. Phase 0에서 찾은 테스트·린트·빌드를 전부 다시 실행.
 2. 베이스라인보다 나빠진 게 하나라도 있으면 **실패**.
 3. 작업의 완료 기준을 충족하지 않으면 **실패**.
-4. 실패 시: `git checkout -- . ':!.autopilot' && git clean -fd -e .autopilot`로 작업 변경만 되돌린다. `.autopilot/`까지 되돌리면 Phase 2에서 올린 `attempts`가 사라져 같은 작업을 끝없이 재시도하므로 반드시 제외한다. BACKLOG 상태를 `open`으로 되돌리고(attempts는 유지) LOG에 실패 사유를 기록한다. 드라이버 모드면 종료, 세션 연속 모드면 Phase 0으로 돌아간다.
+4. 실패 시: `git checkout -- . ':!.autopilot' && git clean -fd -e .autopilot`로 작업 변경만 되돌린다. `.autopilot/`까지 되돌리면 Phase 2에서 올린 `attempts`가 사라져 같은 작업을 끝없이 재시도하므로 반드시 제외한다. BACKLOG 상태를 `open`으로 되돌리고(attempts는 유지) LOG에 실패 사유를 기록한다. 통합 모드가 `local`이면 상태 변경만 커밋한다(`.autopilot/`만 add, 메시지 `autopilot(<작업ID>): 실패 기록` 또는 레포 커밋 규칙 형식). 드라이버 모드면 종료, 세션 연속 모드면 Phase 0으로 돌아간다.
 
 ### Phase 5 — 기록
 

@@ -61,3 +61,17 @@
 - 변경: SKILL.md(Phase 0-1, 발굴 규칙), scripts/archive.sh, tests/test_archive.sh, docs/skill-design.md
 - 검증: validate PASS, test_archive 16 통과(행·항목 손실 없음, 재실행 이어 붙이기)
 - 후속: 큐 비어 있음 → 재발굴
+
+## 2026-10-19T09:52 | - | retro | skill 1.7.0
+- 구간: T-001~T-013 (11개 항목) done 11 / 실패 0 / blocked 0
+- 발견: 직접 써보기와 명령 실행 테스트가 실제 버그(드라이버 5건, 롤백 무한 재시도)를 찾음. 정적 읽기만으로는 놓쳤던 것
+- 환경: 태그 push·원격 브랜치 삭제 정책 거부 → 배운 것에 기록
+
+## 2026-10-19T09:52 | - | discover | skill 1.7.0
+- 큐 비어 재발굴. 정적 검토(SKILL.md 전체 정독)·시나리오 재검토·이슈 확인(0건)
+- 추가: T-014(fix) T-015(docs) T-016(enhance) T-017(test) T-018(feature)
+
+## 2026-10-19T09:53 | T-014,T-015 | done | skill 1.7.0
+- 변경: SKILL.md(Phase 0-2, Phase 4, 반복 차단 규칙 제목), tests/test_skill_rules.sh
+- 검증: validate PASS. 기존 git stash가 attempts 1→0으로 되돌림을 재현, 새 명령은 유지
+- 후속: 없음

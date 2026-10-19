@@ -1,6 +1,8 @@
 # ROADMAP (autopilot 레포 자체 개발)
 
 last_scan: 2026-10-19
+last_issue_check: 2026-10-19 (open 이슈 0건, gh 미인증 → GitHub MCP로 확인)
+last_retro: 2026-10-19
 
 ## 제품
 
@@ -10,29 +12,29 @@ last_scan: 2026-10-19
 ### 기능 지도
 | 기능 | 완성도 | 근거 |
 |---|---|---|
-| 상태 파일 기반 루프 (ROADMAP/BACKLOG/LOG) | 완성 | SKILL.md Phase 0~5, assets/ |
-| 발굴: 유지보수 축 | 부분 | 보안 소스가 조직 전용 MCP 이름에 의존 |
-| 발굴: 제품 축 (기능 지도·빠진/약한 것) | 부분 | 정적 읽기뿐. 실제 실행·사용 시나리오·이슈 트래커를 보지 않음 |
-| 기능 제안 | 스텁 | 큰 기능 설계 문서만 있고, 범위 밖 아이디어를 남길 곳이 없음 |
-| 검증 (베이스라인 비교·롤백) | 부분 | 테스트 없는 레포에서 검증 수단이 없음 |
-| 세션 연속 모드 + Stop 훅 | 부분 | 훅이 실행 중이 아닐 때도 모든 세션을 가둠, 진척 없는 무한 차단 방지 없음 |
-| 드라이버 모드 | 완성 | scripts/autopilot.sh |
-| 결과 통합 (push·PR·릴리스) | 없음 | 항상 로컬 커밋까지만. 설정으로 고를 수 없음 |
-| 긴 실행 컨텍스트 관리 | 부분 | LOG·BACKLOG 전체를 매번 읽음 |
-| 레포 도구 (validate/bump/release/tests) | 완성 | scripts/, tests/ |
+| 상태 파일 기반 루프 (ROADMAP/BACKLOG/LOG/PROPOSALS/CONFIG) | 완성 | SKILL.md, assets/ |
+| 발굴: 유지보수 축 (깨진 상태·보안·마커·테스트 공백) | 완성 | SKILL.md 1-B |
+| 발굴: 제품 축 (기능 지도·직접 써보기·시나리오) | 완성 | SKILL.md 1-A |
+| 발굴: 이슈 트래커·리뷰 코멘트 | 완성 | SKILL.md 1-E |
+| 기능 제안 (PROPOSALS) | 완성 | SKILL.md 1-F |
+| 심화 발굴 후 최종 중단 | 완성 | SKILL.md 실질 작업 판정 |
+| 회고 | 완성 | SKILL.md Phase 0.5 |
+| 검증 (베이스라인·불안정 테스트·무테스트 레포) | 완성 | SKILL.md Phase 0·4 |
+| 세션 연속 모드 + Stop 훅 | 완성 | assets/autopilot-stop.sh, tests/test_hook.sh |
+| 드라이버 모드 | 완성 | scripts/autopilot.sh, tests/test_driver.sh |
+| 통합 정책 (local/branch/pr, 자동 머지·릴리스) | 완성 | SKILL.md 통합 정책, assets/CONFIG.md |
+| 긴 실행 컨텍스트 관리 | 완성 | scripts/archive.sh |
+| 실행 결과 요약 보기 | 없음 | 상태 파일을 직접 열어야 함 |
+| 레포 도구 (validate/bump/release/tests) | 완성 | scripts/, tests/ (88개) |
 
 ### 빠진 것
-- 이슈 트래커·PR 리뷰 코멘트를 발굴 소스로 쓰기: 사람이 이미 적어둔 요구가 가장 확실한 신호
-- 앱을 직접 실행하는 탐색적 검사·사용 시나리오 점검: 테스트가 못 잡는 버그와 사용성 문제를 찾는 보편적 방법
-- 기능 제안 기록(PROPOSALS): 자율 루프가 스스로 못 하는 큰 아이디어를 사람에게 넘길 통로
-- 통합 정책 설정(로컬 / 브랜치 / PR·머지 / 자동 릴리스): 무인 운영에서 결과를 밖으로 내보내는 방법
-- 회고: 실패·blocked 원인을 다음 발굴에 반영
+- 실행 결과 요약 명령: 밤새 돌린 뒤 사람이 완료·실패·blocked·제안·중단 사유를 한눈에 볼 수단 (시나리오 2)
+- SKILL.md가 참조하는 파일(assets·scripts)이 실제로 있는지 검사: 빠지면 스킬이 깨지는데 validate가 모름
 
 ### 약한 것
-- Stop 훅: 활성 조건이 STOP 부재뿐이라 실행 후·새 클론에서 일반 세션까지 막음, `$CLAUDE_PROJECT_DIR` 미사용, 진척 없는 무한 차단 방지 없음
-- 세션 연속 모드에서 `.autopilot/STOP` 등이 `.gitignore`에 안 들어감 (드라이버만 추가)
-- 최종 중단 판정 전 발굴 깊이가 얕음: 정적 스캔 한 번으로 "할 일 없음" 판정 가능
-- 베이스라인 명령 탐색이 package.json/Makefile/pyproject 위주
+- Phase 0의 `git stash`가 `.autopilot/`의 미커밋 상태(실패한 작업의 attempts·LOG)까지 치워 무한 재시도가 다른 경로로 재발
+- frontmatter description이 1.5 기준이라 이슈 처리·PR 통합 등 새 기능이 호출 조건에 반영되지 않음
+- "반복 차단 규칙 (유일한 중단 조건)" 문구가 "실질 작업 판정 — 최종 중단의 유일한 기준"과 모순
 
 ### 관찰
 - 2026-10-19 드라이버(`scripts/autopilot.sh`) 실행:
@@ -47,11 +49,20 @@ last_scan: 2026-10-19
 2. 터미널 사용자: 드라이버로 밤새 실행 → 아침에 결과 확인. 막힌 점: 위 관찰의 드라이버 결함, 결과 요약을 한눈에 볼 수단 없음
 3. 유지보수자: 이슈로 버그 신고 → 루프가 반영. T-004로 해결
 
+## 심화 발굴
+(아직 없음)
+
 ## 진행 중인 기능
 (없음)
 
 ## 유지보수 상태
-- `bash scripts/validate.sh` PASS, tests/test_scripts.sh 20개 통과 (2026-10-19)
+- 검증 명령: `bash scripts/validate.sh` (JSON·frontmatter·버전·bash -n·claude plugin validate·tests/test_*.sh). 약 20초. 2026-10-19 PASS, 테스트 93개
+
+## 배운 것
+- 클라우드 세션은 태그 push(403)·원격 브랜치 삭제가 막힌다. 릴리스는 main 머지까지 하고 태그는 `release.sh --catch-up`으로 로컬에서 처리
+- 스크립트를 바꾸면 경계 입력(빈 값·숫자 아님·도구 없음·하위 폴더) 테스트를 같이 쓴다. 직접 써보기에서 드라이버 결함 5건이 나왔다
+- SKILL.md에 적힌 명령(롤백 등)은 tests/test_skill_rules.sh로 실제 실행해 검증한다. 문서 속 명령의 버그가 무한 재시도를 만들었다
+- `.autopilot/` 상태를 되돌리거나 치우는 모든 git 명령은 pathspec으로 `.autopilot`을 제외해야 한다
 
 ## 하지 않기로 한 것
 - GitHub Actions CI: 레포 규칙상 로컬 검증만 (CLAUDE.md)

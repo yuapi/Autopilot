@@ -10,6 +10,7 @@
 - 기능 제안(1-F, `.autopilot/PROPOSALS.md`): 공개 인터페이스 변경·무거운 의존성·구조 개편·방향 선택은 근거·대안·비용·위험과 함께 제안으로 남기고 루프는 계속. 사람이 `채택`하면 다음 발굴에서 작업화(그 범위에서만 인터페이스 변경 허용)
 - 통합 정책(`.autopilot/CONFIG.md`, 사람이 정하고 Claude는 읽기만): `local`(기본)·`branch`(작업 브랜치 push)·`pr`(PR 생성, `merge: auto`면 검증 후 머지), `release: auto`는 문서화된 릴리스 절차가 있을 때만. 레포 관례 우선, 막히면 우회 없이 local로 폴백
 - 긴 실행: Phase 0에서 LOG는 최근 20개, BACKLOG는 열린 작업과 최근 완료 10행만 읽음. `scripts/archive.sh`가 완료 행 50개·LOG 300개 초과분을 아카이브로 옮김(내용 보존), 중복 확인은 아카이브 grep
+- Phase 0 작업 트리 정리가 `.autopilot/` 미커밋 상태(직전 실패의 attempts·LOG)까지 stash해 무한 재시도가 재발하던 버그 수정. local 모드 실패 시 상태만 커밋
 
 ## 1.7.0 — 2026-10-19
 - 검증 실패 롤백이 `.autopilot/`까지 되돌려 attempts가 사라지고 같은 작업을 무한 재시도하던 버그 수정. 실패 후 세션 연속 모드는 Phase 0으로 복귀
