@@ -77,7 +77,7 @@ CI는 없고 검증은 로컬에서 한다. 요약:
 
 ```bash
 git checkout -b feature/<주제> develop
-bash scripts/bump.sh patch "<요약>"
+# 변경 후 CHANGELOG.md의 "## Unreleased" 아래에 한 줄 추가
 bash scripts/validate.sh
 ```
 

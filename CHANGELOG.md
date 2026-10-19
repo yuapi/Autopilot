@@ -5,6 +5,12 @@
 - MINOR: 루프 규칙·발굴 소스·중단 조건 변경
 - PATCH: 드라이버 수정, 문구 정리, 버그 수정
 
+## Unreleased
+- 레포 규칙 개정: Claude가 git flow(feature → develop → release → main)로 자율 개발·릴리스. 버전은 release 브랜치에서 올리고 feature는 `## Unreleased`에 기록
+- bump.sh: `## Unreleased`를 새 버전 섹션으로 전환, 실패 시 파일을 바꾸지 않음
+- release.sh: `git archive`로 커밋된 내용만 패키징, `--catch-up`(밀린 태그 일괄 처리)·`--dry-run` 추가
+- validate.sh: `tests/` 실행, 테스트 스크립트 문법 검사
+
 ## 1.5.1 — 2026-10-19
 - 플러그인 마켓플레이스 구조로 재편, description 수정, 오픈소스 문서 추가
 - validate.sh: LOG 예시 버전·레포 scripts/ 문법 검사 추가, bump.sh: 따옴표 붙은 버전 지원, release.sh: 태그 push 실패 시 로컬 태그 정리

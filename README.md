@@ -77,7 +77,7 @@ There is no CI; validation is local. The short version:
 
 ```bash
 git checkout -b feature/<topic> develop
-bash scripts/bump.sh patch "<summary>"
+# change things, add a line under "## Unreleased" in CHANGELOG.md
 bash scripts/validate.sh
 ```
 

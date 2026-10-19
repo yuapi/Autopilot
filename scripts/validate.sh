@@ -56,10 +56,12 @@ fi
 echo "[4] 셸 스크립트 문법 (bash -n)"
 while IFS= read -r f; do
   if bash -n "$f" 2>/dev/null; then ok "$f"; else bad "$f 문법 오류"; fi
-done < <(find scripts "$SKILL_DIR" -name '*.sh' -type f | sort)
+done < <(find scripts tests "$SKILL_DIR" -name '*.sh' -type f 2>/dev/null | sort)
 
 echo "[5] claude plugin validate"
-if command -v claude >/dev/null 2>&1; then
+if [ -n "${AUTOPILOT_IN_TESTS:-}" ]; then
+  skip "테스트 안에서는 생략"
+elif command -v claude >/dev/null 2>&1; then
   if out="$(claude plugin validate . 2>&1)"; then
     printf '%s\n' "$out" | sed 's/^/        /'
     ok "claude plugin validate ."
@@ -97,6 +99,21 @@ if [ -n "$ph" ]; then
   wrn "플레이스홀더가 남아 있음"
 else
   ok "플레이스홀더 없음"
+fi
+
+echo "[8] 테스트 (tests/test_*.sh)"
+if [ -n "${AUTOPILOT_IN_TESTS:-}" ]; then
+  skip "테스트 안에서는 생략"
+else
+  for t in tests/test_*.sh; do
+    [ -f "$t" ] || continue
+    if out="$(bash "$t" 2>&1)"; then
+      ok "$t ($(printf '%s\n' "$out" | grep -c '^  ok') 통과)"
+    else
+      printf '%s\n' "$out" | grep -v '^  ok' | sed 's/^/        /'
+      bad "$t"
+    fi
+  done
 fi
 
 echo
