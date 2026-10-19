@@ -54,6 +54,14 @@ AUTOPILOT_PERMISSION=skip bash <skill folder>/scripts/autopilot.sh   # opt-in, s
 
 `<skill folder>` is where the skill is installed, for example `plugins/autopilot/skills/autopilot` in a clone of this repository. The driver stops when `.autopilot/STOP` appears or at the iteration limit (exit code 0), and after 3 consecutive Claude crashes, on a bad argument or when the `claude` CLI is missing (exit code 1). It can be started from any folder inside the repository. `AUTOPILOT_SLEEP` sets the pause between runs (default 10 seconds).
 
+### Checking on a run
+
+```bash
+bash <skill folder>/scripts/status.sh [repo path]
+```
+
+One screen with whether the loop is running or stopped (and why), the integration settings, task counts, the success rate of the last 10 runs, open and blocked tasks, proposals waiting for your decision, and the latest log entries. It only reads the state files.
+
 ## How it works
 
 - **Two discovery axes.** A *maintenance* axis looks for broken builds, security findings, TODO markers, test gaps and dead code. A *product* axis first writes down what the software does, which features are complete, partial or missing, and which are weak, then turns those into feature and enhancement tasks. At least half of each discovery cycle must come from the product axis, so the loop does not just pile up tests and lint fixes.
