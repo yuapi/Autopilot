@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 21
+next_id: 25
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -27,3 +27,7 @@ next_id: 21
 | T-018 | feature | done | 1 | `scripts/status.sh`: 완료·실패·blocked 수, 열린 작업, 최근 LOG, 결정 대기 제안, STOP 사유를 한 화면에 요약 | tests/test_status.sh 통과, README 반영 | 시나리오 2 | 2026-10-19 |
 | T-019 | fix | done | 1 | macOS 기본 환경 호환: release.sh의 `tac`, validate.sh·테스트의 `timeout`, 테스트의 GNU `sed -i` 제거 | tac·timeout 없는 PATH에서 catch-up·validate 테스트 통과 | 심화 발굴 3 이식성 | 2026-10-19 |
 | T-020 | enhance | done | 1 | status.sh가 구버전(1.5.x) Stop 훅 설치를 감지해 경고하고 교체 방법 안내, README에 업그레이드 절 | 테스트: RUN 검사 없는 훅이면 경고, 새 훅이면 경고 없음 | 심화 발굴 3 업그레이드 | 2026-10-19 |
+| T-021 | feature | open | 0 | 스킬 행동 평가: 일부러 버그·빠진 기능·TODO를 심은 예제 레포(tests/fixtures/)에서 드라이버 1회 실행 후 BACKLOG가 심은 항목을 찾았는지 채점 (`claude plugin eval` 사용 가능 여부 먼저 조사) | 예제 레포·채점 스크립트·README 절, claude 없으면 건너뜀 | 빠진 것: 발굴 품질을 측정할 수단 없음 | |
+| T-022 | enhance | open | 0 | 동시 실행 방지: 같은 레포에서 세션 두 개가 autopilot을 돌리면 BACKLOG·커밋이 충돌. RUN 마커에 세션 정보·시각을 쓰고, 다른 세션의 RUN이 살아 있으면 시작하지 않음 | SKILL.md 규칙 + 훅·status 테스트 | 시나리오: 두 터미널에서 실행 | |
+| T-023 | enhance | open | 0 | 드라이버가 `.autopilot/CONFIG.md` 통합 모드가 pr일 때 필요한 도구(gh 또는 MCP)를 시작 전에 확인하고, 없으면 안내 후 local로 동작함을 출력 | test_driver에 경우 추가 | 품질 속성: 첫 실행 안내 | |
+| T-024 | fix | done | 1 | status.sh 출력을 `| head`로 자르면 BrokenPipeError 트레이스가 노출됨 | 끊겨도 오류 출력 없음 테스트 | 관찰 2026-10-19 | 2026-10-19 |

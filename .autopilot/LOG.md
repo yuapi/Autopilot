@@ -104,3 +104,12 @@
 - 변경: scripts/status.sh, tests/test_status.sh, README.md, README.ko.md
 - 검증: validate PASS, test_status 17 통과(구버전 훅 경고, 새 훅 무경고)
 - 후속: 큐 비어 있음
+
+## 2026-10-19T10:07 | - | discover | skill 1.8.1
+- 1.8.1 릴리스 후 다음 세션을 위한 발굴: T-021(feature, 발굴 품질 평가) T-022(enhance, 동시 실행 방지) T-023(enhance, 드라이버 통합 도구 확인)
+- 태그 대기: v1.5.1 v1.6.0 v1.7.0 v1.8.0 v1.8.1 → 로컬에서 `bash scripts/release.sh --catch-up`
+
+## 2026-10-19T10:09 | T-024 | done | skill 1.8.1
+- 변경: scripts/status.sh, tests/test_status.sh
+- 검증: validate PASS, 수정 전 실패·수정 후 통과 확인
+- 출처: 직접 써보기(`status.sh | head`)

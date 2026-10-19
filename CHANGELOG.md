@@ -7,6 +7,10 @@
 
 ## Unreleased
 
+## 1.8.2 — 2026-10-19
+- release.sh: git 태그 push가 막히면 쓰기 권한이 있는 `gh`(GH_TOKEN)로 GitHub API에서 태그와 Release를 함께 생성. 권한 확인은 `gh auth status` 대신 레포 API로(레포 한정 토큰 지원)
+- status.sh: 출력을 `head` 등으로 자를 때 BrokenPipeError 트레이스가 나오던 문제 수정
+
 ## 1.8.1 — 2026-10-19
 - macOS 기본 환경 호환: release.sh의 `tac`, validate.sh·테스트의 `timeout`(gtimeout·perl 대체), 테스트의 GNU `sed -i` 제거. tac·timeout 없는 PATH로 검증하는 tests/test_portability.sh
 - status.sh가 구버전(1.5.x) Stop 훅 설치를 감지해 경고하고 교체 방법 안내. README에 1.5.x 업그레이드 절
