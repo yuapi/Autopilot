@@ -113,3 +113,8 @@
 - 변경: scripts/status.sh, tests/test_status.sh
 - 검증: validate PASS, 수정 전 실패·수정 후 통과 확인
 - 출처: 직접 써보기(`status.sh | head`)
+
+## 2026-10-19T10:54 | - | release | skill 1.8.2
+- 1.8.2 main 머지·역병합 완료(PR #33, #34). release.sh에 gh API 대체 경로 추가(PR #32)
+- 막힘: 사람이 PAT를 추가했으나 Release API가 "Creating, editing, or deleting releases is not permitted for this session type"(403)로 거부. 세션 정책이므로 우회하지 않음. 원격 태그·Release 0개 유지 확인
+- 태그 대기: v1.5.1 v1.6.0 v1.7.0 v1.8.0 v1.8.1 v1.8.2 → 로컬에서 `bash scripts/release.sh --catch-up`

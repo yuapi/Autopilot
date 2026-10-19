@@ -30,7 +30,7 @@ feature/<topic> ──PR──▶ develop ──▶ release/<ver> ──PR──
 
 ## 밀린 태그 한 번에 만들기
 
-태그 push도 `gh`도 쓸 수 없는 환경에서 릴리스하면 `main`에는 버전이 들어갔지만 태그가 없는 상태가 된다. 태그를 push할 수 있거나 쓰기 권한이 있는 `gh`가 있는 곳에서:
+태그 push도 `gh`도 쓸 수 없는 환경에서 릴리스하면 `main`에는 버전이 들어갔지만 태그가 없는 상태가 된다. Claude Code 클라우드 세션이 그렇다: git 태그 push는 403, Release API는 "not permitted for this session type"으로 정책상 막혀 있다. 태그를 push할 수 있거나 쓰기 권한이 있는 `gh`가 있는 곳에서:
 
 ```bash
 git checkout main && git pull
