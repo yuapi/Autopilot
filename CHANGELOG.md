@@ -7,6 +7,7 @@
 
 ## Unreleased
 - macOS 기본 환경 호환: release.sh의 `tac`, validate.sh·테스트의 `timeout`(gtimeout·perl 대체), 테스트의 GNU `sed -i` 제거. tac·timeout 없는 PATH로 검증하는 tests/test_portability.sh
+- status.sh가 구버전(1.5.x) Stop 훅 설치를 감지해 경고하고 교체 방법 안내. README에 1.5.x 업그레이드 절
 
 ## 1.8.0 — 2026-10-19
 - 회고(Phase 0.5): 10작업마다 실패·blocked 원인을 분류해 ROADMAP "배운 것"(15줄 이내)에 레포 전용 규칙으로 기록, blocked 작업은 쪼개거나 보류로 이동. LOG 상태 값 정의
