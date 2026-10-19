@@ -40,3 +40,9 @@
 - 함께 수정: Phase 4 롤백이 .autopilot까지 되돌려 attempts가 사라지던 버그(무한 재시도), 실패 후 세션 연속 모드에서 멈추던 문제. tests/test_skill_rules.sh (수정 전 2건 실패 재현)
 - 검증: validate PASS
 - 후속: 없음
+
+## 2026-10-19T09:45 | T-010 | done | skill 1.7.0
+- 변경: SKILL.md(Phase 0.5, LOG 상태 값), assets/ROADMAP.md(last_retro, 배운 것), docs/skill-design.md, README
+- 검증: validate PASS
+- 태그 대기: v1.5.1, v1.6.0, v1.7.0
+- 후속: 없음
