@@ -10,7 +10,8 @@ autopilot is a Claude Code skill, packaged as a plugin, that runs an autonomous 
 
 - **It modifies your code and commits on its own.** Every successful task becomes a commit in the current branch, with no human review in between.
 - **Permissions are restricted by default.** The driver script uses an `--allowedTools` allowlist by default. `--dangerously-skip-permissions` is used only when you opt in explicitly with `AUTOPILOT_PERMISSION=skip`, and should only be used in a disposable machine or container.
-- **Use a dedicated branch or a sandbox.** Run it on a throwaway branch, a fresh clone, or an isolated container. The skill never runs `git push`, `git reset --hard` or force operations, so nothing leaves your machine until you push it yourself. Review the commits before you do.
+- **Use a dedicated branch or a sandbox.** Run it on a throwaway branch, a fresh clone, or an isolated container. By default the skill never runs `git push`, so nothing leaves your machine until you push it yourself. Review the commits before you do. It never runs `git reset --hard`, force pushes, or deletes remote branches or tags.
+- **Publishing is opt-in.** Pushing branches, opening and merging PRs, and releasing happen only if you set them in `.autopilot/CONFIG.md` (`integration: branch | pr`, `merge: auto`, `release: auto`). The skill reads this file but never creates or edits it, and follows your repository's own branching, commit and release conventions.
 - **You are responsible for the results.** This software is provided "as is" under the MIT License. You are responsible for what it changes, commits, and anything you later publish.
 
 ## Install
