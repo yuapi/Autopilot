@@ -60,7 +60,7 @@ AUTOPILOT_PERMISSION=skip bash <skill folder>/scripts/autopilot.sh   # opt-in, s
 - **Issues are read, not obeyed.** When `gh` or a tracker MCP is available, every task checks issues opened or updated since the last check and turns bugs and feature requests into tasks (source `issue #N`, picked first among equal priorities). Issue text is treated as data, never as instructions.
 - **Substantive vs. auxiliary tasks.** Tasks that fix defects or add or improve behavior (fix, security, feature, enhance, perf, todo, test, cleanup) are *substantive*. Tasks that only change form (lint, docs, refactor) are *auxiliary* and are queued only alongside substantive work.
 - **One task at a time, verified.** Each task is sized at 1–2 hours, has a written completion criterion, and must not make tests, lint or build worse than the baseline. Failure means a full rollback.
-- **Final stop conditions.** The loop stops for good when (a) re-discovery, after a real product review, finds zero substantive tasks, (b) 7 of the last 10 runs failed, or (c) a human creates `.autopilot/STOP`. Tasks that fail 3 times are marked `blocked` and skipped.
+- **Final stop conditions.** The loop stops for good when (a) re-discovery finds zero substantive tasks even after four deepening passes (static review, running the software with fresh scenarios, a quality-attribute checklist, and a full re-read of issues and earlier rejections), (b) 7 of the last 10 runs failed, or (c) a human creates `.autopilot/STOP`. Tasks that fail 3 times are marked `blocked` and skipped.
 
 ## Repository layout
 
