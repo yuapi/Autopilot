@@ -27,4 +27,14 @@ json="$(grep -m1 '{"hooks":{"Stop"' "$SKILL")"
 check "Stop 훅 설정 예시가 유효한 JSON" python3 -c 'import json,sys; json.loads(sys.argv[1])' "$json"
 check "Stop 훅 명령이 \$CLAUDE_PROJECT_DIR 기준" grep -q 'CLAUDE_PROJECT_DIR' <<<"$json"
 
+# CONFIG 템플릿: 기본값이 가장 안전한 값이고 알려진 키만 있는지
+cfg="$REPO/$SKILL_REL/assets/CONFIG.md"
+val() { sed -n "s/^$1:[[:space:]]*\([^[:space:]#]*\).*/\1/p" "$cfg"; }
+check "CONFIG 기본 integration=local" test "$(val integration)" = local
+check "CONFIG 기본 merge=off" test "$(val merge)" = off
+check "CONFIG 기본 release=off" test "$(val release)" = off
+keys="$(sed -n 's/^\([a-z_]*\):.*/\1/p' "$cfg" | sort | tr '\n' ' ')"
+check "CONFIG 키 목록" test "$keys" = "base_branch branch_prefix integration merge release "
+check "SKILL.md: CONFIG는 Claude가 바꾸지 않음" grep -q "Claude가 만들거나 값을 바꾸지 않는다" "$REPO/$SKILL_REL/SKILL.md"
+
 finish

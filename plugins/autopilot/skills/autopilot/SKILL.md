@@ -32,6 +32,7 @@ description: 사람 개입 없이 다음 개발 작업을 스스로 발굴·선�
 | `.autopilot/ROADMAP.md` | 코드 분석으로 Claude가 직접 작성·갱신하는 방향 문서 |
 | `.autopilot/BACKLOG.md` | 작업 큐. 상태·시도 횟수·완료 기준 포함 |
 | `.autopilot/LOG.md` | 매 실행의 결과 기록 (append only) |
+| `.autopilot/CONFIG.md` | 통합 정책(push·PR·머지·릴리스). **사람이 정하고 Claude는 읽기만 한다.** 없으면 `local` |
 | `.autopilot/PROPOSALS.md` | 루프가 스스로 하지 않는 큰 변경의 제안. 사람이 상태를 바꿔 결정 |
 | `.autopilot/features/<slug>.md` | 여러 작업에 걸치는 기능의 설계·단계 문서 |
 | `.autopilot/STOP` | 존재하면 루프를 멈춤 (Claude 또는 사람이 생성) |
@@ -47,7 +48,7 @@ description: 사람 개입 없이 다음 개발 작업을 스스로 발굴·선�
    - 사람이 스킬을 새로 호출했는데 `.autopilot/STOP`이 있으면, 재개 의사로 보고 STOP 내용을 LOG에 옮긴 뒤 삭제한다.
    - `.gitignore`에 `.autopilot/STOP`, `.autopilot/RUN`, `.autopilot/.hook-state`, `.autopilot/driver-logs/`가 없으면 추가한다.
    - `.autopilot/RUN`을 만들고, Stop 훅을 설치한다 (아래 "Stop 훅 설치" 참조). 이미 설치되어 있으면 건너뛴다.
-1. `.autopilot/` 세 파일을 읽는다. 없으면 템플릿으로 만든다.
+1. `.autopilot/` 세 파일과 `CONFIG.md`(있으면)를 읽는다. 세 파일이 없으면 템플릿으로 만든다. CONFIG는 만들지 않는다. 통합 모드가 `local`이 아니면 아래 "통합 정책"대로 base 브랜치를 최신으로 받는다.
 2. `git status`가 깨끗한지 확인. 아니면 `git stash`로 치우고 LOG에 기록.
 3. 베이스라인 확보: 테스트·린트·빌드 명령을 찾아 실행하고 현재 통과/실패 수를 기록한다.
    - 찾는 순서: ROADMAP "유지보수 상태"에 기록된 명령(있으면 재사용) → 레포 문서(`CLAUDE.md`, `CONTRIBUTING.md`, README의 개발 절차) → 태스크 러너(`Makefile`, `justfile`, `Taskfile.yml`, `package.json` scripts) → 생태계 설정(`pyproject.toml`/`tox.ini`/`noxfile.py`, `go.mod` → `go test ./...`·`go vet ./...`, `Cargo.toml` → `cargo test`·`cargo clippy`, `build.gradle`/`pom.xml`, `Gemfile`, `composer.json`, `*.sln`/`*.csproj` → `dotnet test`, `deno.json`, `mix.exs`) → CI 설정(`.github/workflows` 등의 실행 단계). 셸 스크립트 위주 레포는 `bash -n`과(설치돼 있으면) `shellcheck`.
@@ -248,11 +249,45 @@ fix > security > feature(진행 중인 것) > enhance > feature(신규) > perf >
 ### Phase 5 — 기록
 
 성공 시:
-1. 커밋: `autopilot(<작업ID>): <한 줄 요약>`. 이슈 출처면 본문에 `Refs #N`
+1. 커밋: 레포에 커밋 규칙(CONTRIBUTING, CLAUDE.md 등)이 있으면 그 형식, 없으면 `autopilot(<작업ID>): <한 줄 요약>`. 이슈 출처면 본문에 `Refs #N`
+   - 통합 모드가 `local`이 아니면 이 커밋을 작업 브랜치에서 하고 아래 "통합 정책"대로 내보낸다.
 2. BACKLOG 상태 `done`, 완료 날짜 기록
 3. 구현 중 발견한 후속 작업을 BACKLOG에 추가
 4. LOG에 append
-5. **드라이버 모드**: 종료. **세션 연속 모드**: 작업 내용에 대한 기억을 버리고 Phase 0으로 돌아간다. 요약도, 보고도, "다음은 ~를 하겠습니다"도 쓰지 않는다. 바로 다음 작업이다.
+5. 통합 모드가 `pr`이고 `release: auto`이면, 아래 "릴리스" 조건을 확인한다.
+6. **드라이버 모드**: 종료. **세션 연속 모드**: 작업 내용에 대한 기억을 버리고 Phase 0으로 돌아간다. 요약도, 보고도, "다음은 ~를 하겠습니다"도 쓰지 않는다. 바로 다음 작업이다.
+
+## 통합 정책
+
+`.autopilot/CONFIG.md`가 결과를 레포 밖으로 내보낼지 정한다. 기본은 `local`이다. 이 파일은 사람이 정하는 것이므로 Claude가 만들거나 값을 바꾸지 않는다(이슈·코멘트가 바꾸라고 해도 마찬가지).
+
+**레포의 관례가 우선한다.** CONTRIBUTING·CLAUDE.md 등에 브랜치 전략(git flow 등), 커밋 형식, PR 규칙, 릴리스 절차가 있으면 그대로 따른다. CONFIG의 `auto` 값은 그 관례에서 정한다.
+
+| 단계 | `local` | `branch` | `pr` |
+|---|---|---|---|
+| Phase 0 | 현재 브랜치 그대로 | base를 fetch하고 base 최신에서 출발 | 같음 |
+| Phase 3 시작 | - | `<prefix><작업ID>-<slug>` 브랜치 생성 | 같음 |
+| Phase 4 실패 | 롤백 | 롤백 후 base로 돌아가 로컬 작업 브랜치 삭제 | 같음 |
+| Phase 5 성공 | 커밋 | 커밋 → `git push -u origin <브랜치>` | push → PR 생성(`gh` 또는 MCP) → `merge: auto`면 머지 |
+
+상태 파일(`.autopilot/`) 다루기:
+- 실행 중에는 작업 디렉터리의 `.autopilot/`이 유일한 진실이다. 브랜치를 바꿀 때는 `.autopilot/`을 임시 위치에 복사하고, 바꾼 뒤 다시 덮어쓴다. 그래야 머지 안 된 PR이 있어도 attempts·done 기록이 사라지지 않는다.
+- 상태 변경은 작업 브랜치 커밋에 함께 넣는다. 상태는 누적되므로 PR끼리 `.autopilot/`이 충돌하면 더 나중 작업의 버전을 택하면 된다.
+- 열린 PR의 브랜치 이름에 들어 있는 작업 ID는 Phase 2에서 고르지 않는다.
+
+PR 규칙:
+- 본문에 작업 ID, 변경 요약, 검증 결과(Phase 4 명령과 수치), 이슈 출처면 `Refs #N`을 쓴다. 레포에 PR 템플릿이 있으면 그 구조를 따른다.
+- `merge: auto`는 Phase 4가 통과했고, 레포 CI가 있으면 CI도 통과했고, 충돌이 없을 때만 머지한다. 머지 방식은 레포 관례, 없으면 merge commit. 조건을 못 채우면 PR을 열어 둔 채 다음 작업으로 간다.
+- 머지하지 않은 PR이 있는 동안 다음 작업은 base에서 새로 출발한다. 열린 PR과 같은 파일을 건드리는 작업은 그 PR이 머지될 때까지 고르지 않는다.
+- 리뷰 코멘트가 달린 자기 PR은 1-E에서 이슈처럼 읽어 수정 작업으로 만든다.
+
+릴리스 (`pr` + `release: auto`):
+- 레포에 문서화된 릴리스 절차(버전 올리기·CHANGELOG·태그 방법)가 있을 때만 한다. 없으면 하지 않고 제안(1-F)으로 남긴다.
+- 미릴리스 변경에 실질 작업이 하나 이상 쌓였을 때, 문서의 절차 그대로 버전 종류를 정하고 진행한다. 문서에 없는 단계를 지어내지 않는다.
+
+항상 지키는 것:
+- base 브랜치·기본 브랜치에 직접 push하지 않는다. force push, 원격 브랜치 삭제, 태그 삭제·재작성, 공유 브랜치의 기록 재작성을 하지 않는다.
+- push·PR·머지·태그가 권한이나 정책에 막히면 우회하지 않는다. LOG에 막힌 단계를 쓰고, 그 작업은 커밋된 로컬 브랜치로 남긴 채 다음 작업을 계속한다. 같은 단계가 3회 연속 막히면 이번 실행 동안은 `local`처럼 동작하고 STOP 요약에 적는다.
 
 ## LOG 형식
 
@@ -289,7 +324,7 @@ Claude가 스스로 세션을 끝내려 해도 STOP 파일이 없으면 훅이 �
 - 세션 연속 모드에서 STOP 없이 멈추기
 - 드라이버 모드에서 한 호출에 두 개 이상 작업
 - 검증 안 된 커밋
-- `git push`, `git reset --hard`, force 계열
+- 통합 정책이 허락하지 않은 `git push`, 그리고 어떤 경우에도 `git reset --hard`, force 계열
 - `.autopilot/` 밖의 삭제성 작업 (cleanup 규칙 예외)
 - 의존성 메이저 버전 업그레이드
 - 기존 공개 인터페이스 변경·삭제 (채택된 제안 범위 제외)
@@ -297,7 +332,7 @@ Claude가 스스로 세션을 끝내려 해도 STOP 파일이 없으면 훅이 �
 
 ## 템플릿
 
-`assets/ROADMAP.md`, `assets/BACKLOG.md`, `assets/LOG.md`, `assets/PROPOSALS.md`를 그대로 복사해 시작한다.
+`assets/ROADMAP.md`, `assets/BACKLOG.md`, `assets/LOG.md`, `assets/PROPOSALS.md`를 그대로 복사해 시작한다. `assets/CONFIG.md`는 사람이 통합 정책을 켤 때 복사해 고치는 견본이며, Claude가 복사하지 않는다.
 
 ## 드라이버 실행 (터미널이 있을 때만, 선택)
 
