@@ -70,3 +70,8 @@
 ## 2026-10-19T09:52 | - | discover | skill 1.7.0
 - 큐 비어 재발굴. 정적 검토(SKILL.md 전체 정독)·시나리오 재검토·이슈 확인(0건)
 - 추가: T-014(fix) T-015(docs) T-016(enhance) T-017(test) T-018(feature)
+
+## 2026-10-19T09:53 | T-014,T-015 | done | skill 1.7.0
+- 변경: SKILL.md(Phase 0-2, Phase 4, 반복 차단 규칙 제목), tests/test_skill_rules.sh
+- 검증: validate PASS. 기존 git stash가 attempts 1→0으로 되돌림을 재현, 새 명령은 유지
+- 후속: 없음

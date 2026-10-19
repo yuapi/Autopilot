@@ -56,7 +56,7 @@ last_retro: 2026-10-19
 (없음)
 
 ## 유지보수 상태
-- `bash scripts/validate.sh` PASS, tests/test_scripts.sh 20개 통과 (2026-10-19)
+- 검증 명령: `bash scripts/validate.sh` (JSON·frontmatter·버전·bash -n·claude plugin validate·tests/test_*.sh). 약 20초. 2026-10-19 PASS, 테스트 93개
 
 ## 배운 것
 - 클라우드 세션은 태그 push(403)·원격 브랜치 삭제가 막힌다. 릴리스는 main 머지까지 하고 태그는 `release.sh --catch-up`으로 로컬에서 처리
