@@ -6,7 +6,7 @@
 ## 세션 시작 시
 
 1. `docs/`를 읽는다. 특히 `skill-design.md`는 SKILL.md를 고치기 전에 반드시 읽는다.
-2. `.autopilot/ROADMAP.md`, `.autopilot/BACKLOG.md`, `.autopilot/LOG.md`의 최근 항목을 읽는다. 이 레포 자체의 개발 상태다.
+2. `.autopilot/ROADMAP.md`, `.autopilot/BACKLOG.md`, `.autopilot/LOG.md`의 최근 항목, `.autopilot/PROPOSALS.md`를 읽는다. 이 레포 자체의 개발 상태다. `.autopilot/CONFIG.md`(integration: pr, merge·release: auto)가 아래 흐름을 스킬 설정으로 표현한 것이다.
 3. 사람이 구체적인 요청을 했으면 그것이 우선이다. 요청이 없거나 "알아서"라면 BACKLOG에서 다음 작업을 골라 진행한다. BACKLOG 운영 방식은 autopilot 스킬 절차를 따른다(발굴·선택·검증·기록).
 
 ## 개발 흐름 (git flow, Claude가 끝까지 수행)

@@ -51,3 +51,8 @@
 - 변경: SKILL.md(상태 파일, 1-E, 1-F, 심화 4단계, Phase 3, 하지 않는 것, STOP 요약), assets/PROPOSALS.md, docs/skill-design.md, README. 이 레포에도 PROPOSALS.md 생성
 - 검증: validate PASS
 - 후속: 없음
+
+## 2026-10-19T09:48 | T-008 | done | skill 1.7.0
+- 변경: SKILL.md(상태 파일, Phase 0·5, 통합 정책 절, 하지 않는 것, 템플릿), assets/CONFIG.md, docs/skill-design.md, README, tests/test_skill_rules.sh. 이 레포에 CONFIG.md(pr/auto) 생성
+- 검증: validate PASS
+- 후속: 없음
