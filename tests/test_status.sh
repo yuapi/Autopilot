@@ -54,6 +54,8 @@ printf '#!/usr/bin/env bash\nif [ -f .autopilot/STOP ]; then exit 0; fi\necho bl
 check "구버전 훅이면 경고와 교체 안내" bash -c "bash '$ST' '$d' | grep -q '구버전(1.5.x) Stop 훅'"
 rm -rf "$d/.claude"
 
+check "출력이 중간에 끊겨도 오류 없음" test -z "$({ bash "$ST" "$d" | head -1 >/dev/null; } 2>&1)"
+
 rm "$d/.autopilot/CONFIG.md"
 check "CONFIG 없으면 local" bash -c "bash '$ST' '$d' | grep -q 'local (CONFIG 없음)'"
 e="$(mktemp -d "$TMPROOT/e.XXXX")"
