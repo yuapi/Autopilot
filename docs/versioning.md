@@ -12,11 +12,16 @@
 
 ## 버전을 바꾸는 유일한 방법
 
+feature 작업은 버전을 올리지 않고 `CHANGELOG.md`의 `## Unreleased` 아래에 한 줄을 쓴다. 버전은 `release/<ver>` 브랜치에서 올린다.
+
 ```bash
-bash scripts/bump.sh <major|minor|patch> "<변경 요약>"
+bash scripts/bump.sh <major|minor|patch> ["<추가 요약>"]
 ```
 
-`bump.sh` 가 건드리는 곳:
+- `## Unreleased`에 항목이 있으면 그 제목을 `## x.y.z — YYYY-MM-DD`로 바꾸고, 빈 `## Unreleased`를 새로 위에 둔다. 요약을 주면 항목 끝에 덧붙인다.
+- `## Unreleased`가 없거나 비어 있으면 요약이 필수이고, 그 요약으로 새 항목을 만든다.
+
+`bump.sh`가 건드리는 곳:
 
 | 파일 | 위치 |
 |---|---|
@@ -24,9 +29,9 @@ bash scripts/bump.sh <major|minor|patch> "<변경 요약>"
 | 〃 | 본문 `**버전 x.y.z**` |
 | 〃 | LOG 형식 예시의 `skill x.y.z` |
 | `plugins/autopilot/.claude-plugin/plugin.json` | `version` |
-| `CHANGELOG.md` | 최상단에 `## x.y.z — YYYY-MM-DD` 항목 추가 |
+| `CHANGELOG.md` | `## Unreleased` → `## x.y.z — YYYY-MM-DD` |
 
-커밋은 하지 않는다. 요약 문구는 커밋 전에 CHANGELOG에서 다듬어도 된다.
+커밋은 하지 않는다.
 
 ## 세 곳이 항상 같아야 하는 이유
 
