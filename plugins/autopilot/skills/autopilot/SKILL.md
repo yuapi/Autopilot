@@ -1,13 +1,13 @@
 ---
 name: autopilot
 metadata:
-  version: 1.5.1
+  version: 1.6.0
 description: 사람 개입 없이 다음 개발 작업을 스스로 발굴·선택·구현·검증·기록하는 자율 루프. .autopilot/STOP 파일이 생길 때까지 같은 세션에서 계속 이어가며, 터미널이 있으면 드라이버 모드로도 실행할 수 있다. "autopilot", "자율 개발", "다음 작업 알아서", "무인 루프"라는 말이 나오거나 드라이버가 호출하면 반드시 이 스킬의 절차를 그대로 따를 것.
 ---
 
 # Autopilot — 자율 개발 루프
 
-**버전 1.5.1** — 변경 이력은 레포 루트 `CHANGELOG.md`. 매 실행 LOG 항목 첫 줄에 이 버전을 기록한다.
+**버전 1.6.0** — 변경 이력은 레포 루트 `CHANGELOG.md`. 매 실행 LOG 항목 첫 줄에 이 버전을 기록한다.
 
 ## 실행 모드 — 먼저 판별한다
 
@@ -33,7 +33,8 @@ description: 사람 개입 없이 다음 개발 작업을 스스로 발굴·선�
 | `.autopilot/BACKLOG.md` | 작업 큐. 상태·시도 횟수·완료 기준 포함 |
 | `.autopilot/LOG.md` | 매 실행의 결과 기록 (append only) |
 | `.autopilot/features/<slug>.md` | 여러 작업에 걸치는 기능의 설계·단계 문서 |
-| `.autopilot/STOP` | 존재하면 드라이버가 루프를 멈춤 (Claude가 생성) |
+| `.autopilot/STOP` | 존재하면 루프를 멈춤 (Claude 또는 사람이 생성) |
+| `.autopilot/RUN` | 세션 연속 모드 실행 중 표시. 이것이 있을 때만 Stop 훅이 동작 |
 
 없으면 `assets/` 템플릿으로 생성한다.
 
@@ -41,7 +42,10 @@ description: 사람 개입 없이 다음 개발 작업을 스스로 발굴·선�
 
 ### Phase 0 — 상태 로드
 
-0. **세션 연속 모드 첫 진입 시에만**: Stop 훅을 설치한다 (아래 "Stop 훅 설치" 참조). 이미 설치되어 있으면 건너뛴다.
+0. **세션 연속 모드 첫 진입 시에만**:
+   - 사람이 스킬을 새로 호출했는데 `.autopilot/STOP`이 있으면, 재개 의사로 보고 STOP 내용을 LOG에 옮긴 뒤 삭제한다.
+   - `.gitignore`에 `.autopilot/STOP`, `.autopilot/RUN`, `.autopilot/.hook-state`, `.autopilot/driver-logs/`가 없으면 추가한다.
+   - `.autopilot/RUN`을 만들고, Stop 훅을 설치한다 (아래 "Stop 훅 설치" 참조). 이미 설치되어 있으면 건너뛴다.
 1. `.autopilot/` 세 파일을 읽는다. 없으면 템플릿으로 만든다.
 2. `git status`가 깨끗한지 확인. 아니면 `git stash`로 치우고 LOG에 기록.
 3. 베이스라인 확보: 테스트·린트·빌드 명령을 찾아 실행하고 현재 통과/실패 수를 기록. 명령은 `package.json`, `Makefile`, `pyproject.toml`, CI 설정 순으로 탐색.
@@ -68,7 +72,7 @@ description: 사람 개입 없이 다음 개발 작업을 스스로 발굴·선�
 | 축 | 소스 | 방법 | 유형 |
 |---|---|---|---|
 | 유지보수 | 깨진 상태 | 베이스라인 실패 테스트·빌드 | `fix` |
-| 유지보수 | 보안 | `security-audit`, `quantakrypto` MCP | `security` |
+| 유지보수 | 보안 | ① 의존성 취약점: 이미 설치됐거나 패키지 매니저 내장 도구만 (`npm audit`, `pnpm audit`, `pip-audit`, `cargo audit`, `govulncheck`, `bundle audit` 등). 세션에 보안 스캔 스킬·MCP가 있으면 함께 사용 ② 정적 패턴: 하드코딩된 비밀값, 셸·SQL 문자열 결합, `eval`/`exec`, 검증 없는 역직렬화, TLS 검증 끄기 ③ 도구가 없으면 ②만 하고 LOG에 "감사 도구 없음" | `security` |
 | 유지보수 | 코드 마커 | `TODO`, `FIXME`, `HACK`, `XXX`, `NotImplementedError`, `pass # stub` | `todo` |
 | 제품 | 미완성 기능 | 기능 지도에서 "부분"·"스텁" | `feature` |
 | 제품 | 빠진 기능 | 기능 지도 "빠진 것" | `feature` |
@@ -110,7 +114,7 @@ description: 사람 개입 없이 다음 개발 작업을 스스로 발굴·선�
 
 재발굴 결과 **실질 작업이 0개**면 최종 중단이다. 단, 1-A 제품 이해를 수행했고 "빠진 것"·"약한 것" 섹션이 비어 있음을 ROADMAP에 명시한 뒤에만 0개로 판정할 수 있다. 제품 축을 건너뛰고 0개라고 하면 안 된다:
 1. 보조 작업도 큐에 넣지 않는다.
-2. `.autopilot/STOP`을 만든다. 내용은 아래 형식.
+2. `.autopilot/STOP`을 만들고 `.autopilot/RUN`을 지운다. STOP 내용은 아래 형식.
 3. LOG에 기록하고 종료.
 
 ```
@@ -171,7 +175,7 @@ fix > security > feature(진행 중인 것) > enhance > feature(신규) > perf >
 ## LOG 형식
 
 ```
-## 2026-10-01T14:30 | T-042 | done | skill 1.5.1
+## 2026-10-01T14:30 | T-042 | done | skill 1.6.0
 - 변경: src/auth/token.py, tests/test_token.py
 - 검증: test 128→131 pass, lint 0 err
 - 후속: T-051 추가 (refresh 실패 시 재시도)
@@ -181,17 +185,19 @@ fix > security > feature(진행 중인 것) > enhance > feature(신규) > perf >
 
 Claude가 스스로 세션을 끝내려 해도 STOP 파일이 없으면 훅이 막고 다음 작업을 시킨다. 스킬 규칙만으로는 긴 세션에서 "이 정도면 됐다"고 멈추는 경우가 있어 훅이 보험이다.
 
+훅은 `.autopilot/RUN`이 있을 때만 동작하므로 루프를 돌리지 않는 평소 세션이나 새 클론은 막지 않는다. LOG와 커밋에 변화 없이 3회 연속 막으면(권한 거부 등으로 진행 불가) 훅이 스스로 STOP을 남기고 종료를 허용한다.
+
 1. `.claude/hooks/autopilot-stop.sh`를 `assets/autopilot-stop.sh` 내용으로 만들고 실행 권한을 준다.
 2. `.claude/settings.json`에 아래를 **병합**한다. 기존 훅이 있으면 `Stop` 배열에 항목을 추가하지 기존 것을 지우지 않는다.
 
 ```json
-{"hooks":{"Stop":[{"hooks":[{"type":"command","command":"bash .claude/hooks/autopilot-stop.sh"}]}]}}
+{"hooks":{"Stop":[{"hooks":[{"type":"command","command":"bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/autopilot-stop.sh\""}]}]}}
 ```
 
 3. 두 파일은 커밋한다 (레포의 기존 Stop 훅이 미추적 파일 커밋을 요구하므로).
 4. 설치가 권한 검사기에 막히면 LOG에 기록하고 훅 없이 진행한다. 그 경우 스킬 규칙만으로 이어간다.
 
-훅 해제는 `.autopilot/STOP`을 만들거나 settings.json에서 항목을 지우면 된다.
+훅 해제는 `.autopilot/STOP`을 만들거나, `.autopilot/RUN`을 지우거나, settings.json에서 항목을 지우면 된다. 이전 버전 훅(RUN 검사 없음)이 설치되어 있으면 `assets/autopilot-stop.sh` 내용으로 교체한다.
 
 ## 하지 않는 것
 
@@ -223,4 +229,4 @@ bash <스킬 폴더>/scripts/autopilot.sh 20       # 20회만
 
 ## 레포의 Stop 훅과 충돌 시
 
-레포에 "미추적 파일을 커밋하라"는 Stop 훅이 있으면 이 스킬의 Phase 4 롤백(`git clean`)과 Phase 5 커밋이 그 요구를 자연히 충족한다. `.autopilot/driver-logs/`와 `STOP`은 드라이버가 `.gitignore`에 넣는다.
+레포에 "미추적 파일을 커밋하라"는 Stop 훅이 있으면 이 스킬의 Phase 4 롤백(`git clean`)과 Phase 5 커밋이 그 요구를 자연히 충족한다. `.autopilot/` 실행 산출물(STOP, RUN, .hook-state, driver-logs)은 Phase 0(세션 연속)과 드라이버가 `.gitignore`에 넣는다.

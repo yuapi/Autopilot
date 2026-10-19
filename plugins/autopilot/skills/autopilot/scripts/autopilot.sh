@@ -25,9 +25,10 @@ LOG_DIR=".autopilot/driver-logs"
 mkdir -p "$LOG_DIR"
 
 # .autopilot 산출물이 커밋에 섞이지 않도록 (상태 파일은 스킬이 커밋 대상에 포함)
-if ! grep -qs '^\.autopilot/driver-logs/' .gitignore 2>/dev/null; then
-  printf '\n# autopilot 드라이버 산출물\n.autopilot/driver-logs/\n.autopilot/STOP\n' >> .gitignore
-fi
+if [ -s .gitignore ] && [ -n "$(tail -c1 .gitignore)" ]; then echo >> .gitignore; fi
+for ig in .autopilot/driver-logs/ .autopilot/STOP .autopilot/RUN .autopilot/.hook-state; do
+  grep -qsxF "$ig" .gitignore || printf '%s\n' "$ig" >> .gitignore
+done
 
 # 스킬은 이름으로 호출한다. 레포 경로가 아니라 계정/프로젝트에 설치된 스킬을 찾는다.
 PROMPT='autopilot 스킬을 사용해서 그 절차대로 작업 하나만 수행한 뒤 종료해. 질문하지 말고, 두 번째 작업을 시작하지 마.'
