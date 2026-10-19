@@ -72,7 +72,7 @@ release_one() {
 
 if [ "$mode" = "--catch-up" ]; then
   done_any=0
-  for ver in $(sed -n 's/^## \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/p' CHANGELOG.md | tac); do
+  for ver in $(sed -n 's/^## \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/p' CHANGELOG.md | awk '{l[NR]=$0} END{for(i=NR;i>0;i--) print l[i]}'); do
     git rev-parse -q --verify "refs/tags/v$ver" >/dev/null && continue
     c="$(first_commit_with_version "$ver")"
     if [ -z "$c" ]; then

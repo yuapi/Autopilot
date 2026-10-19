@@ -23,7 +23,7 @@ newrepo() {
   (cd "$d" && git init -q && mkdir .autopilot && printf 'node_modules/' > .gitignore)
   echo "$d"
 }
-drive() { local dir="$1"; shift; (cd "$dir" && PATH="$FAKEBIN:$PATH" timeout 30 bash "$DRIVER" "$@"); }
+drive() { local dir="$1"; shift; (cd "$dir" && PATH="$FAKEBIN:$PATH" with_timeout 30 bash "$DRIVER" "$@"); }
 calls() { wc -l < "$1/.autopilot/calls" | tr -d ' '; }
 
 d="$(newrepo)"
