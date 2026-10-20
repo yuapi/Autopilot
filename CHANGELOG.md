@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- Sixth eval fixture `watch`: `npm test` runs `node --test --watch` and never exits. New `roadmap=` expectations grade what the run recorded, here a one-shot test command
 - Verification commands run non-interactively (`CI=1`, no stdin) with a time limit in Phase 0 and Phase 4. A watch-mode test command (`jest --watch`, plain `vitest`) or one waiting for input hung until the tool call was killed, on every task; a timeout is recorded and its one-shot form used instead
 
 ## 1.32.1 — 2026-10-20

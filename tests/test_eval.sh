@@ -266,4 +266,21 @@ check "driver eval loads the working copy as a plugin" grep -q -- "--plugin-dir 
 check "driver eval uses the driver's allowlist (with Skill)" grep -q -- "--allowedTools Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,Skill,TodoWrite" "$kept/.autopilot/args"
 rm -rf "$kept"
 
+# watch fixture: roadmap= grades what the run recorded (a one-shot test command)
+FAKE7="$TMPROOT/fake-claude-7"
+cat > "$FAKE7" <<'SH'
+#!/usr/bin/env bash
+mkdir -p .autopilot
+{ echo "| ID | Type | Status | Attempts | Task | Done when | Source | Completed |"; echo "|---|---|---|---|---|---|---|---|"
+  echo "| T-001 | fix | done | 1 | repeated spaces give several dashes | test passes | baseline | |"; } > .autopilot/BACKLOG.md
+printf '## Maintenance status\n%s\n' "${FAKE_BASELINE:-Tests: node --test (npm test runs --watch and never exits)}" > .autopilot/ROADMAP.md
+echo x >> slugify.js; git add -A >/dev/null 2>&1; git commit -qm "autopilot(T-001): x" >/dev/null 2>&1
+SH
+chmod +x "$FAKE7"
+out="$(CLAUDE_BIN="$FAKE7" bash "$EV" --fixture watch 2>&1)"
+check "watch: one-shot command recorded → found" grep -q "found   one-shot" <<<"$out"
+out="$(FAKE_BASELINE='Tests: npm test' CLAUDE_BIN="$FAKE7" bash "$EV" --fixture watch 2>&1)"
+check "watch: only npm test recorded → missed" grep -q "MISSED  one-shot" <<<"$out"
+check "watch fixture's npm test is watch mode" grep -q '"test": "node --test --watch"' "$REPO/tests/eval/fixture-watch/package.json"
+
 finish
