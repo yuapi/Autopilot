@@ -27,7 +27,7 @@ check "진척 후 카운터 0" grep -q ' 0$' "$d/.autopilot/.hook-state"
 check "진척 없음 1회째 block" blocks "$d"
 check "진척 없음 2회째 block" blocks "$d"
 check_not "진척 없음 3회째 종료 허용" blocks "$d"
-check "정체 시 STOP 생성" grep -q "진척 없음" "$d/.autopilot/STOP"
+check "정체 시 STOP 생성" grep -q "no progress" "$d/.autopilot/STOP"
 check "정체 시 RUN 삭제" test ! -e "$d/.autopilot/RUN"
 
 d="$(newrepo)"; touch "$d/.autopilot/RUN"

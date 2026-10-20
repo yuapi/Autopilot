@@ -52,7 +52,7 @@ PY
 bash "$ARCH" "$d" >/dev/null
 check "재실행: LOG 100개 남김" test "$(entries "$d/.autopilot/LOG.md")" -eq 100
 check "재실행: 아카이브에 이어 붙임 (500개)" test "$(entries "$d/.autopilot/LOG.archive.md")" -eq 500
-check "재실행: 아카이브 머리말 1번" test "$(grep -c '^# LOG 아카이브' "$d/.autopilot/LOG.archive.md")" -eq 1
+check "재실행: 아카이브 머리말 1번" test "$(grep -c '^# LOG archive' "$d/.autopilot/LOG.archive.md")" -eq 1
 
 check_not ".autopilot 없으면 실패" bash "$ARCH" "$TMPROOT"
 
