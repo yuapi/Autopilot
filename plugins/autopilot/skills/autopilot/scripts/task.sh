@@ -37,7 +37,7 @@ if [ "$cmd" = done ]; then
   range="$start..HEAD"; [ "$start" = none ] && range=HEAD
   code="$(git log --format= --name-only "$range" | grep -v '^$' | grep -v '^\.autopilot/' | grep -vx '.gitignore' | head -1 || true)"
   [ -n "$code" ] || { echo "[task] refused: the commits since $id started change only .autopilot/" >&2; exit 1; }
-  others="$(git log --format=%s "$range" | grep -oE 'T-[0-9]+' | grep -vx "$id" | sort -u | tr '\n' ' ' || true)"
+  others="$(git log --format=%s "$range" -- . ':!.autopilot' ':!.gitignore' | grep -oE 'T-[0-9]+' | grep -vx "$id" | sort -u | tr '\n' ' ' || true)"
   [ -z "$others" ] || { echo "[task] refused: commits since $id started also name $others— one task per commit. Roll back and redo them one at a time" >&2; exit 1; }
 fi
 

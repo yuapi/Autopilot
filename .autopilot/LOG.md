@@ -325,3 +325,15 @@
 ## 2026-10-20T12:38 | T-050 | done | skill 1.23.0
 - 변경: scripts/task.sh(drop), SKILL.md Phase 3(불필요한 작업은 drop + 하지 않기로 한 것에 근거), tests/test_task.sh(+6), CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-20T12:42 | - | release | skill 1.24.0
+- 1.24.0 릴리즈: release/1.24.0 → main, main → develop 역병합. 태그 대기: v1.24.0 (403, 누적 v1.11.0~v1.24.0)
+
+## 2026-10-20T12:53 | T-051 | done | skill 1.24.0
+- 변경: tests/eval/fixture-stats(CONTRIBUTING: Conventional Commits·make test, 실패 테스트, README와 동작 불일치)·.expected, scripts/eval.sh(commit= 기대값, 상태 전용 커밋은 묶음 검사에서 제외), tests/test_eval.sh(+6), README 2종, CHANGELOG
+- 검증: validate PASS. 실제 eval --fixture stats --mode session --iterations 2: 8/8, 모든 커밋이 Conventional Commits. 채점 오탐 1건(상태 전용 커밋 "chore: record T-1 and queue T-4"를 묶음으로 판정) → 수정 후 재채점 규칙 전부 ok
+- 발견: task.sh done도 같은 커밋 때문에 거부할 것 → T-052
+
+## 2026-10-20T12:55 | T-052 | done | skill 1.24.0
+- 변경: scripts/task.sh(다른 작업 ID 검사는 .autopilot/·.gitignore 밖을 바꾼 커밋만), tests/test_task.sh(+1), CHANGELOG
+- 검증: validate PASS. 재현: start → 코드 커밋 → "chore: record T-001 and queue T-004"(상태 전용) → done 거부 → 수정 후 허용

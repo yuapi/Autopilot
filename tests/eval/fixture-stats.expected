@@ -1,0 +1,7 @@
+# autopilot-scan: ignore-file
+# id | what autopilot should find | regex matched (case-insensitive) against BACKLOG task and criteria text
+# A regex starting with "type=" is matched against the type of the first completed task; one starting
+# with "commit=" must match the subject of every commit the run made (the repository's convention).
+median-even | `median` of an even-length list is wrong (failing test) | median|even|test_median
+no-numbers | with no numbers README promises an error and exit 1; the code prints usage and exits 2 | empty|no numbers|zero ?division|ZeroDivision|exit 1|without numbers|빈
+conventional | every commit follows CONTRIBUTING's Conventional Commits | commit=^(fix|feat|test|docs|refactor|chore|perf)(\([^)]*\))?!?: \S
