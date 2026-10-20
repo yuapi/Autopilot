@@ -214,3 +214,8 @@
 - 실제 확인: claude -p --plugin-dir로 스킬을 호출한 세션에서 frontmatter Stop 훅이 동작(RUN 있으면 block, STALL_LIMIT=1에서 STOP 작성). 스킬을 호출하지 않은 세션에서는 동작 안 함(RUN 그대로)
 - 변경: assets/autopilot-stop.sh STOP 메모 "1 times" → "time(s)", CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-20T11:30 | T-035 | done | skill 1.17.0
+- 근거: 이 세션에 로드된 플러그인 스킬이 1.10.2였는데 레포는 1.15 규칙으로 돌고 있었음. 사용자는 알 방법이 없음
+- 변경: scripts/status.sh(Skill: 버전, 새 버전 LOG 경고), tests/test_status.sh(+4), SKILL.md 상태 확인 절, README 2종, CHANGELOG
+- 검증: validate PASS
