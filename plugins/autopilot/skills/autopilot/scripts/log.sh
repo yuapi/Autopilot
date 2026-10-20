@@ -4,16 +4,16 @@
 #   - Changed: …
 #   - Verified: …
 #   EOF
-# status: done failed blocked retro discover stop. Body lines come from stdin; a line that does not
+# status: done failed blocked retro discover release stop. Body lines come from stdin; a line that does not
 # start with "- " gets one. Earlier entries are never touched, so the LOG stays in time order.
 # Prints the header it wrote; for `done` it warns when the last commit names several task IDs.
 # Exit 1 on a bad argument or an empty body.
 set -eu
 id="${1:-}"; status="${2:-}"
-usage() { echo "usage: log.sh <task ID or -> <done|failed|blocked|retro|discover|stop> [repository path] < body" >&2; exit 1; }
+usage() { echo "usage: log.sh <task ID or -> <done|failed|blocked|retro|discover|release|stop> [repository path] < body" >&2; exit 1; }
 case "$id" in -|T-[0-9]*) ;; *) usage;; esac
 case "$id" in -) ;; *[!T0-9-]*|T-) usage;; esac
-case "$status" in done|failed|blocked|retro|discover|stop) ;; *) usage;; esac
+case "$status" in done|failed|blocked|retro|discover|release|stop) ;; *) usage;; esac
 here="$(cd "$(dirname "$0")/.." && pwd)"
 root="$(git -C "${3:-.}" rev-parse --show-toplevel 2>/dev/null || (cd "${3:-.}" && pwd))"
 cd "$root"

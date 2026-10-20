@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.20.0
+  version: 1.20.1
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.20.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.20.1** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -330,7 +330,7 @@ PR rules:
 
 Release (`pr` + `release: auto`):
 - Only if the repository documents a release procedure (how to bump the version, CHANGELOG, tags). Otherwise do not release; leave a proposal (1-F).
-- When unreleased changes include at least one substantive task, choose the version kind and proceed exactly as documented. Never invent steps the documentation does not have.
+- When unreleased changes include at least one substantive task, choose the version kind and proceed exactly as documented. Never invent steps the documentation does not have. Record it as a `release` LOG entry (version, what was merged, and any step that was blocked, such as a tag push).
 
 Always:
 - Never push directly to the base or default branch. Never force push, delete remote branches, delete or rewrite tags, or rewrite the history of shared branches.
@@ -339,7 +339,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30 | T-042 | done | skill 1.20.0
+## 2026-10-01T14:30 | T-042 | done | skill 1.20.1
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
@@ -356,7 +356,7 @@ EOF
 
 It appends at the end of the file with the current time and this skill's version (use `-` as the ID for entries without a task). Writing entries by hand produced entries inserted above earlier ones and times that were made up, which breaks "the last N runs" and every rule that reads the LOG in order. If the script cannot run, append at the very end and take the time from `date +%Y-%m-%dT%H:%M`.
 
-The third column (status) is one of `done` / `failed` / `blocked` / `retro` / `discover` / `stop`. "The last N runs" in the repeat-failure and same-file rules count only `done`, `failed` and `blocked`. The bullet text is in the output language.
+The third column (status) is one of `done` / `failed` / `blocked` / `retro` / `discover` / `release` / `stop`. "The last N runs" in the repeat-failure and same-file rules count only `done`, `failed` and `blocked`. The bullet text is in the output language.
 
 ## The Stop hook (session mode)
 
