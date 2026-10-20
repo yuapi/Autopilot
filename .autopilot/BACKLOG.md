@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 57
+next_id: 58
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -63,3 +63,4 @@ next_id: 57
 | T-054 | test | done | 1 | Go eval 예제 kv: 실패 테스트·go vet 경고·패닉·무시된 오류·README의 없는 플래그 5개 결함, 기준선 탐색이 go test/go vet을 찾는지 | 가짜 claude 채점, 실제 실행 1회 | 품질(이식성): 예제가 Python·Node뿐 | 2026-10-20 |
 | T-055 | fix | done | 1 | Phase 0 작업 트리 정리가 진행 중 작업의 변경까지 stash해 Phase 2 "이전 작업 끝내기" 검사를 무력화 → in_progress 행이 있으면 stash하지 않고 끝내거나 되돌리기 | SKILL.md 규칙 문장과 실행 검사(test_skill_rules) | 심화 발굴 1단계(규칙 정독: Phase 0 단계 2 ↔ Phase 2 첫 검사 충돌) | 2026-10-20 |
 | T-056 | enhance | done | 1 | status.sh: 지금 진행 중인 작업(ID·제목·시작 후 경과 시간, .autopilot/.task 기준) 표시 | 진행 중/없음 테스트 | 심화 발굴 3단계(관찰성: "지금 뭐 하는 중"에 개수만 나옴) | 2026-10-20 |
+| T-057 | feature | done | 1 | 세션 모드 작업 수 한도: runlock.sh start --tasks N이 RUN에 기록, task.sh done이 N개째에 STOP 작성, status.sh 표시 | runlock·task·status 테스트, SKILL.md 규칙 | 시나리오: "3개만 하고 멈춰" — 드라이버엔 최대 실행 수가 있는데 세션 모드엔 없음 | 2026-10-20 |

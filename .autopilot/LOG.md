@@ -366,3 +366,10 @@
 - 범위: T-047~T-056 (10건). done 10 / failed 0 / blocked 0. 유형: enhance 3, test 3, fix 3, feature 2(T-048, T-053). 출처: eval 실제 실행 3, 직접 사용 2, 정독 2, 시나리오·품질 3
 - 실패 원인 없음. 반복된 사실: 새 장치(task.sh)는 이 레포에서 직접 써 보면서 결함 2건이 나옴(T-049, T-052)
 - "배운 것"에 2줄 추가(task.sh 순서, eval 예제 결함 가림)
+
+## 2026-10-20T13:24 | - | release | skill 1.26.0
+- 1.26.0 릴리즈: release/1.26.0 → main, main → develop 역병합. 태그 대기: v1.26.0 (403, 누적 v1.11.0~v1.26.0)
+
+## 2026-10-20T13:29 | T-057 | done | skill 1.26.0
+- 변경: scripts/runlock.sh(start --tasks N, 인자 파싱), scripts/task.sh(done이 예산을 세고 N개째에 STOP), scripts/status.sh(예산 진행 표시), SKILL.md Phase 0(사람이 작업 수를 말하면 --tasks), README 2종, tests/test_task.sh(+12), CHANGELOG
+- 검증: validate PASS
