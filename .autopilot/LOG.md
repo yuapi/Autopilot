@@ -361,3 +361,8 @@
 ## 2026-10-20T13:19 | T-056 | done | skill 1.25.0
 - 변경: scripts/status.sh("Now:" 줄), SKILL.md 상태 확인 절, tests/test_status.sh(+3), CHANGELOG
 - 검증: validate PASS. 이 레포에서 "Now: T-056 … (attempt 1, started 0 min ago)" 확인
+
+## 2026-10-20T13:20 | - | retro | skill 1.25.0
+- 범위: T-047~T-056 (10건). done 10 / failed 0 / blocked 0. 유형: enhance 3, test 3, fix 3, feature 2(T-048, T-053). 출처: eval 실제 실행 3, 직접 사용 2, 정독 2, 시나리오·품질 3
+- 실패 원인 없음. 반복된 사실: 새 장치(task.sh)는 이 레포에서 직접 써 보면서 결함 2건이 나옴(T-049, T-052)
+- "배운 것"에 2줄 추가(task.sh 순서, eval 예제 결함 가림)
