@@ -400,3 +400,8 @@
 ## 2026-10-20T13:55 | T-061 | done | skill 1.27.1
 - 변경: scripts/task.sh(칸 수 오류에 기대 형식·예시 행), tests/test_task.sh(+3), CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-20T14:03 | T-062 | done | skill 1.27.1
+- 발굴(심화 3단계 이식성): bash 4 전용 문법·GNU 전용 옵션 없음. 새 시나리오(모노레포 패키지 하나만)에서 범위 지정 수단 없음 발견
+- 변경: assets/CONFIG.md(scope), scripts/task.sh(done이 범위 밖 변경 거부), scripts/status.sh(scope 표시), SKILL.md Phase 1·3, README 2종, tests(task +6, skill_rules CONFIG 키 목록), CHANGELOG
+- 검증: validate PASS

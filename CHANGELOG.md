@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- New CONFIG key `scope` (set by people) limits autopilot to some paths, e.g. one package of a monorepo: discovery reads and runs only there, tasks change only files there, `task.sh done` refuses a commit that changes anything outside, and status.sh shows it
 - task.sh shows the expected BACKLOG layout and an example row when a row has the wrong number of columns, instead of only the count
 
 ## 1.27.1 — 2026-10-20

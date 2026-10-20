@@ -51,7 +51,8 @@ check "CONFIG default integration=local" test "$(val integration)" = local
 check "CONFIG default merge=off" test "$(val merge)" = off
 check "CONFIG default release=off" test "$(val release)" = off
 keys="$(sed -n 's/^\([a-z_]*\):.*/\1/p' "$cfg" | sort | tr '\n' ' ')"
-check "CONFIG key list" test "$keys" = "base_branch branch_prefix integration language local_branch merge release "
+check "CONFIG key list" test "$keys" = "base_branch branch_prefix integration language local_branch merge release scope "
+check "CONFIG default scope=. (whole repository)" test "$(val scope)" = .
 check "SKILL.md: Claude never changes CONFIG" grep -q "Claude never creates it or changes its values" "$REPO/$SKILL_REL/SKILL.md"
 
 # plugin commands: frontmatter description, and every ${CLAUDE_PLUGIN_ROOT} path they run exists
