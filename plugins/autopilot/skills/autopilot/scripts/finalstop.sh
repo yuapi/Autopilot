@@ -37,7 +37,8 @@ if rows:
 print("\n".join(out))
 PY
 )"
-dirty="$(git status --porcelain -- . ':!.autopilot' 2>/dev/null | head -5)"
+# .gitignore counts as state here, as in task.sh: task.sh start adds the .autopilot/.task line to it
+dirty="$(git status --porcelain -- . ':!.autopilot' ':!.gitignore' 2>/dev/null | head -5)"
 [ -z "$dirty" ] || problems="${problems:+$problems
 }uncommitted changes outside .autopilot/ (commit or roll back the last task first): $(echo "$dirty" | tr '\n' ' ')"
 case "$summary" in "Final stop"*|"최종 정지"*) ;; *) problems="${problems:+$problems
