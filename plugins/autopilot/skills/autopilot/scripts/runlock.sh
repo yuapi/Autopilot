@@ -40,6 +40,12 @@ set_budget() {  # task budget lines (tasks: N, done: 0); without --tasks an exis
 
 case "$cmd" in
   start)
+    if [ "${AUTOPILOT_DRIVER:-}" = 1 ]; then
+      # Driver mode: the driver runs one task per call and limits runs itself. A run marker here would
+      # let the session-mode Stop hook keep this call going, and --tasks would stop the whole driver.
+      echo "[runlock] driver mode (AUTOPILOT_DRIVER=1): no run marker and no task budget; do one task and exit."
+      exit 0
+    fi
     if [ -f "$RUN" ]; then
       o="$(owner)"; a="$(age_min)"
       if [ -n "$o" ] && [ "$o" != "$me" ] && [ "$o" != unknown ] && [ "$me" != unknown ] && [ "$a" -lt "$stale_min" ]; then

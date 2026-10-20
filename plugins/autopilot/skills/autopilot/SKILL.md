@@ -18,7 +18,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 | Mode | Condition | Behavior |
 |---|---|---|
-| **Driver** | environment variable `AUTOPILOT_DRIVER=1` | One task, then exit. An outer shell loop calls again |
+| **Driver** | environment variable `AUTOPILOT_DRIVER=1` | One task, then exit. An outer shell loop calls again. "One task" is how the driver works, not a person's task budget: no `runlock.sh`, no STOP for it |
 | **Session** | everything else (default) | Keep working task after task in the same session until `.autopilot/STOP` exists |
 
 A cloud session without terminal access is always in session mode. In this mode you **never decide "that's one done, I'll stop here."** Only the STOP file stops the loop.
