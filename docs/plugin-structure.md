@@ -15,7 +15,10 @@ Sources:
 plugins/autopilot/                              ← plugin root
 plugins/autopilot/.claude-plugin/plugin.json    ← manifest (nothing else in this folder)
 plugins/autopilot/skills/autopilot/SKILL.md     ← skill (skills/<name>/SKILL.md)
+plugins/autopilot/commands/status.md, stop.md   ← /autopilot:status, /autopilot:stop
 ```
+
+Commands run the skill's scripts through `${CLAUDE_PLUGIN_ROOT}`, which Claude Code substitutes in command files too (checked with `claude -p "/autopilot:status" --plugin-dir plugins/autopilot`). The `.skill` package contains only the skill folder, so the commands exist only for plugin installs.
 
 ## marketplace.json
 
