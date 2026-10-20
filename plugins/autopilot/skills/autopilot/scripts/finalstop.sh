@@ -8,6 +8,7 @@
 # external signals); no BACKLOG task is open or in progress; nothing outside .autopilot/ is uncommitted.
 # Then writes STOP from stdin, removes RUN and adds a `stop` LOG entry. Exit 1 with the reasons otherwise.
 set -eu
+case "${1:-}" in -h|--help) awk 'NR > 1 && /^set -/ { exit } NR > 1 { sub(/^# ?/, ""); print }' "$0"; exit 0;; esac
 PY="$(command -v python3 || command -v python || true)"   # Windows Git Bash often has only python
 [ -n "$PY" ] || { echo "[autopilot] needs Python 3 on PATH (python3 or python)" >&2; exit 1; }
 here="$(cd "$(dirname "$0")" && pwd)"

@@ -4,6 +4,7 @@
 # Rules: BACKLOG done/blocked rows > 50 → move the oldest, keep 30
 #        LOG entries (lines starting with ##) > 300 → move the oldest, keep 100
 set -eu
+case "${1:-}" in -h|--help) awk 'NR > 1 && /^set -/ { exit } NR > 1 { sub(/^# ?/, ""); print }' "$0"; exit 0;; esac
 PY="$(command -v python3 || command -v python || true)"   # Windows Git Bash often has only python
 [ -n "$PY" ] || { echo "[autopilot] needs Python 3 on PATH (python3 or python)" >&2; exit 1; }
 cd "${1:-.}"

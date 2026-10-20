@@ -2,6 +2,7 @@
 # autopilot run status summary: bash status.sh [repository path, default: current directory]
 # Only reads the .autopilot/ state files.
 set -eu
+case "${1:-}" in -h|--help) awk 'NR > 1 && /^set -/ { exit } NR > 1 { sub(/^# ?/, ""); print }' "$0"; exit 0;; esac
 PY="$(command -v python3 || command -v python || true)"   # Windows Git Bash often has only python
 [ -n "$PY" ] || { echo "[autopilot] needs Python 3 on PATH (python3 or python)" >&2; exit 1; }
 self="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"

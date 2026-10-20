@@ -7,6 +7,7 @@
 # On any other branch it stays put, so running it before every task is safe. It never pushes.
 # Prints the branch to work on as the last line.
 set -eu
+case "${1:-}" in -h|--help) awk 'NR > 1 && /^set -/ { exit } NR > 1 { sub(/^# ?/, ""); print }' "$0"; exit 0;; esac
 root="$(git -C "${1:-.}" rev-parse --show-toplevel 2>/dev/null || true)"
 [ -n "$root" ] || { echo "[workbranch] not inside a git repository" >&2; exit 1; }
 cd "$root"

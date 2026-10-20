@@ -8,6 +8,7 @@
 # A line containing "autopilot-scan: ignore" is skipped; so is a file with "autopilot-scan: ignore-file"
 # in its first 5 lines (for code that discusses these patterns, like this script).
 set -u
+case "${1:-}" in -h|--help) awk 'NR > 1 && /^set -/ { exit } NR > 1 { sub(/^# ?/, ""); print }' "$0"; exit 0;; esac
 if [ $# -gt 0 ]; then
   root="$(cd "$1" 2>/dev/null && pwd)" || { echo "[scan] no such directory: $1" >&2; exit 1; }
 else

@@ -23,6 +23,7 @@
 # --iterations and --mode).
 # CLAUDE_BIN overrides the claude command (the tests use a fake).
 set -u
+case "${1:-}" in -h|--help) awk 'NR > 1 && /^set -/ { exit } NR > 1 { sub(/^# ?/, ""); print }' "$0"; exit 0;; esac
 cd "$(dirname "$0")/.."
 REPO="$(pwd)"
 keep=0; timeout_s=1200; fixture=todo; iterations=1; mode=driver; grade=""; model=""
