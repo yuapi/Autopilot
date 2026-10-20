@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.28.2 — 2026-10-20
 - `.gitattributes` keeps shell scripts LF: a clone or plugin install with `core.autocrlf=true` (common on Windows) checked them out with CRLF, and bash failed on every script
 
 ## 1.28.1 — 2026-10-20
