@@ -126,4 +126,10 @@ t "$d" start T-001 >/dev/null; (cd "$d" && echo 1 > a/x && echo 2 > b/y && git a
 check "several scope paths (trailing slash allowed)" bash -c "cd '$d' && bash '$TS' done T-001 >/dev/null"
 check "status.sh shows the scope" bash -c "bash '$REPO/$SKILL_REL/scripts/status.sh' '$d' | grep -q 'scope=a'"
 
+# a CRLF BACKLOG (Windows checkout) stays CRLF
+d="$(newrepo)"; sedi 's/$/\r/' "$d/.autopilot/BACKLOG.md"; (cd "$d" && git commit -qam crlf)
+t "$d" start T-001 >/dev/null
+check "CRLF BACKLOG: every line still ends in CRLF after start" bash -c "! grep -qv \$'\\r\$' '$d/.autopilot/BACKLOG.md'"
+check "CRLF BACKLOG: the row was updated" grep -q "| T-001 | fix | in_progress | 1 |" "$d/.autopilot/BACKLOG.md"
+
 finish

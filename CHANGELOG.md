@@ -7,6 +7,10 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.28.1 — 2026-10-20
+- State files with CRLF line endings (a Windows checkout) keep them: task.sh and archive.sh rewrote the whole file as LF, and log.sh appended LF lines
+- Fifth eval fixture `mono`: a monorepo whose CONFIG sets `scope: pkg/a`, with defects in both packages. New `nofile=` expectations fail when any commit changes a matching path
+
 ## 1.28.0 — 2026-10-20
 - New CONFIG key `scope` (set by people) limits autopilot to some paths, e.g. one package of a monorepo: discovery reads and runs only there, tasks change only files there, `task.sh done` refuses a commit that changes anything outside, and status.sh shows it
 - task.sh shows the expected BACKLOG layout and an example row when a row has the wrong number of columns, instead of only the count

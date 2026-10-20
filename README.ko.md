@@ -121,6 +121,7 @@ bash scripts/eval.sh                        # todo 예제. 실행 결과를 보�
 bash scripts/eval.sh --fixture wordcount    # 테스트가 없는 레포: 첫 작업이 테스트 하네스인가
 bash scripts/eval.sh --fixture stats        # CONTRIBUTING이 커밋 형식을 정한 레포: 모든 커밋이 따르는가
 bash scripts/eval.sh --fixture kv           # Go 모듈: go test·go vet을 찾고 결과를 큐에 넣는가
+bash scripts/eval.sh --fixture mono         # 모노레포에서 CONFIG scope: pkg/a: 모든 커밋이 그 안에 머무는가
 bash scripts/eval.sh --iterations 3         # 드라이버 3회: 매번 새 작업 하나, 반복 없음, 실패 없음
 bash scripts/eval.sh --mode session --iterations 2   # 플러그인으로 세션 모드 1회, 작업 2개 요청: 계속 이어 가다가 예산에서 멈추는가
 bash scripts/eval.sh --grade <남긴 폴더> [같은 옵션]   # --keep으로 남긴 실행을 다시 채점
