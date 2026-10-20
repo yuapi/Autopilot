@@ -54,4 +54,15 @@ keys="$(sed -n 's/^\([a-z_]*\):.*/\1/p' "$cfg" | sort | tr '\n' ' ')"
 check "CONFIG key list" test "$keys" = "base_branch branch_prefix integration language local_branch merge release "
 check "SKILL.md: Claude never changes CONFIG" grep -q "Claude never creates it or changes its values" "$REPO/$SKILL_REL/SKILL.md"
 
+# plugin commands: frontmatter description, and every ${CLAUDE_PLUGIN_ROOT} path they run exists
+PLUGIN="$REPO/plugins/autopilot"
+for c in "$PLUGIN"/commands/*.md; do
+  n="$(basename "$c" .md)"
+  check "command /autopilot:$n has a description" grep -qE '^description: .{10,}' "$c"
+  for rel in $(grep -oE '\$\{CLAUDE_PLUGIN_ROOT\}/[A-Za-z0-9_./-]+' "$c" | sed 's#^${CLAUDE_PLUGIN_ROOT}/##' | sort -u); do
+    check "command /autopilot:$n runs an existing file ($rel)" test -f "$PLUGIN/$rel"
+  done
+done
+check "status and stop commands exist" test -f "$PLUGIN/commands/status.md" -a -f "$PLUGIN/commands/stop.md"
+
 finish

@@ -44,4 +44,17 @@ check "RUN is written at the repository root" test -f "$d/.autopilot/RUN"
 check_not "rejects an unknown command" as A bogus "$d"
 check_not "fails outside a git repository" as A start "$(mktemp -d "$TMPROOT/n.XXXX")"
 
+# stop: a person ends the loop
+d="$(newrepo)"; as A start "$d"
+out="$(as B stop "$d")"
+check "stop writes STOP" grep -q "^Stopped by a person" "$d/.autopilot/STOP"
+check "stop names the running session" grep -q "session A" <<<"$out"
+out="$(as B stop "$d")"
+check "stop twice says it is already stopped" grep -q "already stopped" <<<"$out"
+d="$(newrepo)"
+out="$(as A stop "$d")"
+check "stop with no loop running says so" grep -q "No loop was running" <<<"$out"
+d="$(mktemp -d "$TMPROOT/x.XXXX")"; git -C "$d" init -q
+check "stop without .autopilot does nothing" bash -c "CLAUDE_CODE_SESSION_ID=A bash '$RL' stop '$d' | grep -q 'has not run' && test ! -e '$d/.autopilot'"
+
 finish
