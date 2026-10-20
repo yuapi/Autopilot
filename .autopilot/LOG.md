@@ -570,3 +570,11 @@
 ## 2026-10-20T17:09Z | T-086 | done | skill 1.34.0
 - 변경: scripts/autopilot.sh(첫 커밋 없고 파일이 있으면 첫 실행 전 고치는 법과 함께 exit 1), SKILL.md Phase 0(같은 경우 STOP, 대신 커밋하지 않음), tests/test_driver.sh(+5: 파일 있음 → 멈춤, 빈 새 레포는 실행), CHANGELOG
 - 검증: validate PASS. 재현: stash "You do not have the initial commit yet", task.sh start "uncommitted changes (?? app.py)"
+
+## 2026-10-20T17:13Z | - | release | skill 1.35.0
+- 1.35.0 릴리즈: release/1.35.0 → main, main → develop 역병합. 태그 대기: v1.35.0 (403, 누적 v1.11.0~v1.35.0)
+
+## 2026-10-20T17:15Z | T-087 | done | skill 1.35.0
+- 발굴: 공백·한글 경로("내 프로젝트 (copy)")에서 runlock·task·log·status·archive·scan·finalstop 전체 흐름 정상. 그 과정에서 finalstop이 .gitignore 변경으로 거부하는 불일치 발견
+- 변경: scripts/finalstop.sh(.gitignore 제외), tests/test_finalstop.sh(+1), CHANGELOG
+- 검증: validate PASS
