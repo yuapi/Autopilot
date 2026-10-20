@@ -58,7 +58,7 @@ if os.path.exists(hook):
         print("Note: the installed Stop hook is a copy from another skill version. The next run updates it (or run scripts/hook.sh install).")
     print("Note: the skill declares its own Stop hook since 1.16; the copy in .claude/hooks is only needed where skill hooks are ignored. Remove it with scripts/hook.sh uninstall.")
 
-cfg = dict(re.findall(r"^(integration|merge|release|language):\s*([^\s#]+)", read("CONFIG.md"), re.M))
+cfg = dict(re.findall(r"^(integration|merge|release|language|scope):\s*([^\s#]+)", read("CONFIG.md"), re.M))
 print("Integration: " + (", ".join(f"{k}={v}" for k, v in cfg.items()) if cfg else "local (no CONFIG)"))
 if os.environ.get("CLAUDE_CODE_REMOTE") == "true" and cfg.get("integration", "local") == "local":
     print("Warning: this is a cloud session and integration is local: the loop's commits stay in this container and are lost when it is reclaimed. Set integration: branch (or pr) in .autopilot/CONFIG.md to push them.")

@@ -109,4 +109,21 @@ check "7-column row → refused with the column count" grep -q "T-010 has 7 colu
 check "the refusal shows the expected layout" grep -q "| ID | Type | Status | Attempts | Task | Done when | Source | Completed |" <<<"$out"
 check "the malformed row is left as it was" grep -qx "| T-010 | fix | open | 0 | added by hand | t | s |" "$d/.autopilot/BACKLOG.md"
 
+# CONFIG scope: commits outside the scope are refused at done
+d="$(newrepo)"; mkdir -p "$d/pkg/a" "$d/pkg/b"; printf 'scope: pkg/a   # one package\n' > "$d/.autopilot/CONFIG.md"
+(cd "$d" && git add -A && git commit -qm "config" >/dev/null 2>&1 || true)
+t "$d" start T-001 >/dev/null; (cd "$d" && echo x > pkg/a/f.txt && git add -A && git commit -qm "autopilot(T-001): in scope")
+check "change inside the scope → done accepted" bash -c "cd '$d' && bash '$TS' done T-001 >/dev/null"
+t "$d" start T-002 >/dev/null; (cd "$d" && echo y > pkg/b/g.txt && echo z >> code.txt && git add -A && git commit -qm "autopilot(T-002): outside")
+out="$(t "$d" done T-002)"
+check "change outside the scope → refused, files named" grep -q "changes outside scope (pkg/a) from .autopilot/CONFIG.md: code.txt pkg/b/g.txt" <<<"$out"
+check "refused → still in progress" grep -q "| T-002 | fix | in_progress |" <<<"$(row "$d" T-002)"
+d="$(newrepo)"; printf 'scope: .\n' > "$d/.autopilot/CONFIG.md"; (cd "$d" && git add -A && git commit -qm c >/dev/null)
+t "$d" start T-001 >/dev/null; (cd "$d" && echo q >> code.txt && git commit -qam "autopilot(T-001): any")
+check "scope . → whole repository allowed" bash -c "cd '$d' && bash '$TS' done T-001 >/dev/null"
+d="$(newrepo)"; mkdir -p "$d/a" "$d/b"; printf 'scope: a b/\n' > "$d/.autopilot/CONFIG.md"; (cd "$d" && git add -A && git commit -qm c >/dev/null 2>&1 || true)
+t "$d" start T-001 >/dev/null; (cd "$d" && echo 1 > a/x && echo 2 > b/y && git add -A && git commit -qm "autopilot(T-001): two paths")
+check "several scope paths (trailing slash allowed)" bash -c "cd '$d' && bash '$TS' done T-001 >/dev/null"
+check "status.sh shows the scope" bash -c "bash '$REPO/$SKILL_REL/scripts/status.sh' '$d' | grep -q 'scope=a'"
+
 finish
