@@ -83,7 +83,7 @@ printf '\n## 2026-01-01T00:0%s | %s | %s | skill 1.0.0\n- x\n' "$n" "$id" "$stat
 SH
 chmod +x "$FAKE3"
 out="$(CLAUDE_BIN="$FAKE3" bash "$EV" --iterations 3 2>&1)"; rc=$?
-check "--iterations 3 runs the driver three times" grep -q "iteration 3 finished" <<<"$out"
+check "--iterations 3 runs the driver three times" grep -qx "\[eval\] iteration 3" <<<"$out"
 check "three clean runs → 8/8 with the multi-run checks" grep -q "Score: 8/8" <<<"$out"
 out="$(SAME_ID=1 CLAUDE_BIN="$FAKE3" bash "$EV" --iterations 2 2>&1)"
 check "the same task completed twice is caught" grep -q "FAILED  no task completed twice" <<<"$out"
@@ -94,5 +94,37 @@ out="$(CLAUDE_BIN="$FAKE3" bash "$EV" 2>&1)"
 check_not "one iteration (default) adds no multi-run checks" grep -q "Multi-run checks" <<<"$out"
 check_not "--iterations 0 is refused" bash "$EV" --iterations 0
 check_not "--iterations abc is refused" bash "$EV" --iterations abc
+
+# --mode session: one session loaded as a plugin, STOP written once enough tasks are logged
+FAKES="$TMPROOT/fake-claude-session"
+cat > "$FAKES" <<'SH'
+#!/usr/bin/env bash
+# Session-mode stand-in: logs a task every half second until STOP appears (like the Stop hook keeps it going)
+mkdir -p .autopilot; echo "args=$*" > .autopilot/args; echo "driver=${AUTOPILOT_DRIVER:-unset}" > .autopilot/env
+touch .autopilot/RUN; sleep 2.5   # no LOG yet: the watcher must cope
+{ echo "| ID | Type | Status | Attempts | Task | Done when | Source | Completed |"; echo "|---|---|---|---|---|---|---|---|"
+  echo "| T-001 | fix | done | 1 | done <n> is off by one and marks the wrong item | t | baseline | |"; } > .autopilot/BACKLOG.md
+for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
+  [ -f .autopilot/STOP ] && { [ -n "${FAKE_KEEP_RUN:-}" ] || rm -f .autopilot/RUN; exit 0; }
+  [ -n "${FAKE_HANG:-}" ] || printf '\n## 2026-01-01T00:0%s | T-%03d | done | skill 0\n' "$i" "$i" >> .autopilot/LOG.md
+  sleep 0.5
+done
+SH
+chmod +x "$FAKES"
+out="$(CLAUDE_BIN="$FAKES" bash "$EV" --mode session --iterations 2 --keep 2>&1)"
+kept="$(sed -n 's/^\[eval\] kept the run in \([^ ]*\).*/\1/p' <<<"$out")"
+check "session mode loads the working copy as a plugin" grep -q -- "--plugin-dir $REPO/plugins/autopilot" "$kept/.autopilot/args"
+check "session mode allows the Skill tool (the Stop hook needs it)" grep -q "Skill" "$kept/.autopilot/args"
+check "session mode does not set AUTOPILOT_DRIVER" grep -qx "driver=unset" "$kept/.autopilot/env"
+check "no shell errors while the LOG does not exist yet" bash -c "! grep -q 'integer expression' <<<\"\$1\"" _ "$out"
+check "STOP written once 2 tasks are logged" grep -q "2 task(s) in the LOG → wrote STOP" <<<"$out"
+check "session ended on STOP → ok" grep -q "ok      the session ended after STOP, not on the timeout" <<<"$out"
+check "RUN removed → ok" grep -q "ok      RUN removed when it ended" <<<"$out"
+rm -rf "$kept"
+out="$(FAKE_KEEP_RUN=1 CLAUDE_BIN="$FAKES" bash "$EV" --mode session --iterations 1 2>&1)"
+check "RUN left behind → FAILED" grep -q "FAILED  RUN removed when it ended" <<<"$out"
+out="$(FAKE_HANG=1 CLAUDE_BIN="$FAKES" bash "$EV" --mode session --iterations 1 --timeout 3 2>&1)"
+check "no task before the timeout → FAILED" grep -q "FAILED  the session ended after STOP, not on the timeout" <<<"$out"
+check_not "--mode bogus is refused" bash "$EV" --mode bogus
 
 finish
