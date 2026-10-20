@@ -119,12 +119,18 @@
 - 막힘: 사람이 PAT를 추가했으나 Release API가 "Creating, editing, or deleting releases is not permitted for this session type"(403)로 거부. 세션 정책이므로 우회하지 않음. 원격 태그·Release 0개 유지 확인
 - 태그 대기: v1.5.1 v1.6.0 v1.7.0 v1.8.0 v1.8.1 v1.8.2 → 로컬에서 `bash scripts/release.sh --catch-up`
 
-## 2026-10-20T01:01 | - | release | skill 1.9.0
+## 2026-10-20T01:01 | - | release | skill 1.10.2
 - 사람 요청: 기본 영어 + 다국어 지원. 스킬 규칙·템플릿·스크립트 영어화와 language 설정(PR #36), 레포 도구·테스트·문서 영어화(PR #37)
 - 이 레포의 .autopilot 기록은 language: auto에 따라 기존 언어(한국어) 유지
 - 태그 대기: v1.5.1 ~ v1.8.2, v1.9.0 → 로컬에서 `bash scripts/release.sh --catch-up`
 
-## 2026-10-20T01:11 | T-025 | done | skill 1.9.0
+## 2026-10-20T01:11 | T-025 | done | skill 1.10.2
 - 변경: scripts/workbranch.sh(신규), SKILL.md Phase 0·통합 정책 표, assets/CONFIG.md(local_branch), README, docs/skill-design.md, tests/test_workbranch.sh
 - 검증: validate PASS, test_workbranch 17 통과(레포 밖 실행 버그를 테스트가 잡아 수정)
 - 참고: 사람은 1.5에 있던 기능이라 했으나 레포에 남은 1.5.0 원본(SKILL.md·드라이버)에는 없음. README의 '전용 브랜치에서 시작' 안내만 있었음
+
+## 2026-10-20T09:51 | T-022 | done | skill 1.10.2
+- 변경: scripts/runlock.sh(신규), assets/autopilot-stop.sh(소유 세션만 차단, stdin 2초 제한), scripts/autopilot.sh(driver.lock·세션 루프 감지), scripts/status.sh(소유 세션·활동 시각), SKILL.md, README, docs/skill-design.md, 테스트(runlock 21, hook +5, driver +9, status +2)
+- 검증: validate PASS(테스트 169개)
+- 발견: 루프가 도는 동안 같은 레포에서 연 다른 세션도 훅에 막히던 버그를 함께 수정. 닫히지 않는 stdin에서 훅이 멈추는 문제를 테스트가 잡아 read -t로 수정
+- 이 레포: Phase 0에서 Stop 훅 설치(.claude/), RUN을 이 세션 소유로 기록
