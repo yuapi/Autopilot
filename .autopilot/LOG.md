@@ -437,3 +437,10 @@
 - 범위: T-057~T-066 (10건). done 10 / failed 0 / blocked 0. 유형: fix 5, feature 2, test 2, enhance 1, docs 1(T-059). 출처: 시나리오 6, eval·관찰 3, 정독 1
 - 실패 원인 없음. eval --fixture all(세션 모드) 5개 예제 100%. 새 결함은 대부분 플랫폼·환경 시나리오(Windows CRLF 2건, 시간대 1건)에서 나옴
 - "배운 것"에 1줄 추가(Windows 시나리오)
+
+## 2026-10-20T14:45Z | - | release | skill 1.28.3
+- 1.28.3 릴리즈: release/1.28.3 → main, main → develop 역병합. 태그 대기: v1.28.3 (403, 누적 v1.11.0~v1.28.3)
+
+## 2026-10-20T14:50Z | T-067 | done | skill 1.28.3
+- 변경: 스킬 스크립트 7개(autopilot·finalstop·task·status·hook·runlock·archive)에 PY=python3||python, 없으면 분명한 오류. tests/test_portability.sh(+6: python만 있는 PATH에서 runlock·task·status·archive, Python 없음 오류), README 2종 요구 사항, CHANGELOG
+- 검증: validate PASS. 수정 전 새 검사 4개 실패 → 통과
