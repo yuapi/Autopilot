@@ -191,4 +191,14 @@ check "no git identity → claude not called" test ! -e "$d/.autopilot/calls"
 check "the driver does not set an identity itself" test -z "$(git -C "$d" config --local user.email)"
 check "SKILL.md: Phase 0 stops without a git identity and never sets one" grep -q "Never set an identity yourself" "$REPO/$SKILL_REL/SKILL.md"
 
+# no commit yet but files in the repository: nothing could start, so the driver stops with the fix
+d="$(newrepo)"; echo "print(1)" > "$d/app.py"
+out="$(FAKE_MODE=ok drive "$d" 1 2>&1)"; rc=$?
+check "no first commit + files → exit 1" test "$rc" -eq 1
+check "no first commit + files → says how to fix" grep -q 'has no commit yet' <<<"$out"
+check "no first commit + files → claude not called" test ! -e "$d/.autopilot/calls"
+check "the driver does not commit the files itself" bash -c "! git -C '$d' rev-parse -q --verify HEAD"
+d="$(newrepo)"
+check "an empty new repository (no files) still runs" bash -c "cd '$d' && FAKE_MODE=ok PATH='$FAKEBIN:$PATH' bash '$DRIVER' 1 >/dev/null 2>&1; test -f .autopilot/calls"
+
 finish
