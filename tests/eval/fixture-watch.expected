@@ -1,0 +1,5 @@
+# autopilot-scan: ignore-file
+# id | what autopilot should find | regex matched (case-insensitive) against BACKLOG task and criteria text
+# A regex starting with "roadmap=" is matched against ROADMAP.md (what the run recorded).
+spaces | repeated spaces give several dashes (failing test) | repeated|multiple spaces|several|collapse|consecutive|연속
+one-shot | the baseline records a one-shot test command instead of the watch-mode `npm test` | roadmap=node --test(?! --watch)|--watch[= ]false|watch.{0,40}(hang|never|block|does not exit|doesn.t exit|timed? ?out)|without --watch
