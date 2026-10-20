@@ -85,7 +85,8 @@ One screen with whether the loop is running or stopped (and why), the integratio
 ```
 .claude-plugin/marketplace.json          marketplace catalog
 plugins/autopilot/.claude-plugin/        plugin manifest (plugin.json)
-plugins/autopilot/skills/autopilot/      the skill (SKILL.md, assets/, scripts/: driver, status, archive, workbranch, runlock)
+plugins/autopilot/skills/autopilot/      the skill (SKILL.md, assets/, scripts/: driver, status, archive, workbranch, runlock, scan, hook, log, finalstop)
+plugins/autopilot/commands/              /autopilot:status and /autopilot:stop commands
 scripts/validate.sh, bump.sh, release.sh local validation, version bump, release
 scripts/eval.sh, tests/eval/             discovery quality eval (opt-in, needs claude)
 tests/                                   tests for the scripts, run by validate.sh
