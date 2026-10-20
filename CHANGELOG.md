@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.9.0 — 2026-10-20
 - Skill rules, templates and skill scripts are now in English. New `language` setting in `.autopilot/CONFIG.md` (`auto` = existing state files → README → the user's language → English) sets the language of notes people read; machine-readable values stay English. Korean PROPOSALS statuses from earlier versions (`제안`, `채택`, …) are still understood
 - Repository tooling, tests and docs are now in English (`validate.sh` prints `Result: PASS`); the Korean README stays as a translation. Earlier CHANGELOG entries were translated too
 
