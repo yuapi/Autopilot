@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- README (EN/KO) brought up to date: driver stop conditions and `glab`, the status screen, the stop conditions including the task budget and cost cap, and the eval section
 
 ## 1.36.0 — 2026-10-20
 - status.sh shows a running driver (`Run: running (driver, pid N, started M min ago)`) and a stale driver.lock, instead of "idle" while the driver works
