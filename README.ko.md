@@ -85,7 +85,7 @@ bash <스킬 폴더>/scripts/status.sh [레포 경로]
 ```
 .claude-plugin/marketplace.json          마켓플레이스 카탈로그
 plugins/autopilot/.claude-plugin/        플러그인 매니페스트 (plugin.json)
-plugins/autopilot/skills/autopilot/      스킬 본체 (SKILL.md, assets/, scripts/: 드라이버·status·archive·workbranch·runlock·scan·hook·log·finalstop)
+plugins/autopilot/skills/autopilot/      스킬 본체 (SKILL.md, assets/, scripts/: 드라이버·status·archive·workbranch·runlock·scan·hook·log·finalstop·task)
 plugins/autopilot/commands/              /autopilot:status, /autopilot:stop 명령
 scripts/validate.sh, bump.sh, release.sh 로컬 검증, 버전 올리기, 릴리스
 scripts/eval.sh, tests/eval/             발굴 품질 평가 (선택, claude 필요)
