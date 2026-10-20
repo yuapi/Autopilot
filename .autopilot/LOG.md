@@ -525,3 +525,8 @@
 ## 2026-10-20T16:22Z | T-079 | done | skill 1.31.0
 - 변경: scripts/eval.sh(드라이버 모드가 autopilot.sh의 PROMPT·허용 도구를 읽어 쓰고 --plugin-dir로 작업 사본), tests/test_eval.sh(+3), CHANGELOG
 - 검증: validate PASS. 실제 eval 드라이버 2회 3번: 7/8, 8/8, 8/8 (7/8은 발굴 1건 누락, 다시 돌리면 재현 안 됨 → 변동)
+
+## 2026-10-20T16:31Z | T-080 | done | skill 1.31.0
+- 발굴: eval --fixture all(드라이버, 실제 프롬프트) 5개 예제 100%. docs/versioning.md 정확. 안전한 기본값 점검에서 skip 모드 무음·오타 무음 발견
+- 변경: scripts/autopilot.sh(권한 모드 안내, skip 경고, 알 수 없는 값 경고), tests/test_driver.sh(+5), CHANGELOG
+- 검증: validate PASS
