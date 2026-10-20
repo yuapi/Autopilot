@@ -39,7 +39,7 @@ limit="${AUTOPILOT_STALL_LIMIT:-3}"
 if [ "$n" -ge "$limit" ]; then
   {
     echo "Final stop: no progress"
-    echo "- The Stop hook blocked ending the session ${n} times in a row, but LOG.md and the commits did not change"
+    echo "- The Stop hook blocked ending the session ${n} time(s) in a row, but LOG.md and the commits did not change"
     echo "- Work may be stuck on permission denials or an environment problem. Check the last LOG entry"
   } > "$A/STOP"
   rm -f "$A/RUN" "$A/.hook-state"
