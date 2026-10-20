@@ -61,4 +61,16 @@ d="$(mktemp -d "$TMPROOT/s1.XXXX")"; git -C "$d" init -q; echo "# TODO: only one
 out="$(bash "$SC" "$d")"
 check "single file → file name in the output" grep -q "한글 name.py:1:# TODO: only one" <<<"$out"
 
+# speed: one file list for all searches (it took minutes on a few thousand files)
+d="$(mktemp -d "$TMPROOT/big.XXXX")"; git -C "$d" init -q
+python3 -c 'import os,sys
+for i in range(3000):
+    p=os.path.join(sys.argv[1],"m%d" % (i % 30)); os.makedirs(p, exist_ok=True)
+    open(os.path.join(p,"f%d.py" % i),"w").write("x = %d\n" % i + ("# TODO: big\n" if i == 2999 else ""))' "$d"
+start=$(date +%s); out="$(bash "$SC" "$d")"; secs=$(( $(date +%s) - start ))
+check "3000 files scanned in under 10 s (${secs}s)" test "$secs" -lt 10
+check "the marker in file 3000 is found" grep -q "f2999.py:2:# TODO: big" <<<"$out"
+e="$(mktemp -d "$TMPROOT/empty.XXXX")"; git -C "$e" init -q; echo "# TODO: untracked-but-ignored" > "$e/ign.py"; echo "ign.py" > "$e/.gitignore"
+check_not "an empty git repository does not fall back to scanning ignored files" grep -q "untracked-but-ignored" <<<"$(bash "$SC" "$e")"
+
 finish
