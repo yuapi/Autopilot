@@ -318,3 +318,10 @@
 ## 2026-10-20T12:30 | T-049 | done | skill 1.22.0
 - 변경: scripts/task.sh(.gitignore 추가를 start 성공 뒤로), tests/test_task.sh(+2: 거부 시 트리·.gitignore 그대로, .task 없음), CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-20T12:34 | - | release | skill 1.23.0
+- 1.23.0 릴리즈: release/1.23.0 → main, main → develop 역병합. 태그 대기: v1.23.0 (403, 누적 v1.11.0~v1.23.0)
+
+## 2026-10-20T12:38 | T-050 | done | skill 1.23.0
+- 변경: scripts/task.sh(drop), SKILL.md Phase 3(불필요한 작업은 drop + 하지 않기로 한 것에 근거), tests/test_task.sh(+6), CHANGELOG
+- 검증: validate PASS

@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.23.0
+  version: 1.24.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.23.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.24.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -275,6 +275,7 @@ Claim it with `bash <skill folder>/scripts/task.sh start <ID>`: it refuses while
 ### Phase 3 — implement
 
 - Do not touch files outside the task's scope. If you find a problem outside the scope, only add a new BACKLOG task for it.
+- If the task turns out to be unnecessary (the defect does not reproduce, it is already fixed, the premise was wrong), do not invent a change: roll back anything you changed, run `bash <skill folder>/scripts/task.sh drop <ID>` (status `blocked`, no commit) and write the evidence under ROADMAP "Not doing" and in the LOG (`blocked`). It counts as neither done nor failed work.
 - Public interfaces may **grow but not change or shrink.** Add new commands, endpoints, options and functions freely. Keep existing signatures, behavior and defaults. If something must change, add it under a new name and leave the old one. The only exception is the scope written in an `adopted` proposal.
 - Add a new dependency only if all of these hold: widely used (a standard of its ecosystem), permissive license (MIT/Apache/BSD), pinned version, and the reason written in the commit message. Otherwise mark the task `blocked`.
 - Add external network calls only when the feature itself requires them (e.g. an HTTP client feature), and only with timeouts, retries and error handling.
@@ -340,7 +341,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30 | T-042 | done | skill 1.23.0
+## 2026-10-01T14:30 | T-042 | done | skill 1.24.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)

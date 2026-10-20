@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 50
+next_id: 51
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -56,3 +56,4 @@ next_id: 50
 | T-047 | enhance | done | 1 | scripts/task.sh start/done/fail: 진행 중 작업·커밋 안 된 코드가 있으면 start 거부, 자기 커밋(다른 작업 ID 없음)이 없으면 done 거부, fail은 open/3회째 blocked | task.sh 테스트, eval session 2회 규칙 검사 ok | ROADMAP 약한 것: 세션 모드 작업 묶기 잔존 | 2026-10-20 |
 | T-048 | feature | done | 1 | pr 통합 GitLab 지원: origin이 GitLab이면 glab으로 MR·이슈, 드라이버 사전 점검도 glab | 드라이버 테스트(glab 있음/로그인 안 됨/없음), SKILL.md 규칙 | 빠진 것: 비슷한 도구는 GitHub·GitLab 둘 다 지원 | 2026-10-20 |
 | T-049 | fix | done | 1 | task.sh가 거부할 때도 .gitignore에 .autopilot/.task를 먼저 추가함(거부는 아무것도 바꾸지 않아야 함) | 거부 시 .gitignore 변경 없음 테스트 | 직접 사용(T-048 start 거부 후 stash 충돌) | 2026-10-20 |
+| T-050 | enhance | done | 1 | task.sh drop: 할 필요가 없어진 작업(재현 안 됨, 이미 고쳐짐)을 커밋 없이 blocked로 닫기 + 이유는 ROADMAP 하지 않기로 한 것 | drop 테스트, SKILL.md Phase 3 규칙 | 시나리오: 재현 안 되는 버그 작업 → done은 커밋을 요구, fail은 3번 재시도 | 2026-10-20 |
