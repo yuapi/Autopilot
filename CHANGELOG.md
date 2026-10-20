@@ -7,6 +7,9 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.34.0 — 2026-10-20
+- Without a git `user.name`/`user.email` every commit fails and the loop only burned attempts. The driver now stops before the first run and Phase 0 writes STOP, both with the fix; neither sets an identity itself
+
 ## 1.33.0 — 2026-10-20
 - Sixth eval fixture `watch`: `npm test` runs `node --test --watch` and never exits. New `roadmap=` expectations grade what the run recorded, here a one-shot test command
 - Verification commands run non-interactively (`CI=1`, no stdin) with a time limit in Phase 0 and Phase 4. A watch-mode test command (`jest --watch`, plain `vitest`) or one waiting for input hung until the tool call was killed, on every task; a timeout is recorded and its one-shot form used instead

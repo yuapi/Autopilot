@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 85
+next_id: 86
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -91,3 +91,4 @@ next_id: 85
 | T-082 | enhance | done | 1 | 없는 경로를 주면 status·archive·log는 bash cd 오류를 그대로, runlock·task·finalstop·hook·workbranch는 "git 레포 아님"이라는 엉뚱한 안내 → 모두 "[이름] no such directory: <경로>" | 스크립트 전체 없는 경로 테스트 | 심화 발굴 3단계(오류 처리: 원인을 알려 주는가) | 2026-10-20 |
 | T-083 | fix | done | 1 | Phase 0·4 검증 명령에 시간 제한·비대화 실행 규칙이 없음(watch 모드 테스트·입력 대기 명령이면 루프가 영원히 멈춤) → CI=1·stdin 닫기·시간 제한, 시간 초과는 기록하고 다른 명령/비-watch 옵션 찾기 | SKILL.md 규칙 검사 테스트, eval 예제로 확인 | 심화 발굴 2단계 새 시나리오: jest --watch가 기본인 JS 레포 | 2026-10-20 |
 | T-084 | test | done | 1 | eval 예제 watch: npm test가 node --test --watch(끝나지 않음)인 Node 레포. roadmap= 기대값으로 기준선에 1회 실행 명령을 기록했는지 채점 | 가짜 claude 채점, 실제 세션 실행 1회 | T-083 규칙 측정 | 2026-10-20 |
+| T-085 | fix | done | 1 | git 사용자 이름·이메일이 없는 환경에서는 모든 커밋이 실패하고 루프가 시도만 소모 → 드라이버 사전 점검과 Phase 0에서 확인, 없으면 고치는 방법을 담아 STOP(스스로 정체 설정 금지) | 드라이버 테스트(정체 없음 → 실행 안 함·이유), SKILL 규칙 | 심화 발굴 2단계 새 시나리오: 새 컨테이너·CI에서 첫 실행 | 2026-10-20 |
