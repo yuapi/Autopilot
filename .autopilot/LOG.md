@@ -264,3 +264,8 @@
 - 변경: scripts/finalstop.sh(신규: 심화 발굴 4단계·빈 큐·커밋 안 된 코드 없음을 확인해야 STOP), SKILL.md(최종 정지는 finalstop.sh, Phase 2 시작에 이전 작업 커밋 확인, "사람에게 남기지 않기" 원칙), scripts/log.sh(done인데 마지막 커밋이 여러 작업이면 경고), tests/test_finalstop.sh(15)·test_log.sh(+4), docs/skill-design.md, CHANGELOG
 - 검증: validate PASS. 실제 eval --mode session 2회: 3회차(iterations 3) 규칙 검사 전부 ok·10/10, 2회차 1건 위반(T-003,T-004 한 커밋)·나머지 ok. 수정 전 2회차는 위반 3건
 - 판단: 커밋 묶음은 규칙과 log.sh 경고까지만. 이미 만든 커밋을 쪼개는 것은 히스토리 재작성이라 하지 않음
+
+## 2026-10-20T11:49 | T-042 | done | skill 1.20.0
+- 발굴(eval 반복 측정): session 모드 todo 2회·wordcount 1회 모두 규칙 검사 ok(T-041 후 위반 0/3). 복합 명령 승인 문제는 재현 안 됨(allowlist에서 && 실행됨)
+- 변경: tests/eval/fixture-todo.expected(off-by-one에 "[01]-based", "mark item n"), tests/test_eval.sh(+4, 실제 표현 회귀), CHANGELOG
+- 검증: validate PASS. 남긴 실행 재채점 9/10 → 10/10, 다른 행에 오탐 없음
