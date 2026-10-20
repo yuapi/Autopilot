@@ -11,6 +11,7 @@
 # - uninstall removes only autopilot's entry; other hooks and settings stay. Empty Stop/hooks keys go too
 # Prints what it did. Exit 1 if settings.json exists but is not valid JSON (it is then left alone).
 set -eu
+case "${1:-}" in -h|--help) awk 'NR > 1 && /^set -/ { exit } NR > 1 { sub(/^# ?/, ""); print }' "$0"; exit 0;; esac
 PY="$(command -v python3 || command -v python || true)"   # Windows Git Bash often has only python
 [ -n "$PY" ] || { echo "[autopilot] needs Python 3 on PATH (python3 or python)" >&2; exit 1; }
 cmd="${1:-}"

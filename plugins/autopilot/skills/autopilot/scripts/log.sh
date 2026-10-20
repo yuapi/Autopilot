@@ -9,6 +9,7 @@
 # Prints the header it wrote; for `done` it warns when the last commit names several task IDs.
 # Exit 1 on a bad argument or an empty body.
 set -eu
+case "${1:-}" in -h|--help) awk 'NR > 1 && /^set -/ { exit } NR > 1 { sub(/^# ?/, ""); print }' "$0"; exit 0;; esac
 id="${1:-}"; status="${2:-}"
 usage() { echo "usage: log.sh <task ID or -> <done|failed|blocked|retro|discover|release|stop> [repository path] < body" >&2; exit 1; }
 case "$id" in -|T-[0-9]*) ;; *) usage;; esac

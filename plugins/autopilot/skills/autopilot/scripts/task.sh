@@ -10,6 +10,7 @@
 # The start commit is kept in .autopilot/.task (ignored by git). Prints what it did; exit 1 with the reason
 # when it refuses. Only the status, attempts and completed cells of the row are changed.
 set -eu
+case "${1:-}" in -h|--help) awk 'NR > 1 && /^set -/ { exit } NR > 1 { sub(/^# ?/, ""); print }' "$0"; exit 0;; esac
 PY="$(command -v python3 || command -v python || true)"   # Windows Git Bash often has only python
 [ -n "$PY" ] || { echo "[autopilot] needs Python 3 on PATH (python3 or python)" >&2; exit 1; }
 cmd="${1:-}"; id="${2:-}"

@@ -5,6 +5,7 @@
 #   add --dry-run to print what would happen without tags, pushes or Releases (also skips branch/tree checks)
 # Packages are built from committed content (git archive).
 set -eu
+case "${1:-}" in -h|--help) awk 'NR > 1 && /^set -/ { exit } NR > 1 { sub(/^# ?/, ""); print }' "$0"; exit 0;; esac
 cd "$(dirname "$0")/.."
 
 mode=""; dry=0

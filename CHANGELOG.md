@@ -7,6 +7,9 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.32.0 — 2026-10-20
+- Every script answers `-h`/`--help` with its usage and exits 0. Before, status.sh exited 2 silently, archive.sh printed bash's own `cd` help, and others reported `--help` as a missing directory
+
 ## 1.31.1 — 2026-10-20
 - The driver names its permission mode at start: a loud warning for `AUTOPILOT_PERMISSION=skip`, and a warning when the value is unknown (a typo used to fall back to the allowlist silently)
 - eval.sh driver mode sends the real driver's prompt and allowlist (read from autopilot.sh) and loads the working copy as a plugin. Its own prompt hid the driver-only bug fixed in 1.31
