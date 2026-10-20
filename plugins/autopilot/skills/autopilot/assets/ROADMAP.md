@@ -1,42 +1,42 @@
-# ROADMAP (autopilot 자동 생성)
+# ROADMAP (written by autopilot)
 
-last_scan: (아직 없음)
-last_issue_check: (아직 없음)
-last_retro: (아직 없음)
+last_scan: (not yet)
+last_issue_check: (not yet)
+last_retro: (not yet)
 
-## 제품
+## Product
 
-### 이 소프트웨어는
-(한 문단: 무엇을, 누구를 위해, 어떻게)
+### What this software is
+(One paragraph: what it does, for whom, how)
 
-### 기능 지도
-| 기능 | 완성도 | 근거 |
+### Feature map
+| Feature | Completeness | Evidence |
 |---|---|---|
-(완성 / 부분 / 스텁)
+(complete / partial / stub)
 
-### 빠진 것
-(이 종류의 도구에 보편적으로 기대되지만 없는 기능. 근거 한 줄씩)
+### Missing
+(Features commonly expected of this kind of tool but absent. One line of evidence each)
 
-### 약한 것
-(있지만 에러 처리·검증·설정화·성능·관측성이 부족한 기능)
+### Weak
+(Present but short on error handling, validation, configurability, performance or observability)
 
-### 관찰
-(직접 써보기 결과: 실행한 명령 → 결과 요약. 실행 못 했으면 그 이유)
+### Observations
+(Results of using it: command run → summary of result. If it could not be run, why)
 
-### 시나리오
-(대표 사용자 작업 3가지와 단계별로 막힌 지점)
+### Scenarios
+(Three typical user tasks and where each step got stuck)
 
-## 심화 발굴
-(실질 작업 0개일 때만. 단계 1 정적 / 2 실행 / 3 품질 속성 / 4 외부 신호별로 확인한 것과 발견 수, 날짜)
+## Deep discovery
+(Only when zero substantive tasks were found. What stages 1 static / 2 running / 3 quality attributes / 4 external signals checked, how many found, date)
 
-## 진행 중인 기능
-(features/<slug>.md 목록과 현재 단계)
+## Features in progress
+(features/<slug>.md list and current stage)
 
-## 유지보수 상태
-(테스트/린트/빌드/보안 스캔 결과 요약)
+## Maintenance status
+(Test/lint/build commands, how long they take, results; flaky tests)
 
-## 배운 것
-(회고에서 얻은 이 레포 전용 규칙. 15줄 이내, 틀린 항목은 지운다)
+## Learned
+(Repository-specific rules from retrospectives. 15 lines at most; delete wrong ones)
 
-## 하지 않기로 한 것
-(검토 후 의도적으로 제외한 항목과 사유)
+## Not doing
+(Items deliberately excluded after review, with the reason)
