@@ -108,6 +108,7 @@ bash scripts/validate.sh
 ```bash
 bash scripts/eval.sh                        # todo 예제. 실행 결과를 보려면 --keep
 bash scripts/eval.sh --fixture wordcount    # 테스트가 없는 레포: 첫 작업이 테스트 하네스인가
+bash scripts/eval.sh --iterations 3         # 드라이버 3회: 매번 새 작업 하나, 반복 없음, 실패 없음
 ```
 
 `tests/eval/fixture-todo/`(결함 다섯 개를 심은 작은 할 일 CLI: 실패하는 테스트가 있는 off-by-one, 첫 실행 크래시, 셸 주입, README에만 있고 구현이 없는 명령, TODO 마커)를 임시 레포로 복사하고, 작업 사본의 스킬을 드라이버 모드로 한 번 돌린 뒤 `tests/eval/fixture-todo.expected`의 결함 중 몇 개가 BACKLOG에 들어갔는지 채점한다. `wordcount` 예제는 테스트가 전혀 없는 레포로, 첫 작업이 테스트 러너 구축인지 확인한다. `claude` CLI가 필요하고 실제 실행 비용이 들어 `validate.sh`에는 포함하지 않는다. 발굴 규칙을 바꾼 뒤 더 잘 찾는지 확인할 때 쓴다.
