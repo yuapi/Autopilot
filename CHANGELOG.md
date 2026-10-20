@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- Stop hook: the no-progress STOP note said "1 times"
 
 ## 1.17.0 — 2026-10-20
 - scan.sh printed matches as `<line>:<text>` without the file name when only one file matched, and skipped files with non-ASCII names (git quoted the path). Both fixed
