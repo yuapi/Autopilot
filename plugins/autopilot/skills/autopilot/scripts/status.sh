@@ -40,7 +40,7 @@ else:
 
 def ver(v): return tuple(int(x) for x in v.split("."))
 skill_md = os.path.join(os.path.dirname(os.path.abspath(sys.argv[2])), "..", "SKILL.md")
-try: mine = (re.findall(r"^\s*version:\s*\"?(\d+\.\d+\.\d+)", open(skill_md, encoding="utf-8").read(), re.M) or [""])[0]
+try: mine = (re.findall(r"^\s*version:\s*[\"']?(\d+\.\d+\.\d+)", open(skill_md, encoding="utf-8").read(), re.M) or [""])[0]
 except OSError: mine = ""
 seen = re.findall(r"\|\s*skill (\d+\.\d+\.\d+)\s*$", read("LOG.md") + read("LOG.archive.md"), re.M)
 newest = max(seen, key=ver) if seen else ""

@@ -504,3 +504,7 @@
 ## 2026-10-20T16:08Z | T-076 | done | skill 1.30.0
 - 변경: scripts/runlock.sh(AUTOPILOT_DRIVER=1이면 RUN·예산 없이 안내만), scripts/task.sh(드라이버 모드에선 예산 무시), scripts/autopilot.sh(프롬프트: 예산 아님, runlock 쓰지 말 것), SKILL.md 실행 모드 표, tests(task +3, driver +1), CHANGELOG
 - 검증: validate PASS. 실제 드라이버 2회(todo, 동기화된 1.27 스킬): 2회 모두 작업 완료, STOP 없음(수정 전 1회 후 멈춤). eval 드라이버 2회 8/8
+
+## 2026-10-20T16:10Z | T-077 | done | skill 1.30.0
+- 변경: scripts/log.sh·status.sh(version 값의 작은따옴표 허용), tests(log +3: 따옴표 없음·큰·작은, status +1), CHANGELOG
+- 검증: validate PASS. 실제 동기화본(autopilot~g3, version: '1.30.0')에서 1.30.0 파싱

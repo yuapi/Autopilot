@@ -27,7 +27,8 @@ if [ ! -t 0 ]; then
 fi
 [ -n "$body" ] || { echo "[log] empty body: pass the entry's bullet lines on stdin" >&2; exit 1; }
 
-version="$(sed -n 's/^[[:space:]]*version:[[:space:]]*"\{0,1\}\([0-9][0-9.]*\)"\{0,1\}[[:space:]]*$/\1/p' "$here/SKILL.md" | head -1)"
+# version: 1.2.3, "1.2.3" or '1.2.3' (the account plugin sync writes it single-quoted)
+version="$(sed -n "s/^[[:space:]]*version:[[:space:]]*[\"']\{0,1\}\([0-9][0-9.]*\)[\"']\{0,1\}[[:space:]]*\$/\1/p" "$here/SKILL.md" | head -1)"
 [ -n "$version" ] || version=unknown
 mkdir -p .autopilot
 f=.autopilot/LOG.md

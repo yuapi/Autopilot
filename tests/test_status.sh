@@ -101,4 +101,9 @@ check "start time shown from .autopilot/.task" bash -c "bash '$ST' '$d' | grep -
 printf '| T-008 | fix | open | 0 | other | t | s | |\n' > "$d/.autopilot/BACKLOG.md"
 check_not "nothing in progress → no Now line" bash -c "bash '$ST' '$d' | grep -q '^Now:'"
 
+# status.sh reads a single-quoted version too (account plugin sync)
+k="$(mktemp -d "$TMPROOT/sq.XXXX")"; mkdir -p "$k/scripts"; cp "$ST" "$k/scripts/"; printf -- "---\nmetadata:\n  version: '9.8.7'\n---\n" > "$k/SKILL.md"
+d="$(mktemp -d "$TMPROOT/sqr.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
+check "single-quoted version shown" bash -c "bash '$k/scripts/status.sh' '$d' | grep -q '^Skill: 9.8.7'"
+
 finish
