@@ -47,7 +47,7 @@ Start on a dedicated branch at the root of the repository you want to work on.
 
 Ask Claude in a session, for example "run autopilot". The skill keeps working task after task in the same session until `.autopilot/STOP` exists. A Stop hook declared in the skill itself keeps the session from ending early; it runs only in sessions that invoked the skill, so nothing is copied into your repository (Claude Code asks once to allow a skill with hooks). A copy left at `.claude/hooks/autopilot-stop.sh` by an older version is refreshed when it differs; remove it with `bash <skill folder>/scripts/hook.sh uninstall` (other hooks in `settings.json` stay). The hook only acts while `.autopilot/RUN` exists and only on the session that started the loop, so ordinary sessions and other sessions you open in the same repository are never blocked. Only one loop runs per repository: a second session or driver is refused while one is active (a marker idle for 2 hours is taken over). The hook writes `STOP` and lets go after three consecutive blocks without progress. This is the only mode available in cloud sessions without a terminal.
 
-To limit a run, ask for a number of tasks, for example "run autopilot for 3 tasks": the loop stops after the third completed task.
+To limit a run, ask for a number of tasks, for example "run autopilot for 3 tasks" or, with the plugin, `/autopilot:run 3`: the loop stops after the third completed task.
 
 To stop: `/autopilot:stop` (with the plugin installed) or `touch .autopilot/STOP`. The loop ends after its current task.
 
@@ -96,7 +96,7 @@ One screen with whether the loop is running or stopped (and why), the integratio
 .claude-plugin/marketplace.json          marketplace catalog
 plugins/autopilot/.claude-plugin/        plugin manifest (plugin.json)
 plugins/autopilot/skills/autopilot/      the skill (SKILL.md, assets/, scripts/: driver, status, archive, workbranch, runlock, scan, hook, log, finalstop, task)
-plugins/autopilot/commands/              /autopilot:status and /autopilot:stop commands
+plugins/autopilot/commands/              /autopilot:run, /autopilot:status and /autopilot:stop commands
 scripts/validate.sh, bump.sh, release.sh local validation, version bump, release
 scripts/eval.sh, tests/eval/             discovery quality eval (opt-in, needs claude)
 tests/                                   tests for the scripts, run by validate.sh

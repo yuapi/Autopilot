@@ -64,7 +64,8 @@ for c in "$PLUGIN"/commands/*.md; do
     check "command /autopilot:$n runs an existing file ($rel)" test -f "$PLUGIN/$rel"
   done
 done
-check "status and stop commands exist" test -f "$PLUGIN/commands/status.md" -a -f "$PLUGIN/commands/stop.md"
+check "run, status and stop commands exist" test -f "$PLUGIN/commands/run.md" -a -f "$PLUGIN/commands/status.md" -a -f "$PLUGIN/commands/stop.md"
+check "/autopilot:run passes a number as the task budget" grep -q "runlock.sh start --tasks N" "$PLUGIN/commands/run.md"
 
 # pr integration comes back to its own open PRs (pending CI, failures, conflicts)
 check "SKILL.md revisits its own open PRs" grep -q 'Revisit your own open PRs' "$SKILL"
