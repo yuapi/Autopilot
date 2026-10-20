@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.22.0 — 2026-10-20
 - New `scripts/task.sh start|done|fail <ID>` makes BACKLOG transitions mechanical: `start` refuses while another task is in progress or code changes are uncommitted; `done` refuses unless the task has its own commit that names no other task; `fail` returns it to open or blocks it from the third attempt. Phases 2, 4 and 5 use it. A session-mode eval run still combined two tasks in one commit after 1.20
 
 ## 1.21.0 — 2026-10-20
