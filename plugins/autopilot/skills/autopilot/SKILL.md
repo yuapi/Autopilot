@@ -390,7 +390,7 @@ The driver only gives Claude Bash and file tools, not MCP servers, so in `pr` mo
 bash <skill folder>/scripts/status.sh [repository path]
 ```
 
-Shows on one screen whether the loop is running or stopped and why (and which session owns the run and when it was last active), the integration settings, task counts (open, in progress, done, blocked), the success rate of the last 10 runs, open tasks, blocked tasks that need a person, proposals awaiting a decision and the latest LOG entries. It only reads the state files. When someone asks "what is autopilot doing" or "autopilot status", run it and show the output.
+Shows on one screen whether the loop is running or stopped and why (and which session owns the run and when it was last active), the integration settings, task counts (open, in progress, done, blocked), the success rate of the last 10 runs, open tasks, blocked tasks that need a person, proposals awaiting a decision and the latest LOG entries. It only reads the state files. When someone asks "what is autopilot doing" or "autopilot status", run it and show the output. With the plugin installed, people can also type `/autopilot:status`, and `/autopilot:stop` to stop the loop after its current task (`runlock.sh stop` writes `.autopilot/STOP`).
 
 ## When the repository has its own Stop hook
 

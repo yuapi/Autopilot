@@ -39,7 +39,7 @@ Claude Code 세션에서:
 
 세션에서 "autopilot 실행해" 같이 요청한다. `.autopilot/STOP`이 생길 때까지 같은 세션에서 작업을 연달아 수행한다. 처음 진입할 때 `.autopilot/RUN`을 만들고 세션이 일찍 끝나지 않도록 Stop 훅(`.claude/hooks/autopilot-stop.sh`)을 설치하고, 스킬 버전과 사본이 다르면 새 사본으로 바꾼다. 훅은 RUN이 있을 때, 그리고 루프를 시작한 세션에만 동작하므로 평소 세션이나 같은 레포에서 새로 연 다른 세션은 막지 않는다. 한 레포에서는 루프가 하나만 돈다. 이미 돌고 있으면 두 번째 세션이나 드라이버는 시작을 거부한다(2시간 동안 활동이 없던 표시는 넘겨받는다). 또한 훅은 진척 없이 3회 연속 막히면 스스로 STOP을 남기고 풀린다. 터미널이 없는 클라우드 세션에서는 이 모드만 쓸 수 있다.
 
-멈추기: `touch .autopilot/STOP`
+멈추기: `/autopilot:stop`(플러그인으로 설치한 경우) 또는 `touch .autopilot/STOP`. 진행 중인 작업을 마친 뒤 멈춘다.
 
 ### 드라이버 모드 (터미널, 선택)
 
@@ -55,6 +55,8 @@ AUTOPILOT_PERMISSION=skip bash <스킬 폴더>/scripts/autopilot.sh   # opt-in, 
 `<스킬 폴더>`는 스킬이 설치된 위치다. 예를 들어 이 레포 클론에서는 `plugins/autopilot/skills/autopilot`. 드라이버는 `.autopilot/STOP`이 생기거나 반복 한도에 도달하면 종료 코드 0으로, Claude가 연속 3회 비정상 종료하거나 인자가 잘못됐거나 `claude` CLI가 없으면 종료 코드 1로 멈춘다. 레포 안 어느 폴더에서 실행해도 된다. `AUTOPILOT_SLEEP`으로 반복 사이 대기 시간(기본 10초)을 바꿀 수 있다. `integration: pr`에서는 `gh` CLI로 PR을 만들며, `gh`가 없거나 이 레포에 push할 수 없으면 시작할 때 경고한다.
 
 ### 실행 상태 확인
+
+플러그인으로 설치했다면 세션에서 `/autopilot:status`를 입력한다. 그렇지 않으면:
 
 ```bash
 bash <스킬 폴더>/scripts/status.sh [레포 경로]
