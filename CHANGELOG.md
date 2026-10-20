@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- eval.sh driver mode sends the real driver's prompt and allowlist (read from autopilot.sh) and loads the working copy as a plugin. Its own prompt hid the driver-only bug fixed in 1.31
 
 ## 1.31.0 — 2026-10-20
 - task.sh done printed a shell error (`.autopilot/CONFIG.md: No such file or directory`) in repositories without a CONFIG

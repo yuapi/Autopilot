@@ -119,13 +119,18 @@ else
     run_claude $((timeout_s * iterations)) "$((iterations + 1))" env -u AUTOPILOT_DRIVER "$CLAUDE_BIN" -p "$prompt" ${model_args[@]+"${model_args[@]}"} \
       --plugin-dir "$REPO/plugins/autopilot" --allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,TodoWrite,Skill" --output-format json
   else
-    prompt="Read $SKILL/SKILL.md and follow its procedure exactly, in driver mode (AUTOPILOT_DRIVER=1 is set): do exactly one task in this repository, then exit. <skill folder> in the rules means $SKILL. Do not ask questions."
+    # the real driver's prompt and allowlist, with the working copy loaded as a plugin, so the eval
+    # measures what autopilot.sh does (its own prompt once hid a driver-only bug)
+    DRIVER_SH="$SKILL/scripts/autopilot.sh"
+    prompt="$(sed -n "s/^PROMPT='\(.*\)'\$/\1/p" "$DRIVER_SH" | head -1)"
+    tools="$(sed -n 's/.*PERM_ARGS=(--allowedTools "\([^"]*\)").*/\1/p' "$DRIVER_SH" | head -1)"
+    [ -n "$prompt" ] && [ -n "$tools" ] || { echo "[eval] cannot read PROMPT and the allowlist from $DRIVER_SH" >&2; exit 1; }
     echo "[eval] fixture $fixture: running $iterations driver iteration(s) in $work (timeout ${timeout_s}s each)…"
     for it in $(seq 1 "$iterations"); do
       [ -f "$work/.autopilot/STOP" ] && { echo "[eval] STOP appeared, no more iterations"; break; }
       echo "[eval] iteration $it"
       run_claude "$timeout_s" 0 env AUTOPILOT_DRIVER=1 "$CLAUDE_BIN" -p "$prompt" ${model_args[@]+"${model_args[@]}"} \
-        --allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,TodoWrite" --add-dir "$SKILL" --output-format json
+        --plugin-dir "$REPO/plugins/autopilot" --allowedTools "$tools" --output-format json
     done
   fi
   echo "[eval] all runs finished in $(( $(date +%s) - start_all ))s"
