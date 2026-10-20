@@ -107,9 +107,15 @@ PROMPT='Use the autopilot skill and follow its procedure in driver mode (AUTOPIL
 case "${AUTOPILOT_PERMISSION:-allowlist}" in
   skip)
     PERM_ARGS=(--dangerously-skip-permissions)
+    echo "[driver] permissions: SKIPPED (AUTOPILOT_PERMISSION=skip, --dangerously-skip-permissions). Use this only in a disposable machine or container." >&2
     ;;
   *)
+    case "${AUTOPILOT_PERMISSION:-allowlist}" in
+      allowlist) ;;
+      *) echo "[driver] unknown AUTOPILOT_PERMISSION value: $AUTOPILOT_PERMISSION (expected allowlist or skip); using the allowlist." >&2 ;;
+    esac
     PERM_ARGS=(--allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,Skill,TodoWrite")
+    echo "[driver] permissions: allowlist (Bash, file tools, Skill)"
     ;;
 esac
 if [ -n "${AUTOPILOT_MODEL:-}" ]; then
