@@ -17,6 +17,7 @@ PY="$(command -v python3 || command -v python || true)"   # Windows Git Bash oft
 cmd="${1:-}"
 case "$cmd" in install|uninstall) ;; *) echo "usage: hook.sh install|uninstall [repository path]" >&2; exit 1;; esac
 here="$(cd "$(dirname "$0")/.." && pwd)"
+[ -d "${2:-.}" ] || { echo "[hook] no such directory: ${2:-.}" >&2; exit 1; }
 root="$(git -C "${2:-.}" rev-parse --show-toplevel 2>/dev/null || true)"
 [ -n "$root" ] || { echo "[hook] not inside a git repository" >&2; exit 1; }
 cd "$root"

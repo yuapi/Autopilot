@@ -537,3 +537,10 @@
 ## 2026-10-20T16:37Z | T-081 | done | skill 1.31.1
 - 변경: 스킬 스크립트 10개·레포 스크립트 4개에 -h/--help(머리 주석 출력, exit 0), tests/test_scripts.sh(+43: 모든 스크립트 exit 0·사용법 줄·-h, 아무것도 만들지 않음), CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-20T16:41Z | - | release | skill 1.32.0
+- 1.32.0 릴리즈: release/1.32.0 → main, main → develop 역병합. 태그 대기: v1.32.0 (403, 누적 v1.11.0~v1.32.0)
+
+## 2026-10-20T16:43Z | T-082 | done | skill 1.32.0
+- 변경: 스킬 스크립트 8개에 없는 경로 검사("[이름] no such directory: <경로>"), tests/test_scripts.sh(+9), CHANGELOG
+- 검증: validate PASS

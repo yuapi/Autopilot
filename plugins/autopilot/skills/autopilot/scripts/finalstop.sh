@@ -12,6 +12,7 @@ case "${1:-}" in -h|--help) awk 'NR > 1 && /^set -/ { exit } NR > 1 { sub(/^# ?/
 PY="$(command -v python3 || command -v python || true)"   # Windows Git Bash often has only python
 [ -n "$PY" ] || { echo "[autopilot] needs Python 3 on PATH (python3 or python)" >&2; exit 1; }
 here="$(cd "$(dirname "$0")" && pwd)"
+[ -d "${1:-.}" ] || { echo "[finalstop] no such directory: ${1:-.}" >&2; exit 1; }
 root="$(git -C "${1:-.}" rev-parse --show-toplevel 2>/dev/null || true)"
 [ -n "$root" ] || { echo "[finalstop] not inside a git repository" >&2; exit 1; }
 cd "$root"
