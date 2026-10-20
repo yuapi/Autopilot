@@ -34,6 +34,17 @@ elif os.path.exists(os.path.join(A, "RUN")):
 else:
     print("Run: idle (no RUN or STOP)")
 
+def ver(v): return tuple(int(x) for x in v.split("."))
+skill_md = os.path.join(os.path.dirname(os.path.abspath(sys.argv[2])), "..", "SKILL.md")
+try: mine = (re.findall(r"^\s*version:\s*\"?(\d+\.\d+\.\d+)", open(skill_md, encoding="utf-8").read(), re.M) or [""])[0]
+except OSError: mine = ""
+seen = re.findall(r"\|\s*skill (\d+\.\d+\.\d+)\s*$", read("LOG.md") + read("LOG.archive.md"), re.M)
+newest = max(seen, key=ver) if seen else ""
+if mine:
+    print(f"Skill: {mine}" + (f" (LOG written up to {newest})" if newest and newest != mine else ""))
+    if newest and ver(newest) > ver(mine):
+        print(f"Warning: this repository was already run with skill {newest}, newer than the installed {mine}. Its rules may not match the state files; update the plugin or skill first.")
+
 hook = ".claude/hooks/autopilot-stop.sh"
 asset = os.path.join(os.path.dirname(os.path.abspath(sys.argv[2])), "..", "assets", "autopilot-stop.sh")
 if os.path.exists(hook):

@@ -7,6 +7,10 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.18.0 — 2026-10-20
+- status.sh shows the installed skill version and warns when the LOG was written by a newer skill version (an outdated plugin or skill install running a repository that a newer one already worked on)
+- Stop hook: the no-progress STOP note said "1 times"
+
 ## 1.17.0 — 2026-10-20
 - scan.sh printed matches as `<line>:<text>` without the file name when only one file matched, and skipped files with non-ASCII names (git quoted the path). Both fixed
 - `scripts/hook.sh uninstall` removes the repository hook copy and only its `settings.json` entry, now that the skill carries its own hook. status.sh suggests it when a copy is present

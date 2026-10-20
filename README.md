@@ -62,7 +62,7 @@ With the plugin installed, type `/autopilot:status` in a session. Otherwise:
 bash <skill folder>/scripts/status.sh [repo path]
 ```
 
-One screen with whether the loop is running or stopped (and why), the integration settings, task counts, the success rate of the last 10 runs, open and blocked tasks, proposals waiting for your decision, and the latest log entries. It only reads the state files.
+One screen with whether the loop is running or stopped (and why), the integration settings, task counts, the success rate of the last 10 runs, open and blocked tasks, proposals waiting for your decision, and the latest log entries. It also shows the installed skill version and warns when the repository was already run with a newer one (an outdated plugin install). It only reads the state files.
 
 ## How it works
 

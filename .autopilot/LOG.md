@@ -205,3 +205,17 @@
 - 발견: 탐색 실행에서 파일 하나짜리 레포의 scan.sh 출력이 `1:# ...`(파일 이름 없음). grep에 파일이 하나만 넘어가면 이름을 생략함. 한글 이름 파일은 core.quotePath 때문에 아예 빠짐
 - 변경: scripts/scan.sh(grep -H, git -c core.quotePath=false), tests/test_scan.sh(+1), CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-20T11:12 | - | release | skill 1.17.0
+- 1.17.0 릴리즈: release/1.17.0 → main, main → develop 역병합. 태그 대기: v1.17.0 (403, 누적 v1.11.0~v1.17.0)
+
+## 2026-10-20T11:20 | T-034 | done | skill 1.17.0
+- 발굴(탐색 실행): 스크립트 경계 입력(git 아님, 빈 레포, 잘못된 인자, 3000건 LOG/BACKLOG 0.03초) 이상 없음
+- 실제 확인: claude -p --plugin-dir로 스킬을 호출한 세션에서 frontmatter Stop 훅이 동작(RUN 있으면 block, STALL_LIMIT=1에서 STOP 작성). 스킬을 호출하지 않은 세션에서는 동작 안 함(RUN 그대로)
+- 변경: assets/autopilot-stop.sh STOP 메모 "1 times" → "time(s)", CHANGELOG
+- 검증: validate PASS
+
+## 2026-10-20T11:30 | T-035 | done | skill 1.17.0
+- 근거: 이 세션에 로드된 플러그인 스킬이 1.10.2였는데 레포는 1.15 규칙으로 돌고 있었음. 사용자는 알 방법이 없음
+- 변경: scripts/status.sh(Skill: 버전, 새 버전 LOG 경고), tests/test_status.sh(+4), SKILL.md 상태 확인 절, README 2종, CHANGELOG
+- 검증: validate PASS
