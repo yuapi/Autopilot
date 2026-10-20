@@ -6,11 +6,11 @@ ver="$(sed -n 's/^  version: //p' "$REPO/$SKILL_REL/SKILL.md")"
 d="$(mktemp -d "$TMPROOT/l.XXXX")"; git -C "$d" init -q
 
 out="$(printf -- '- Changed: a\nVerified: b\n\n' | bash "$LG" T-042 done "$d")"
-check "prints the header it wrote" grep -qE "^## [0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2} \| T-042 \| done \| skill $ver\$" <<<"$out"
+check "prints the header it wrote" grep -qE "^## [0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}Z \| T-042 \| done \| skill $ver\$" <<<"$out"
 check "creates LOG.md from the template" grep -q "append only" "$d/.autopilot/LOG.md"
 check "body lines kept" grep -qx -- "- Changed: a" "$d/.autopilot/LOG.md"
 check "a line without '- ' gets one" grep -qx -- "- Verified: b" "$d/.autopilot/LOG.md"
-check "the time is the current time" grep -q "$(date +%Y-%m-%dT%H)" "$d/.autopilot/LOG.md"
+check "the time is the current UTC time" grep -q "$(date -u +%Y-%m-%dT%H)" "$d/.autopilot/LOG.md"
 printf '## 2099-01-01T00:00 | T-001 | done | skill 0\n- no newline at the end' >> "$d/.autopilot/LOG.md"
 echo "- second" | bash "$LG" - discover "$d" >/dev/null
 check "appends at the end, after every earlier entry" test "$(grep '^## ' "$d/.autopilot/LOG.md" | tail -1 | cut -d'|' -f2-3)" = " - | discover "
@@ -46,5 +46,10 @@ d="$(mktemp -d "$TMPROOT/c.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot
 printf -- '- one\n- two\n' | bash "$LG" T-001 done "$d" >/dev/null
 check "CRLF LOG: every line ends in CRLF after appending" bash -c "! grep -qv \$'\\r\$' '$d/.autopilot/LOG.md'"
 check "CRLF LOG: body lines kept" grep -q "^- two" "$d/.autopilot/LOG.md"
+
+# the same moment gives the same time in any time zone
+d="$(mktemp -d "$TMPROOT/z.XXXX")"; git -C "$d" init -q
+a="$(echo '- x' | TZ=Asia/Seoul bash "$LG" - discover "$d" | cut -c4-20)"; b="$(echo '- y' | TZ=America/Los_Angeles bash "$LG" - discover "$d" | cut -c4-20)"
+check "Seoul and Los Angeles write the same UTC time" test "$a" = "$b"
 
 finish

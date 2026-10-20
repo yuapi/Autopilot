@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Append one entry to the end of .autopilot/LOG.md with the current time and this skill's version.
+# Append one entry to the end of .autopilot/LOG.md with the current UTC time and this skill's version.
 #   bash log.sh <task ID or -> <status> [repository path] <<'EOF'
 #   - Changed: …
 #   - Verified: …
@@ -33,7 +33,8 @@ mkdir -p .autopilot
 f=.autopilot/LOG.md
 [ -f "$f" ] || cp "$here/assets/LOG.md" "$f" 2>/dev/null || echo "# LOG" > "$f"
 [ -z "$(tail -c 1 "$f")" ] || echo >> "$f"   # the file must end with a newline before appending
-header="## $(date +%Y-%m-%dT%H:%M) | $id | $status | skill $version"
+# UTC, so entries written on machines in different time zones (a laptop, a cloud session) stay in order
+header="## $(date -u +%Y-%m-%dT%H:%MZ) | $id | $status | skill $version"
 if head -1 "$f" | grep -q $'\r$'; then   # a CRLF file (Windows checkout) gets CRLF lines
   printf '\r\n%s\r\n%s' "$header" "$(printf '%s' "$body" | sed 's/$/\r/')" >> "$f"; printf '\n' >> "$f"
 else
