@@ -76,4 +76,30 @@ d="$(newrepo)"; t "$d" start T-001 >/dev/null
 (cd "$d" && echo fix >> code.txt && git commit -qam "autopilot(T-001): fix" && echo "| T-004 | fix | open | 0 | follow-up | t | s | |" >> .autopilot/BACKLOG.md && git add -A && git commit -qm "chore: record T-001 and queue T-004")
 check "state-only commit naming T-004 → done still accepted" bash -c "cd '$d' && bash '$TS' done T-001 >/dev/null"
 
+# task budget: runlock.sh start --tasks 2 → STOP after the second done
+RL="$REPO/$SKILL_REL/scripts/runlock.sh"
+d="$(newrepo)"
+out="$(cd "$d" && CLAUDE_CODE_SESSION_ID=s1 bash "$RL" start --tasks 2)"
+check "runlock --tasks announces the budget" grep -q "stops after 2 completed task" <<<"$out"
+check "RUN records the budget" bash -c "grep -qx 'tasks: 2' '$d/.autopilot/RUN' && grep -qx 'done: 0' '$d/.autopilot/RUN'"
+check "RUN keeps its owner" grep -qx "session: s1" "$d/.autopilot/RUN"
+for id in T-001 T-002; do
+  t "$d" start $id >/dev/null; (cd "$d" && echo $id >> code.txt && git commit -qam "autopilot($id): x")
+  out="$(t "$d" done $id)"
+done
+check "second done → budget used, STOP written" grep -q "task budget used (2/2)" <<<"$out"
+check "STOP says why" grep -q "Stopped after 2 task(s) as asked" "$d/.autopilot/STOP"
+check "RUN counts done tasks" grep -qx "done: 2" "$d/.autopilot/RUN"
+d="$(newrepo)"; (cd "$d" && CLAUDE_CODE_SESSION_ID=s1 bash "$RL" start --tasks 3 >/dev/null)
+t "$d" start T-001 >/dev/null; (cd "$d" && echo a >> code.txt && git commit -qam "autopilot(T-001): x")
+check "1 of 3 → progress shown, no STOP" bash -c "cd '$d' && bash '$TS' done T-001 | grep -q 'task budget: 1/3 done' && test ! -e .autopilot/STOP"
+check "status.sh shows the budget" bash -c "bash '$REPO/$SKILL_REL/scripts/status.sh' '$d' | grep -q '1/3 tasks of its budget done'"
+d="$(newrepo)"; (cd "$d" && CLAUDE_CODE_SESSION_ID=s1 bash "$RL" start >/dev/null)
+t "$d" start T-001 >/dev/null; (cd "$d" && echo a >> code.txt && git commit -qam "autopilot(T-001): x"); t "$d" done T-001 >/dev/null
+check "no budget → done never writes STOP" test ! -e "$d/.autopilot/STOP"
+check_not "runlock --tasks 0 → refused" bash -c "cd '$d' && bash '$RL' start --tasks 0"
+check_not "runlock --tasks abc → refused" bash -c "cd '$d' && bash '$RL' start --tasks abc"
+d="$(newrepo)"; (cd "$d" && CLAUDE_CODE_SESSION_ID=s1 bash "$RL" start --tasks 5 >/dev/null && CLAUDE_CODE_SESSION_ID=s1 bash "$RL" start >/dev/null)
+check "re-entry without --tasks keeps the budget" grep -qx "tasks: 5" "$d/.autopilot/RUN"
+
 finish
