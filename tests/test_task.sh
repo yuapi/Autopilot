@@ -60,4 +60,15 @@ t "$d" start T-001 >/dev/null
 check "refused start leaves .gitignore and the tree as they were" test "$(cd "$d" && git status --porcelain; cat .gitignore 2>/dev/null)" = "$before"
 check "refused start writes no .autopilot/.task" test ! -e "$d/.autopilot/.task"
 
+# drop: an unnecessary task is closed without a commit
+d="$(newrepo)"; t "$d" start T-001 >/dev/null
+out="$(t "$d" drop T-001)"; rc=$?
+check "drop → exit 0" test "$rc" -eq 0
+check "drop → blocked, attempts kept" grep -q "| T-001 | fix | blocked | 1 |" <<<"$(row "$d" T-001)"
+check "drop clears .autopilot/.task" test ! -e "$d/.autopilot/.task"
+check "drop of an open (not started) task works" bash -c "cd '$d' && bash '$TS' drop T-002 >/dev/null && grep -q '| T-002 | fix | blocked | 2 |' .autopilot/BACKLOG.md"
+d="$(newrepo)"; t "$d" start T-001 >/dev/null; (cd "$d" && echo half >> code.txt)
+check "drop with uncommitted code → refused" grep -q "A dropped task changes no code" <<<"$(t "$d" drop T-001)"
+check "drop of a done task → refused" grep -q "T-003 is done" <<<"$(t "$(newrepo)" drop T-003)"
+
 finish

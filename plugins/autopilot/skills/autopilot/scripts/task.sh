@@ -5,12 +5,14 @@
 #   bash task.sh done <ID> [repo]   refuse unless the task has its own commit(s) since `start` that change
 #                                   files outside .autopilot/ and name no other task; then status done + date
 #   bash task.sh fail <ID> [repo]   status back to open (attempts kept), or blocked from the 3rd attempt
+#   bash task.sh drop <ID> [repo]   the task turned out unnecessary (cannot reproduce, already fixed):
+#                                   blocked now, no commit needed; refused while code changes are uncommitted
 # The start commit is kept in .autopilot/.task (ignored by git). Prints what it did; exit 1 with the reason
 # when it refuses. Only the status, attempts and completed cells of the row are changed.
 set -eu
 cmd="${1:-}"; id="${2:-}"
-usage() { echo "usage: task.sh start|done|fail <task ID> [repository path]" >&2; exit 1; }
-case "$cmd" in start|done|fail) ;; *) usage;; esac
+usage() { echo "usage: task.sh start|done|fail|drop <task ID> [repository path]" >&2; exit 1; }
+case "$cmd" in start|done|fail|drop) ;; *) usage;; esac
 case "$id" in T-[0-9]*) ;; *) usage;; esac
 case "$id" in *[!T0-9-]*) usage;; esac
 root="$(git -C "${3:-.}" rev-parse --show-toplevel 2>/dev/null || true)"
@@ -22,6 +24,9 @@ dirty="$(git status --porcelain -- . ':!.autopilot' ':!.gitignore' 2>/dev/null |
 head="$(git rev-parse -q --verify HEAD 2>/dev/null || echo none)"
 start=""; [ -f .autopilot/.task ] && read -r tid start < .autopilot/.task && [ "$tid" = "$id" ] || start=""
 
+if [ "$cmd" = drop ] && [ -n "$dirty" ]; then
+  echo "[task] refused: uncommitted changes outside .autopilot/ ($dirty). A dropped task changes no code: roll them back first" >&2; exit 1
+fi
 if [ "$cmd" = start ] && [ -n "$dirty" ]; then
   echo "[task] refused: uncommitted changes outside .autopilot/ ($dirty). Commit or roll back the previous task first" >&2; exit 1
 fi
@@ -70,6 +75,10 @@ elif cmd == "done":
         sys.exit(f"[task] refused: {tid} is {status}, not in_progress")
     status = "done"
     c[-1] = " " + datetime.date.today().isoformat() + " "
+elif cmd == "drop":
+    if status not in ("open", "in_progress"):
+        sys.exit(f"[task] refused: {tid} is {status}, not open or in_progress")
+    status = "blocked"
 else:
     status = "blocked" if attempts >= 3 else "open"
 c[2] = f" {status} "; c[3] = f" {attempts} "
@@ -83,5 +92,5 @@ case "$cmd" in
     echo "$id $head" > .autopilot/.task
     # keep the marker out of commits (only once the start succeeded: a refusal changes nothing)
     grep -qxF .autopilot/.task .gitignore 2>/dev/null || { [ -z "$(tail -c 1 .gitignore 2>/dev/null)" ] || echo >> .gitignore; echo .autopilot/.task >> .gitignore; };;
-  done|fail) rm -f .autopilot/.task;;
+  done|fail|drop) rm -f .autopilot/.task;;
 esac
