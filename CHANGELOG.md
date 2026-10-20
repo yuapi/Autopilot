@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.26.0 — 2026-10-20
 - status.sh shows the task in progress (ID, type, title, attempt) and how long ago `task.sh start` claimed it
 - Phase 0 no longer stashes uncommitted changes while a task is `in_progress`: they are that unfinished task's work, which is finished or rolled back instead. Stashing them hid the task from the Phase 2 check
 - Fourth eval fixture `kv`, a Go module with a failing test, a `go vet` finding that `go test` does not run, a panic on malformed input, an ignored file error and a README flag that does not exist: checks baseline detection beyond Python and Node
