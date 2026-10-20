@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 46
+next_id: 47
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -52,3 +52,4 @@ next_id: 46
 | T-043 | fix | done | 1 | log.sh가 release 상태를 거부(SKILL.md 상태 목록에 없음) → release 상태 추가, 릴리스 항목 내용 규정 | SKILL.md 목록의 모든 상태를 log.sh가 받는 테스트 | 직접 사용(1.20.0 기록 실패) | 2026-10-20 |
 | T-044 | docs | done | 1 | README 2종 파일 트리에 scan·hook·log·finalstop 스크립트와 commands/ 폴더 누락 | 트리가 모든 스크립트를 이름으로 언급하는 테스트 | 심화 발굴 3단계(문서 예제 정확성) | 2026-10-20 |
 | T-045 | enhance | done | 1 | Stop 훅 block 메시지가 finalstop.sh를 안내(끝났다고 생각하면 무엇이 빠졌는지 기계적으로 확인) | 출력이 유효한 JSON이고 finalstop.sh를 언급하는 테스트 | 심화 발굴 3단계(사용성: 세션이 일찍 끝나려 할 때의 안내) | 2026-10-20 |
+| T-046 | enhance | done | 1 | 클라우드 세션 + integration local이면 커밋이 컨테이너와 함께 사라짐 → Phase 0 첫 진입에 한 줄 안내·LOG, status.sh 경고 (CONFIG는 바꾸지 않음) | 클라우드/비클라우드/pr 모드 status 테스트, validate 통과 | 심화 발굴 2단계 새 시나리오: 클라우드 세션에서 플러그인 첫 실행 | 2026-10-20 |
