@@ -1,13 +1,13 @@
 ---
 name: autopilot
 metadata:
-  version: 1.9.0
+  version: 1.10.0
 description: Autonomous development loop that finds, selects, implements, verifies and records the next task in a repository with no human in the loop. Finds bug fixes, improvements and new features from code analysis, running the software, user scenarios and the issue tracker, and leaves large changes it must not make alone as proposals. Keeps going in the same session until .autopilot/STOP exists (driver mode when a terminal is available) and, if .autopilot/CONFIG.md allows, pushes branches, opens and merges PRs and releases. Writes its notes in the repository's or user's language. Use whenever someone says "autopilot", "autonomous development", "work on the next task", "keep developing on your own", "unattended loop", "work through the backlog", "handle the issues", or "자율 개발", "알아서 개발해", "다음 작업 알아서", "무인 루프", "백로그 처리", or when the driver invokes it, and follow this procedure exactly.
 ---
 
 # Autopilot — autonomous development loop
 
-**Version 1.9.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.10.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -53,6 +53,8 @@ Create missing files from the `assets/` templates.
 ## Procedure
 
 ### Phase 0 — load state
+
+Before anything else, on every task in both modes: run `bash <skill folder>/scripts/workbranch.sh`. In `local` mode it moves you off a default branch (`main`, `master`, `develop`, `trunk`, the remote's default, or a detached HEAD) onto a new `autopilot/<YYYYMMDD-HHMM>` branch, so the loop never commits straight onto a branch people share. On any other branch it does nothing, so it is safe to run every time. It never pushes. `local_branch: current` in CONFIG turns this off. If the script cannot run, do the same by hand with `git switch -c`.
 
 0. **Only on first entry in session mode**:
    - If a person invoked the skill again while `.autopilot/STOP` exists, treat it as a request to resume: move the STOP content into the LOG and delete STOP.
@@ -280,7 +282,7 @@ On success:
 
 | Step | `local` | `branch` | `pr` |
 |---|---|---|---|
-| Phase 0 | stay on the current branch | fetch the base and start from its latest commit | same |
+| Phase 0 | leave a default branch for `autopilot/<date>` (`workbranch.sh`), otherwise stay | fetch the base and start from its latest commit | same |
 | Phase 3 start | - | create branch `<prefix><task ID>-<slug>` | same |
 | Phase 4 failure | roll back | roll back, return to the base, delete the local task branch | same |
 | Phase 5 success | commit | commit → `git push -u origin <branch>` | push → open a PR (`gh` or MCP) → merge if `merge: auto` |
@@ -307,7 +309,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30 | T-042 | done | skill 1.9.0
+## 2026-10-01T14:30 | T-042 | done | skill 1.10.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)

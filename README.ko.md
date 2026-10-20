@@ -8,7 +8,7 @@ autopilot은 레포지토리에서 자율 개발 루프를 돌리는 Claude Code
 
 **실행 전에 반드시 읽을 것.**
 
-- **스스로 코드를 수정하고 커밋한다.** 성공한 작업은 사람의 검토 없이 현재 브랜치에 커밋된다.
+- **스스로 코드를 수정하고 커밋한다.** 성공한 작업은 사람의 검토 없이 커밋된다. 기본 브랜치(`main`, `master`, `develop` 등)에는 커밋하지 않는다. 기본 브랜치에서 시작하면 먼저 `autopilot/<날짜>` 브랜치를 만들어 옮기고, 직접 만든 브랜치에서 시작하면 그 브랜치에 커밋한다. `.autopilot/CONFIG.md`에 `local_branch: current`를 쓰면 체크아웃된 브랜치에 바로 커밋한다.
 - **권한은 기본적으로 제한된다.** 드라이버 스크립트는 기본으로 `--allowedTools` 허용 목록을 쓴다. `--dangerously-skip-permissions`는 `AUTOPILOT_PERMISSION=skip`으로 명시적으로 opt-in 할 때만 쓰이며, 버려도 되는 머신이나 컨테이너에서만 써야 한다.
 - **전용 브랜치나 샌드박스에서 사용한다.** 임시 브랜치, 새 클론, 격리된 컨테이너에서 돌릴 것. 기본 설정에서 스킬은 `git push`를 하지 않으므로 직접 push 하기 전에는 아무것도 밖으로 나가지 않는다. push 전에 커밋을 검토할 것. `git reset --hard`, force push, 원격 브랜치·태그 삭제는 어떤 설정에서도 하지 않는다.
 - **내보내기는 직접 켜야 한다.** 브랜치 push, PR 생성·머지, 릴리스는 `.autopilot/CONFIG.md`에 설정했을 때만 한다(`integration: branch | pr`, `merge: auto`, `release: auto`). 스킬은 이 파일을 읽기만 하고 만들거나 고치지 않으며, 레포의 브랜치·커밋·릴리스 관례를 따른다.
