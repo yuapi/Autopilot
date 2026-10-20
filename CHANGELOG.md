@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.25.0 — 2026-10-20
 - Model choice: the driver passes `AUTOPILOT_MODEL` to `claude --model` for every run, and `scripts/eval.sh --model <name>` runs an eval with another model to compare
 
 ## 1.24.1 — 2026-10-20
