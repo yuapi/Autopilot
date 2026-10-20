@@ -29,6 +29,9 @@ elif os.path.exists(os.path.join(A, "RUN")):
     sess = (re.findall(r"^session:\s*(\S+)", run, re.M) or ["unknown"])[0]
     idle = int((time.time() - os.path.getmtime(os.path.join(A, "RUN"))) // 60)
     note = " — idle for over 2 h, a new run will take it over" if idle >= 120 else ""
+    bud = re.findall(r"^tasks:\s*(\d+)", run, re.M)
+    if bud:
+        note += f", {(re.findall(r'^done:\s*(\d+)', run, re.M) or ['0'])[0]}/{bud[0]} tasks of its budget done"
     print(f"Run: running (session mode, session {sess}, last active {idle} min ago{note})")
 else:
     print("Run: idle (no RUN or STOP)")

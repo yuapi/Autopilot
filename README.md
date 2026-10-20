@@ -39,6 +39,8 @@ Start on a dedicated branch at the root of the repository you want to work on.
 
 Ask Claude in a session, for example "run autopilot". The skill keeps working task after task in the same session until `.autopilot/STOP` exists. A Stop hook declared in the skill itself keeps the session from ending early; it runs only in sessions that invoked the skill, so nothing is copied into your repository (Claude Code asks once to allow a skill with hooks). A copy left at `.claude/hooks/autopilot-stop.sh` by an older version is refreshed when it differs; remove it with `bash <skill folder>/scripts/hook.sh uninstall` (other hooks in `settings.json` stay). The hook only acts while `.autopilot/RUN` exists and only on the session that started the loop, so ordinary sessions and other sessions you open in the same repository are never blocked. Only one loop runs per repository: a second session or driver is refused while one is active (a marker idle for 2 hours is taken over). The hook writes `STOP` and lets go after three consecutive blocks without progress. This is the only mode available in cloud sessions without a terminal.
 
+To limit a run, ask for a number of tasks, for example "run autopilot for 3 tasks": the loop stops after the third completed task.
+
 To stop: `/autopilot:stop` (with the plugin installed) or `touch .autopilot/STOP`. The loop ends after its current task.
 
 ### Driver mode (terminal, optional)
