@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.13.0 — 2026-10-20
 - The Stop hook copy in a repository is refreshed: new `scripts/hook.sh install` (run on first entry) replaces `.claude/hooks/autopilot-stop.sh` whenever it differs from the skill's asset and merges the settings.json entry without touching other hooks. Copies from 1.6–1.10 had the RUN check, so the old rule never replaced them and they kept blocking other sessions. status.sh notes an outdated copy
 
 ## 1.12.0 — 2026-10-20
