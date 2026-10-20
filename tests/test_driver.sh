@@ -88,4 +88,35 @@ python3 -c 'import os,time; t=time.time()-3*3600; os.utime("'"$d"'/.autopilot/RU
 FAKE_MODE=ok drive "$d" 1 >/dev/null 2>&1
 check "an abandoned RUN (3 h idle) does not stop the driver" test -f "$d/.autopilot/calls"
 
+# integration preflight
+GHBIN="$TMPROOT/ghbin"; mkdir -p "$GHBIN"
+printf '#!/usr/bin/env bash\n[ "$1" = api ] && echo "${FAKE_GH_PUSH:-true}"\n' > "$GHBIN/gh"; chmod +x "$GHBIN/gh"
+cfg() { printf '```\nintegration: %s\n```\n' "$2" > "$1/.autopilot/CONFIG.md"; }
+drive_gh() { local dir="$1"; shift; (cd "$dir" && PATH="$GHBIN:$FAKEBIN:$PATH" with_timeout 30 bash "$DRIVER" "$@"); }
+
+d="$(newrepo)"; cfg "$d" pr; git -C "$d" remote add origin https://example.invalid/x.git
+out="$(FAKE_MODE=ok drive_gh "$d" 1 2>&1)"
+check "pr + gh with push access → confirms" grep -q "gh can open and merge PRs" <<<"$out"
+out="$(FAKE_GH_PUSH=false FAKE_MODE=ok drive_gh "$d" 1 2>&1)"
+check "pr + gh without push access → warns" grep -q "needs gh with push access" <<<"$out"
+check "the warning does not stop the driver" test "$(calls "$d")" -eq 2
+
+NOGH="$TMPROOT/nogh"; mkdir -p "$NOGH"
+for tool in bash env git python3 sed head tail cat date mkdir rm printf sleep grep wc; do
+  p="$(command -v "$tool")" && ln -sf "$p" "$NOGH/$tool"
+done
+ln -sf "$FAKEBIN/claude" "$NOGH/claude"
+out="$(cd "$d" && PATH="$NOGH" FAKE_MODE=ok bash "$DRIVER" 1 2>&1)"
+check "pr without gh installed → warns" grep -q "needs the gh CLI" <<<"$out"
+
+d="$(newrepo)"; cfg "$d" branch
+out="$(FAKE_MODE=ok drive_gh "$d" 1 2>&1)"
+check "branch mode without origin → warns" grep -q "needs a remote named origin" <<<"$out"
+d="$(newrepo)"; cfg "$d" prr
+out="$(FAKE_MODE=ok drive_gh "$d" 1 2>&1)"
+check "unknown integration value → warns" grep -q "unknown integration value" <<<"$out"
+d="$(newrepo)"
+out="$(FAKE_MODE=ok drive_gh "$d" 1 2>&1)"
+check_not "local mode (no CONFIG) → no integration message" grep -q "integration" <<<"$out"
+
 finish

@@ -62,6 +62,29 @@ for ig in .autopilot/driver-logs/ .autopilot/STOP .autopilot/RUN .autopilot/.hoo
   grep -qsxF "$ig" .gitignore || printf '%s\n' "$ig" >> .gitignore
 done
 
+# Integration preflight: branch/pr modes publish results. Say up front if the tools are missing,
+# instead of letting tasks fail one by one. The driver only gets Bash, so PRs need the gh CLI.
+cfg_value() { [ -f .autopilot/CONFIG.md ] && sed -n "s/^$1:[[:space:]]*\([^[:space:]#]*\).*/\1/p" .autopilot/CONFIG.md | head -1; }
+integration="$(cfg_value integration || true)"; integration="${integration:-local}"
+case "$integration" in
+  branch|pr)
+    if ! git remote get-url origin >/dev/null 2>&1; then
+      echo "[driver] integration: $integration needs a remote named origin, and there is none. Tasks will stay as local branches." >&2
+    fi
+    if [ "$integration" = pr ]; then
+      if ! command -v gh >/dev/null 2>&1; then
+        echo "[driver] integration: pr needs the gh CLI to open PRs, and it is not installed. Tasks will be pushed but no PRs opened; after 3 blocked attempts autopilot works like local." >&2
+      elif [ "$(gh api 'repos/{owner}/{repo}' --jq '.permissions.push' 2>/dev/null)" != "true" ]; then
+        echo "[driver] integration: pr needs gh with push access to this repository (gh auth login). Without it no PRs are opened; after 3 blocked attempts autopilot works like local." >&2
+      else
+        echo "[driver] integration: pr — gh can open and merge PRs."
+      fi
+    fi
+    ;;
+  local) ;;
+  *) echo "[driver] unknown integration value in .autopilot/CONFIG.md: $integration (expected local, branch or pr)." >&2 ;;
+esac
+
 # Call the skill by name so the one installed for the account/project is used, not a repository path.
 PROMPT='Use the autopilot skill and follow its procedure to do exactly one task, then exit. Do not ask questions and do not start a second task.'
 
