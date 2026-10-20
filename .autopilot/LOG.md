@@ -393,3 +393,10 @@
 ## 2026-10-20T13:47 | T-060 | done | skill 1.27.0
 - 변경: scripts/eval.sh(--fixture all: 예제마다 같은 옵션으로 실행, 요약, 하나라도 실패하면 1, claude 없으면 3, --grade와 함께는 거부), tests/test_eval.sh(+11), CLAUDE.md, README 2종, CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-20T13:52 | - | release | skill 1.27.1
+- 1.27.1 릴리즈: release/1.27.1 → main, main → develop 역병합. 태그 대기: v1.27.1 (403, 누적 v1.11.0~v1.27.1)
+
+## 2026-10-20T13:55 | T-061 | done | skill 1.27.1
+- 변경: scripts/task.sh(칸 수 오류에 기대 형식·예시 행), tests/test_task.sh(+3), CHANGELOG
+- 검증: validate PASS

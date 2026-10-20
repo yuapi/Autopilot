@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- task.sh shows the expected BACKLOG layout and an example row when a row has the wrong number of columns, instead of only the count
 
 ## 1.27.1 — 2026-10-20
 - `eval.sh --fixture all` runs every fixture with the same options and prints one summary of the scores (exit 1 if any fails); CLAUDE.md points to it for discovery rule changes
