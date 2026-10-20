@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- Local mode no longer commits onto a default branch: new `scripts/workbranch.sh`, run at the start of every task, switches from `main`/`master`/`develop`/`trunk`/the remote default/a detached HEAD to a new `autopilot/<YYYYMMDD-HHMM>` branch and leaves any other branch alone. `local_branch: current` in CONFIG restores the old behavior
 
 ## 1.9.0 — 2026-10-20
 - Skill rules, templates and skill scripts are now in English. New `language` setting in `.autopilot/CONFIG.md` (`auto` = existing state files → README → the user's language → English) sets the language of notes people read; machine-readable values stay English. Korean PROPOSALS statuses from earlier versions (`제안`, `채택`, …) are still understood
