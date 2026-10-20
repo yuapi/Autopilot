@@ -65,7 +65,8 @@ for ig in .autopilot/driver-logs/ .autopilot/STOP .autopilot/RUN .autopilot/.hoo
 done
 
 # Integration preflight: branch/pr modes publish results. Say up front if the tools are missing,
-# instead of letting tasks fail one by one. The driver only gets Bash, so PRs need the gh CLI.
+# instead of letting tasks fail one by one. The driver only gets Bash, so PRs need the gh CLI
+# (glab for a GitLab origin).
 cfg_value() { [ -f .autopilot/CONFIG.md ] && sed -n "s/^$1:[[:space:]]*\([^[:space:]#]*\).*/\1/p" .autopilot/CONFIG.md | head -1; }
 integration="$(cfg_value integration || true)"; integration="${integration:-local}"
 case "$integration" in
@@ -73,7 +74,15 @@ case "$integration" in
     if ! git remote get-url origin >/dev/null 2>&1; then
       echo "[driver] integration: $integration needs a remote named origin, and there is none. Tasks will stay as local branches." >&2
     fi
-    if [ "$integration" = pr ]; then
+    if [ "$integration" = pr ] && git remote get-url origin 2>/dev/null | grep -qi gitlab; then
+      if ! command -v glab >/dev/null 2>&1; then
+        echo "[driver] integration: pr on a GitLab origin needs the glab CLI to open merge requests, and it is not installed. Tasks will be pushed but no MRs opened; after 3 blocked attempts autopilot works like local." >&2
+      elif ! glab auth status >/dev/null 2>&1; then
+        echo "[driver] integration: pr needs glab logged in (glab auth login). Without it no MRs are opened; after 3 blocked attempts autopilot works like local." >&2
+      else
+        echo "[driver] integration: pr — glab can open and merge merge requests."
+      fi
+    elif [ "$integration" = pr ]; then
       if ! command -v gh >/dev/null 2>&1; then
         echo "[driver] integration: pr needs the gh CLI to open PRs, and it is not installed. Tasks will be pushed but no PRs opened; after 3 blocked attempts autopilot works like local." >&2
       elif [ "$(gh api 'repos/{owner}/{repo}' --jq '.permissions.push' 2>/dev/null)" != "true" ]; then

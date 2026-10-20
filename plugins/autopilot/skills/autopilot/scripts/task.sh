@@ -17,7 +17,6 @@ root="$(git -C "${3:-.}" rev-parse --show-toplevel 2>/dev/null || true)"
 [ -n "$root" ] || { echo "[task] not inside a git repository" >&2; exit 1; }
 cd "$root"
 [ -f .autopilot/BACKLOG.md ] || { echo "[task] no .autopilot/BACKLOG.md" >&2; exit 1; }
-grep -qxF .autopilot/.task .gitignore 2>/dev/null || { [ -z "$(tail -c 1 .gitignore 2>/dev/null)" ] || echo >> .gitignore; echo .autopilot/.task >> .gitignore; }
 
 dirty="$(git status --porcelain -- . ':!.autopilot' ':!.gitignore' 2>/dev/null | head -5 | tr '\n' ' ')"
 head="$(git rev-parse -q --verify HEAD 2>/dev/null || echo none)"
@@ -80,6 +79,9 @@ print(f"[task] {tid}: {status} (attempts {attempts})")
 PY
 
 case "$cmd" in
-  start) echo "$id $head" > .autopilot/.task;;
+  start)
+    echo "$id $head" > .autopilot/.task
+    # keep the marker out of commits (only once the start succeeded: a refusal changes nothing)
+    grep -qxF .autopilot/.task .gitignore 2>/dev/null || { [ -z "$(tail -c 1 .gitignore 2>/dev/null)" ] || echo >> .gitignore; echo .autopilot/.task >> .gitignore; };;
   done|fail) rm -f .autopilot/.task;;
 esac
