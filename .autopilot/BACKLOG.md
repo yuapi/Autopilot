@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 65
+next_id: 66
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -71,3 +71,4 @@ next_id: 65
 | T-062 | feature | done | 1 | CONFIG scope: 모노레포에서 지정한 경로 안에서만 발굴·수정, task.sh done이 범위 밖 변경 거부, status.sh 표시 | task.sh·status 테스트, SKILL.md 규칙, CONFIG 템플릿 | 시나리오: 모노레포의 패키지 하나만 맡기기 | 2026-10-20 |
 | T-063 | test | done | 1 | eval 예제 mono: CONFIG scope: pkg/a인 모노레포, 두 패키지 모두 결함. nofile= 기대값으로 pkg/b를 건드린 커밋이 없는지 채점 | 가짜 claude 채점, 실제 실행 1회 | T-062: scope를 실제 모델이 지키는지 측정 수단 없음 | 2026-10-20 |
 | T-064 | fix | done | 1 | task.sh·archive.sh가 CRLF 상태 파일을 통째로 LF로 바꿈(Windows 체크아웃에서 파일 전체가 바뀜), log.sh는 CRLF 파일에 LF 줄을 붙임 → 원래 줄 끝 유지 | CRLF BACKLOG·LOG에서 세 스크립트 후 줄 끝 그대로인 테스트 | 심화 발굴 2단계 시나리오: Windows 사용자(core.autocrlf) | 2026-10-20 |
+| T-065 | fix | done | 1 | core.autocrlf=true인 Windows에서 클론하면 .sh가 CRLF로 체크아웃되어 bash가 모든 스크립트에서 실패 → .gitattributes로 *.sh·hook·fixture 스크립트 LF 고정 | autocrlf=true 클론에서 스크립트가 LF이고 실행되는 테스트 | 심화 발굴 2단계 시나리오: Windows 사용자 플러그인 설치 | 2026-10-20 |
