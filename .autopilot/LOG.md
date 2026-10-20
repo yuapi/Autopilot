@@ -479,3 +479,11 @@
 - 변경: scripts/task.sh(CONFIG에서 \r 제거 후 scope 파싱), tests/test_task.sh(+2), CHANGELOG
 - 검증: validate PASS. 재현(CRLF CONFIG에서 pkg/a/f가 범위 밖으로 거부) → 수정 후 허용
 - 다른 CONFIG 파서 확인: autopilot.sh·status.sh는 공백 클래스에서 멈춰 \r 영향 없음
+
+## 2026-10-20T15:45Z | - | release | skill 1.29.2
+- 1.29.2 릴리즈: release/1.29.2 → main, main → develop 역병합. 태그 대기: v1.29.2 (403, 누적 v1.11.0~v1.29.2)
+
+## 2026-10-20T15:49Z | T-073 | done | skill 1.29.2
+- 발굴: SKILL.md 전체 정독(심화 1단계). 결함 1(branch/pr에서 publish가 task.sh done 검사보다 먼저), 불일치 5(사람에게 남기지 않기↔scope, CONFIG 설명, 예산 문장 위치, 템플릿 설명, gitignore 목록)
+- 변경: SKILL.md Phase 5 순서(커밋 → done → publish), 원칙·표·Phase 0·Templates·마지막 절 갱신, tests/test_skill_rules.sh(+3), CHANGELOG
+- 검증: validate PASS

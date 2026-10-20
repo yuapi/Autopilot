@@ -29,7 +29,7 @@ A cloud session without terminal access is always in session mode. In this mode 
 - **State lives only in files.** Do not rely on memory. The files under `.autopilot/` are the only source of truth. In session mode especially, **re-read** the state files at the start of every task. Never assume you remember what you read earlier.
 - **Never break things.** If verification fails, always roll back. There is no "close enough, commit it."
 - **There is no human.** Do not ask questions. When a judgment call is needed, pick the conservative option and write the reason in the LOG.
-- **Nothing is left "for a person".** A defect or gap you notice while working becomes a BACKLOG task right away (or a proposal, if 1-F says so). Mentioning it only in a summary or report loses it.
+- **Nothing is left "for a person".** A defect or gap you notice while working becomes a BACKLOG task right away (or a proposal, if 1-F says so). Mentioning it only in a summary or report loses it. The one exception is a problem outside CONFIG `scope`, which no task here could fix: write it in the LOG for a person (Phase 3).
 
 ## Language
 
@@ -48,7 +48,7 @@ These rules are written in English. Follow them exactly whatever language you wr
 | `.autopilot/ROADMAP.md` | Direction document Claude writes and updates from code analysis |
 | `.autopilot/BACKLOG.md` | Task queue with status, attempts and completion criteria |
 | `.autopilot/LOG.md` | Record of every run (append only) |
-| `.autopilot/CONFIG.md` | Integration policy (push, PR, merge, release) and output language. **People set it; Claude only reads it.** Missing means `local` |
+| `.autopilot/CONFIG.md` | Integration policy (push, PR, merge, release), output language and `scope`. **People set it; Claude only reads it.** Missing means `local` |
 | `.autopilot/PROPOSALS.md` | Proposals for large changes the loop does not make on its own. People decide by changing the status |
 | `.autopilot/features/<slug>.md` | Design and stage document for a feature that spans several tasks |
 | `.autopilot/STOP` | If present, the loop stops (created by Claude or a person) |
@@ -67,7 +67,8 @@ In session mode, also run `bash <skill folder>/scripts/runlock.sh touch` at the 
 0. **Only on first entry in session mode**:
    - If a person invoked the skill again while `.autopilot/STOP` exists, treat it as a request to resume: move the STOP content into the LOG and delete STOP.
    - Add `.autopilot/STOP`, `.autopilot/RUN`, `.autopilot/.hook-state`, `.autopilot/driver-logs/`, `.autopilot/driver.lock` and `.autopilot/.task` to `.gitignore` if they are missing.
-   - Claim the run marker with `bash <skill folder>/scripts/runlock.sh start`. If the person asked for a number of tasks ("do 3 tasks"), add `--tasks 3`: `task.sh done` then writes STOP after the third completed task and the loop ends normally. Only a person sets a budget; never add one on your own to end early. It writes this session's ID (`CLAUDE_CODE_SESSION_ID`) into `.autopilot/RUN`. **If it exits with 2, another loop is already running in this repository**: tell the person what it printed and stop without changing any state; two loops on one repository corrupt the BACKLOG and fight over commits. A marker idle for 2 hours counts as abandoned and is taken over.
+   - Claim the run marker with `bash <skill folder>/scripts/runlock.sh start`. It writes this session's ID (`CLAUDE_CODE_SESSION_ID`) into `.autopilot/RUN`. **If it exits with 2, another loop is already running in this repository**: tell the person what it printed and stop without changing any state; two loops on one repository corrupt the BACKLOG and fight over commits. A marker idle for 2 hours counts as abandoned and is taken over.
+   - If the person asked for a number of tasks ("do 3 tasks", `/autopilot:run 3`), add `--tasks 3` to that call: `task.sh done` then writes STOP after the third completed task and the loop ends normally. Only a person sets a budget; never add one on your own to end early.
    - If `CLAUDE_CODE_REMOTE` is `true` (a cloud session) and the integration mode is `local`, the commits exist only in this container and are lost when it is reclaimed. Tell the person once, in one line at the start (a notice, not a question): set `integration: branch` or `pr` in `.autopilot/CONFIG.md` to keep them. Write it in the LOG and continue in `local` mode. Never change CONFIG yourself.
    - The Stop hook comes with this skill (see "The Stop hook" below); nothing needs installing. If an older version left a copy at `.claude/hooks/autopilot-stop.sh`, refresh it with `bash <skill folder>/scripts/hook.sh install` and commit what it changed.
 1. If the three core files are missing, create them from the templates (never create CONFIG). If the integration mode is not `local`, update the base branch as described in "Integration policy".
@@ -294,9 +295,9 @@ Claim it with `bash <skill folder>/scripts/task.sh start <ID>`: it refuses while
 ### Phase 5 — record
 
 On success:
-1. Commit: in the repository's commit convention (CONTRIBUTING, CLAUDE.md, …) if it has one, else `autopilot(<task ID>): <one-line summary>`. For issue-sourced tasks put `Refs #N` in the body.
-   - If the integration mode is not `local`, make this commit on the task branch and publish it as described in "Integration policy".
-2. Run `bash <skill folder>/scripts/task.sh done <ID>`. It sets `done` with the date only if the task has its own commit since `start` that changes files outside `.autopilot/` and names no other task. If it refuses, fix the cause instead of editing the row by hand: commit the change, or, when the commit also covers another task, undo that unpushed commit with `git reset --soft HEAD~1` (the changes stay) and commit each task on its own.
+1. Commit: in the repository's commit convention (CONTRIBUTING, CLAUDE.md, …) if it has one, else `autopilot(<task ID>): <one-line summary>`. For issue-sourced tasks put `Refs #N` in the body. If the integration mode is not `local`, commit on the task branch. **Do not push yet.**
+2. Run `bash <skill folder>/scripts/task.sh done <ID>`. It sets `done` with the date only if the task has its own commit since `start` that changes files outside `.autopilot/` (and, with CONFIG `scope`, only inside it) and names no other task. If it refuses, fix the cause instead of editing the row by hand: commit the change, or, when the commit also covers another task, undo that unpushed commit with `git reset --soft HEAD~1` (the changes stay) and commit each task on its own.
+   - Only after `done` accepts, publish as described in "Integration policy" (push, PR, merge). Publishing first would push or merge a commit the check then refuses.
 3. Add follow-up tasks found during implementation to the BACKLOG.
 4. Append to the LOG with `scripts/log.sh` (see "LOG format").
    Never commit generated files (`__pycache__`, build output, coverage, logs). If the task created them, add them to `.gitignore` instead; if they were already tracked, queue a `cleanup` task rather than deleting them in this one.
@@ -394,7 +395,7 @@ It also refreshes such a copy whenever it differs from this skill's version. `ho
 
 ## Templates
 
-Start by copying `assets/ROADMAP.md`, `assets/BACKLOG.md`, `assets/LOG.md` and `assets/PROPOSALS.md` as they are. `assets/CONFIG.md` is a sample people copy and edit when they enable an integration policy or set the language; Claude never copies it.
+Start by copying `assets/ROADMAP.md`, `assets/BACKLOG.md`, `assets/LOG.md` and `assets/PROPOSALS.md` as they are. `assets/CONFIG.md` is a sample people copy and edit when they enable an integration policy, set the language or limit the `scope`; Claude never copies it.
 
 ## Driver (only with a terminal, optional)
 
@@ -420,4 +421,4 @@ Shows on one screen whether the loop is running or stopped and why (and which se
 
 ## When the repository has its own Stop hook
 
-If the repository has a Stop hook that demands committing untracked files, this skill's Phase 4 rollback (`git clean`) and Phase 5 commit satisfy it naturally. The `.autopilot/` run artifacts (STOP, RUN, .hook-state, driver-logs) are added to `.gitignore` by Phase 0 (session mode) and by the driver.
+If the repository has a Stop hook that demands committing untracked files, this skill's Phase 4 rollback (`git clean`) and Phase 5 commit satisfy it naturally. The `.autopilot/` run artifacts (STOP, RUN, .hook-state, .task, driver-logs, driver.lock) are added to `.gitignore` by Phase 0 (session mode) and by the driver.
