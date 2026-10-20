@@ -7,6 +7,7 @@ PY="$(command -v python3 || command -v python || true)"   # Windows Git Bash oft
 [ -n "$PY" ] || { echo "[autopilot] needs Python 3 on PATH (python3 or python)" >&2; exit 1; }
 self="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
 target="${1:-.}"
+[ -d "$target" ] || { echo "[status] no such directory: $target" >&2; exit 1; }
 root="$(git -C "$target" rev-parse --show-toplevel 2>/dev/null || (cd "$target" && pwd))"
 cd "$root"
 [ -d .autopilot ] || { echo "[status] no .autopilot/ in $root. autopilot has not run in this repository yet." >&2; exit 1; }

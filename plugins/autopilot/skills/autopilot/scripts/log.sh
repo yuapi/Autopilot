@@ -16,6 +16,7 @@ case "$id" in -|T-[0-9]*) ;; *) usage;; esac
 case "$id" in -) ;; *[!T0-9-]*|T-) usage;; esac
 case "$status" in done|failed|blocked|retro|discover|release|stop) ;; *) usage;; esac
 here="$(cd "$(dirname "$0")/.." && pwd)"
+[ -d "${3:-.}" ] || { echo "[log] no such directory: ${3:-.}" >&2; exit 1; }
 root="$(git -C "${3:-.}" rev-parse --show-toplevel 2>/dev/null || (cd "${3:-.}" && pwd))"
 cd "$root"
 

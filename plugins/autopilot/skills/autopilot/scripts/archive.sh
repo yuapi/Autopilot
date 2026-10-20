@@ -7,6 +7,7 @@ set -eu
 case "${1:-}" in -h|--help) awk 'NR > 1 && /^set -/ { exit } NR > 1 { sub(/^# ?/, ""); print }' "$0"; exit 0;; esac
 PY="$(command -v python3 || command -v python || true)"   # Windows Git Bash often has only python
 [ -n "$PY" ] || { echo "[autopilot] needs Python 3 on PATH (python3 or python)" >&2; exit 1; }
+[ -d "${1:-.}" ] || { echo "[archive] no such directory: ${1:-.}" >&2; exit 1; }
 cd "${1:-.}"
 [ -d .autopilot ] || { echo "[archive] no .autopilot directory" >&2; exit 1; }
 "$PY" - << 'PY'
