@@ -53,4 +53,11 @@ check "start of a done task → refused" bash -c "cd '$(newrepo)' && ! bash '$TS
 check "unknown task → refused" bash -c "cd '$(newrepo)' && bash '$TS' start T-099 2>&1 | grep -q 'no BACKLOG row T-099'"
 check_not "bad arguments → exit 1" bash "$TS" begin T-001
 check "done without start → refused" bash -c "cd '$(newrepo)' && bash '$TS' done T-001 2>&1 | grep -q 'was not started'"
+# a refusal changes nothing, .gitignore included
+d="$(newrepo)"; (cd "$d" && echo dirty >> code.txt)
+before="$(cd "$d" && git status --porcelain; cat .gitignore 2>/dev/null)"
+t "$d" start T-001 >/dev/null
+check "refused start leaves .gitignore and the tree as they were" test "$(cd "$d" && git status --porcelain; cat .gitignore 2>/dev/null)" = "$before"
+check "refused start writes no .autopilot/.task" test ! -e "$d/.autopilot/.task"
+
 finish
