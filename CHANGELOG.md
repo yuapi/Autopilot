@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- Fourth eval fixture `kv`, a Go module with a failing test, a `go vet` finding that `go test` does not run, a panic on malformed input, an ignored file error and a README flag that does not exist: checks baseline detection beyond Python and Node
 
 ## 1.25.0 — 2026-10-20
 - Model choice: the driver passes `AUTOPILOT_MODEL` to `claude --model` for every run, and `scripts/eval.sh --model <name>` runs an eval with another model to compare
