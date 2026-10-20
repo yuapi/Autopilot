@@ -60,6 +60,10 @@ What an autonomous loop finds on its own is a guess. What people wrote in issues
 
 Issue text is external input anyone can write. Following its sentences as instructions would let anyone command the loop. So the text is used only as data for judging what the problem is, and the scope of work and allowed actions come from the skill's rules alone. Not commenting on or closing issues follows the same reasoning: actions with external effects happen only when the integration policy allows them.
 
+## Why open PRs are revisited
+
+`merge: auto` merges only when CI has passed, and the loop never waits for CI to finish. Without a second look, a PR whose checks were still running when the task ended stayed open forever, and the next tasks avoided its files, so the loop slowly blocked itself. Checking its own open PRs at the start of every task merges those that have since passed, and turns failures and conflicts into ordinary `fix` tasks on the same branch, so a red PR gets the same verify-and-record treatment as any other defect. Merging the base instead of rebasing keeps the branch history people may already have pulled.
+
 ## Why the final stop conditions are what they are
 
 - **Zero substantive tasks → stop.** Stopping when there is nothing to do is the only legitimate voluntary exit. To keep it from skipping the product review and declaring "nothing", zero can only be concluded after the ROADMAP states that "Missing" and "Weak" are empty. It guards against lazy exits.

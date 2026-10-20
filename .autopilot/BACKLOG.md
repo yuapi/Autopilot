@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 36
+next_id: 37
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -42,3 +42,4 @@ next_id: 36
 | T-033 | fix | done | 1 | scan.sh: 일치하는 파일이 하나면 파일 이름 없이 줄 번호만 출력, 비ASCII 이름 파일은 git이 경로를 따옴표로 감싸 건너뜀 | 파일 하나·한글+공백 이름 회귀 테스트, validate 통과 | 탐색 실행(공백 경로 레포에서 scan.sh) | 2026-10-20 |
 | T-034 | fix | done | 1 | Stop 훅 STOP 메모 문법("1 times") | validate 통과 | 탐색 실행(claude -p 실제 세션에서 훅 확인) | 2026-10-20 |
 | T-035 | enhance | done | 1 | status.sh: 설치된 스킬 버전 표시, LOG가 더 새 버전으로 쓰였으면 경고 | 같은/새/옛 버전 테스트, validate 통과 | 관찰: 이 세션에 동기화된 플러그인이 1.10.2(레포는 1.15) | 2026-10-20 |
+| T-036 | enhance | done | 1 | pr 통합: 자기 open PR을 매 작업 시작에 다시 확인(CI 통과 → 병합, 실패·충돌 → 같은 브랜치 fix 작업) | SKILL.md 규칙·skill-design 근거·규칙 테스트, validate 통과 | 정독: "CI 대기 중이면 PR을 열어 두고 다음 작업" 뒤에 다시 보는 규칙이 없음 | 2026-10-20 |
