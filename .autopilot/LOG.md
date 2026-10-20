@@ -389,3 +389,7 @@
 - 변경: README 2종 "업데이트" 절(claude plugin marketplace update / plugin update, 계정 동기화와 세션 버전, /autopilot:status)
 - 검증: validate PASS. 명령은 claude plugin --help로 확인
 - 판단: 이 레포의 .claude/hooks 사본은 유지(스킬 훅과 같이 돌아도 카운터 1회, 동기화된 계정 플러그인에서 skill hook 동작은 아직 직접 확인 못 함)
+
+## 2026-10-20T13:47 | T-060 | done | skill 1.27.0
+- 변경: scripts/eval.sh(--fixture all: 예제마다 같은 옵션으로 실행, 요약, 하나라도 실패하면 1, claude 없으면 3, --grade와 함께는 거부), tests/test_eval.sh(+11), CLAUDE.md, README 2종, CHANGELOG
+- 검증: validate PASS
