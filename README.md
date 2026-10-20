@@ -111,6 +111,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/](docs/) for branching, version
 ```bash
 bash scripts/eval.sh                        # the todo fixture; add --keep to inspect the run afterwards
 bash scripts/eval.sh --fixture wordcount    # a repository with no tests: is the first task a test harness?
+bash scripts/eval.sh --fixture stats        # CONTRIBUTING sets the commit format: does every commit follow it?
 bash scripts/eval.sh --iterations 3         # three driver runs: one new task each, nothing repeated, nothing failed
 bash scripts/eval.sh --mode session --iterations 2   # one session-mode run as a plugin: keeps going, ends on STOP
 bash scripts/eval.sh --grade <kept dir> [same options]   # grade a run kept with --keep again

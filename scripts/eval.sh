@@ -8,7 +8,8 @@
 # Stop hook included; once the LOG has <n> task entries it writes STOP and checks that the session
 # then ended on its own (the hook let go) rather than on the timeout.
 # Fixtures live in tests/eval/fixture-<name>/ with expectations in tests/eval/fixture-<name>.expected
-# (default: todo). `--fixture list` prints the available ones.
+# (default: todo). `--fixture list` prints the available ones. An expectation regex starting with type=
+# grades the first completed task's type; one starting with commit= must match every commit subject.
 # Needs the claude CLI and spends real model usage (one driver run). Not part of validate.sh.
 # Rule checks (one commit per task, LOG only appended, deep discovery before a final stop) are reported
 # separately; any broken rule fails the eval whatever the score.
@@ -116,9 +117,17 @@ completed = [c[1] for c in cells if len(c) > 2 and c[2] in ("done", "in_progress
 items = [l.split("|", 2) for l in open(expected, encoding="utf-8") if l.strip() and not l.startswith("#")]
 found = 0
 print(f"\nBACKLOG rows: {len(rows)}")
+git = lambda *a: subprocess.run(["git", "-C", work, *a], capture_output=True, text=True).stdout
+commits = git("rev-list", "--reverse", "HEAD").split()[1:]   # everything after the fixture commit
+subjects = [git("show", "-s", "--format=%s", c).strip() for c in commits]
 for ident, what, rx in items:
     rx = rx.strip()
-    if rx.startswith("type="):
+    if rx.startswith("commit="):
+        bad = [x for x in subjects if not re.search(rx[7:], x)]
+        hit = bool(subjects) and not bad
+        if bad:
+            what = what.strip() + f" (e.g. {bad[0]!r})"
+    elif rx.startswith("type="):
         hit = bool(completed) and completed[0] == rx[5:]
     else:
         hit = re.search(rx, text, re.I)
@@ -147,8 +156,6 @@ if iterations > 1 or mode == "session":
     for what, ok in checks:
         found += ok; total += 1
         print(f"  {'ok     ' if ok else 'FAILED '} {what}")
-git = lambda *a: subprocess.run(["git", "-C", work, *a], capture_output=True, text=True).stdout
-commits = git("rev-list", "--reverse", "HEAD").split()[1:]   # everything after the fixture commit
 print(f"Commits after the fixture: {len(commits)}")
 
 # Rule checks: the procedure's hard rules, graded on what the run left behind (not part of the score)
@@ -160,8 +167,9 @@ done_tasks = sorted({i for i, st in re.findall(r"^## \S+ \| (T-\d+) \| (\w+) \|"
 code_commits, multi = 0, []
 for c in commits:
     files = git("show", "--name-only", "--format=", c).split()
-    if any(not f.startswith(".autopilot/") for f in files):
-        code_commits += 1
+    if not any(not f.startswith(".autopilot/") and f != ".gitignore" for f in files):
+        continue   # bookkeeping commits (state only) may name several tasks
+    code_commits += 1
     subject = git("show", "-s", "--format=%s", c).strip()
     if len(set(re.findall(r"T-\d+", subject))) > 1 or re.search(r"T-\d+\s*(\.\.|–|-|~)\s*T?-?\d+", subject):
         multi.append(subject)

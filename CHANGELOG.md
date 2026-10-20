@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- Third eval fixture `stats`: a repository whose CONTRIBUTING requires Conventional Commits and `make test`, with a failing test and a README/behavior mismatch. New `commit=` expectations grade every commit subject against the repository's convention. The rule check for combined commits ignores bookkeeping commits that change only `.autopilot/`
 
 ## 1.24.0 — 2026-10-20
 - `task.sh drop <ID>` closes a task that turned out unnecessary (does not reproduce, already fixed) as `blocked` without a commit, and SKILL.md says to record the evidence under "Not doing". `done` requires a code commit and `fail` retries three times, so such a task had no honest way out

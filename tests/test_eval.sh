@@ -171,4 +171,26 @@ check "missing-db: 'list crashes when DB missing'" match missing-db "list crashe
 check "missing-db: 'list works without a DB'" match missing-db "list works without a DB"
 check_not "off-by-one does not match the remove task" match off-by-one "implement remove per README, update usage"
 
+# stats fixture: commit= expectations grade the repository's commit convention
+FAKE4="$TMPROOT/fake-claude-4"
+cat > "$FAKE4" <<'SH'
+#!/usr/bin/env bash
+mkdir -p .autopilot
+{ echo "| ID | Type | Status | Attempts | Task | Done when | Source | Completed |"; echo "|---|---|---|---|---|---|---|---|"
+  echo "| T-001 | fix | done | 1 | median of an even-length list is wrong | test_median_even passes | baseline | |"
+  echo "| T-002 | fix | open | 0 | no numbers: README says exit 1, code exits 2 | test | README | |"; } > .autopilot/BACKLOG.md
+echo x >> stats.py; git add -A >/dev/null 2>&1; git commit -qm "${FAKE_SUBJECT:-fix: average the middle pair in median}" >/dev/null 2>&1
+SH
+chmod +x "$FAKE4"
+out="$(CLAUDE_BIN="$FAKE4" bash "$EV" --fixture stats 2>&1)"
+check "stats: conventional commit → found" grep -q "found   conventional" <<<"$out"
+check "stats: 3/3" grep -q "Score: 3/3" <<<"$out"
+out="$(FAKE_SUBJECT="autopilot(T-001): fix median" CLAUDE_BIN="$FAKE4" bash "$EV" --fixture stats 2>&1)"
+check "stats: a commit ignoring CONTRIBUTING → missed, with the subject" grep -q "MISSED  conventional .*autopilot(T-001): fix median" <<<"$out"
+check "stats fixture listed" grep -qx stats <<<"$(bash "$EV" --fixture list)"
+check "stats fixture starts with a failing test" bash -c "cd '$REPO/tests/eval/fixture-stats' && ! python3 -B -m unittest >/dev/null 2>&1"
+
+d="$(mkrun)"; task "$d" T-001 10:00; (cd "$d" && echo "| T-002 | fix | open | 0 | x | t | s | |" >> .autopilot/BACKLOG.md && git add -A && git commit -qm "chore: record T-001 and queue T-002") >/dev/null
+check "a state-only commit naming two tasks is not a broken rule" grep -q "ok      one commit per completed task" <<<"$(grade "$d")"
+
 finish
