@@ -495,3 +495,8 @@
 - 발굴(심화 4단계): 하지 않기로 한 것(Actions CI) 이유 유지, 이슈 0, 제안 2개 결정 대기. validate.sh 2분 16초 중 test_eval 90초 발견
 - 변경: scripts/eval.sh(AUTOPILOT_EVAL_POLL), tests/test_eval.sh(주기 0.1초, 가짜 대기 단축), CHANGELOG
 - 검증: test_eval 90초 → 24초, 3회 연속 83/83, validate PASS
+
+## 2026-10-20T16:04Z | T-075 | done | skill 1.30.0
+- 변경: scripts/autopilot.sh(--output-format json, read_result로 로그는 결과 텍스트+턴·비용, 실행별·누적 비용 출력, AUTOPILOT_MAX_COST), tests/test_driver.sh(+8), SKILL.md 드라이버 절, README 2종, CHANGELOG
+- 검증: validate PASS. 실제 드라이버(todo, 한도 $0.01): #1 $0.1753 출력, 로그에 결과 텍스트와 비용
+- 같은 실행에서 발견: 모델이 "exactly one task"를 예산으로 해석해 1회 후 STOP(T-076), 동기화본 version 작은따옴표로 "skill unknown"(T-077), CONFIG 없을 때 task.sh 오류 출력(T-078)
