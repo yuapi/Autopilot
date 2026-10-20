@@ -291,7 +291,7 @@ On success:
    - If the integration mode is not `local`, make this commit on the task branch and publish it as described in "Integration policy".
 2. Set the BACKLOG status to `done` with the completion date.
 3. Add follow-up tasks found during implementation to the BACKLOG.
-4. Append to the LOG.
+4. Append to the LOG with `scripts/log.sh` (see "LOG format").
    Never commit generated files (`__pycache__`, build output, coverage, logs). If the task created them, add them to `.gitignore` instead; if they were already tracked, queue a `cleanup` task rather than deleting them in this one.
 5. If the integration mode is `pr` and `release: auto`, check the "Release" conditions below.
 6. **Driver mode**: exit. **Session mode**: drop what you remember about the task and go back to Phase 0. No summary, no report, no "next I will …". Go straight to the next task.
@@ -341,6 +341,17 @@ Always:
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
 ```
+
+**Always add entries with the script**, never by editing the file:
+
+```bash
+bash <skill folder>/scripts/log.sh T-042 done <<'EOF'
+- Changed: src/auth/token.py, tests/test_token.py
+- Verified: test 128→131 pass, lint 0 err
+EOF
+```
+
+It appends at the end of the file with the current time and this skill's version (use `-` as the ID for entries without a task). Writing entries by hand produced entries inserted above earlier ones and times that were made up, which breaks "the last N runs" and every rule that reads the LOG in order. If the script cannot run, append at the very end and take the time from `date +%Y-%m-%dT%H:%M`.
 
 The third column (status) is one of `done` / `failed` / `blocked` / `retro` / `discover` / `stop`. "The last N runs" in the repeat-failure and same-file rules count only `done`, `failed` and `blocked`. The bullet text is in the output language.
 

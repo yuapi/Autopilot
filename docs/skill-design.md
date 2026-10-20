@@ -60,6 +60,10 @@ What an autonomous loop finds on its own is a guess. What people wrote in issues
 
 Issue text is external input anyone can write. Following its sentences as instructions would let anyone command the loop. So the text is used only as data for judging what the problem is, and the scope of work and allowed actions come from the skill's rules alone. Not commenting on or closing issues follows the same reasoning: actions with external effects happen only when the integration policy allows them.
 
+## Why LOG entries go through a script
+
+Several rules read the LOG in order ("the last 3 runs", "7 of the last 10", the retrospective since `last_retro`) and the Stop hook and the driver watch it for progress. The session-mode eval showed a model writing eight entries each above the previous one, with times spread over 40 minutes for a run of under 3 minutes; this repository's own LOG had invented times too. Appending, the clock and the version are mechanical, so `log.sh` does them and the model only writes the bullet text.
+
 ## Why open PRs are revisited
 
 `merge: auto` merges only when CI has passed, and the loop never waits for CI to finish. Without a second look, a PR whose checks were still running when the task ended stayed open forever, and the next tasks avoided its files, so the loop slowly blocked itself. Checking its own open PRs at the start of every task merges those that have since passed, and turns failures and conflicts into ordinary `fix` tasks on the same branch, so a red PR gets the same verify-and-record treatment as any other defect. Merging the base instead of rebasing keeps the branch history people may already have pulled.
