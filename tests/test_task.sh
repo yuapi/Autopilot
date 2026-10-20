@@ -149,4 +149,9 @@ t "$d" start T-001 >/dev/null; (cd "$d" && echo a >> code.txt && git commit -qam
 (cd "$d" && AUTOPILOT_DRIVER=1 bash "$TS" done T-001 >/dev/null)
 check "driver mode: task.sh done never writes a budget STOP" test ! -e "$d/.autopilot/STOP"
 
+# no CONFIG.md: done prints no shell error
+d="$(newrepo)"; t "$d" start T-001 >/dev/null; (cd "$d" && echo a >> code.txt && git commit -qam "autopilot(T-001): x")
+err="$(cd "$d" && bash "$TS" done T-001 2>&1 >/dev/null)"
+check "no CONFIG.md → done prints nothing on stderr" test -z "$err"
+
 finish
