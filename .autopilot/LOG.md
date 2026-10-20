@@ -177,3 +177,8 @@
 - 변경: scripts/eval.sh(--iterations, 반복 검사 3개), tests/test_eval.sh(+8), README 2종
 - 검증: validate PASS. 실제 todo 3회: 8/8, 111초, 우선순위 순서(fix→fix→security)로 서로 다른 작업 3개, 테스트 통과, 작업 트리 깨끗
 - 이 사이클 발굴 기록(T-029, T-030, 제안 P-001)도 이 PR에 포함
+
+## 2026-10-20T10:29 | T-030 | done | skill 1.14.0
+- 변경: plugins/autopilot/commands/status.md·stop.md(신규), scripts/runlock.sh stop, SKILL.md 상태 확인 절, README 2종, docs/plugin-structure.md, tests(runlock +5, skill_rules 명령 검사)
+- 검증: validate PASS(claude plugin validate 포함). claude -p "/autopilot:status"·"/autopilot:stop" --plugin-dir로 실제 실행해 동작 확인(${CLAUDE_PLUGIN_ROOT}가 명령 파일에서도 치환됨)
+- 발견: 스킬 frontmatter에 훅을 선언할 수 있다는 흔적(skill hooks). 레포에 훅을 복사하지 않아도 될 가능성 → 다음 발굴에서 조사
