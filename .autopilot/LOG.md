@@ -552,3 +552,7 @@
 - 변경: SKILL.md Phase 0 단계 3(비대화·시간 제한·watch 모드는 1회 실행 형태로), Phase 4 단계 1(같은 방식, 시간 초과는 기준보다 나쁨), tests/test_skill_rules.sh(+3), CHANGELOG
 - 검증: validate PASS
 - 정정: 처음엔 "영원히 멈춤"이라 적었으나 Claude Code의 Bash 도구가 몇 분 뒤 명령을 끝내므로 "도구 호출이 끊길 때까지, 매 작업마다"가 정확함. 규칙·CHANGELOG 문구 수정
+
+## 2026-10-20T16:57Z | T-084 | done | skill 1.32.1
+- 변경: tests/eval/fixture-watch(npm test = node --test --watch)·.expected, scripts/eval.sh(roadmap= 기대값), tests/test_eval.sh(+3), README 2종, CHANGELOG
+- 검증: validate PASS. 실제 eval --fixture watch --mode session --iterations 1: 170초, 8/8, ROADMAP에 "node --test", "npm test hangs (--watch)" 기록하고 스크립트 수정 작업(T-002) 추가. 평소(약 60초)보다 길어 한 번은 watch에 걸렸다가 빠져나온 것으로 보임
