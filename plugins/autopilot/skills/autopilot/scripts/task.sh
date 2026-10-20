@@ -18,6 +18,7 @@ usage() { echo "usage: task.sh start|done|fail|drop <task ID> [repository path]"
 case "$cmd" in start|done|fail|drop) ;; *) usage;; esac
 case "$id" in T-[0-9]*) ;; *) usage;; esac
 case "$id" in *[!T0-9-]*) usage;; esac
+[ -d "${3:-.}" ] || { echo "[task] no such directory: ${3:-.}" >&2; exit 1; }
 root="$(git -C "${3:-.}" rev-parse --show-toplevel 2>/dev/null || true)"
 [ -n "$root" ] || { echo "[task] not inside a git repository" >&2; exit 1; }
 cd "$root"

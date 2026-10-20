@@ -104,4 +104,12 @@ for f in "$REPO/$SKILL_REL"/scripts/*.sh "$REPO"/scripts/*.sh; do
 done
 check "--help created nothing" test -z "$(ls -A "$h")"
 
+# a path that does not exist gets a clear message, never a raw shell error
+S="$REPO/$SKILL_REL/scripts"
+for c in "status.sh" "archive.sh" "workbranch.sh" "finalstop.sh" "runlock.sh start" "task.sh start T-001" "hook.sh install" "scan.sh"; do
+  out="$(echo x | bash $S/${c%% *} ${c#* } /no/such/dir 2>&1)"; [ "$c" = "${c#* }" ] && out="$(bash $S/$c /no/such/dir 2>&1 </dev/null)"
+  check "$c on a missing path → 'no such directory'" grep -q "no such directory: /no/such/dir" <<<"$out"
+done
+check "log.sh on a missing path → 'no such directory'" bash -c "echo x | bash '$S/log.sh' - discover /no/such/dir 2>&1 | grep -q 'no such directory: /no/such/dir'"
+
 finish

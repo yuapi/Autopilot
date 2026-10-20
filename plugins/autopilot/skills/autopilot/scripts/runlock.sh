@@ -22,6 +22,7 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
+[ -d "$repo" ] || { echo "[runlock] no such directory: $repo" >&2; exit 1; }
 root="$(git -C "$repo" rev-parse --show-toplevel 2>/dev/null || true)"
 [ -n "$root" ] || { echo "[runlock] not inside a git repository" >&2; exit 1; }
 cd "$root"
