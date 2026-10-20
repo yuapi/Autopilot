@@ -7,6 +7,9 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.27.0 — 2026-10-20
+- Task budget for session mode: `runlock.sh start --tasks N` (when the person asks for N tasks) records it in RUN, `task.sh done` writes STOP after the Nth completed task, and status.sh shows the progress. Until now only the driver could be limited
+
 ## 1.26.0 — 2026-10-20
 - status.sh shows the task in progress (ID, type, title, attempt) and how long ago `task.sh start` claimed it
 - Phase 0 no longer stashes uncommitted changes while a task is `in_progress`: they are that unfinished task's work, which is finished or rolled back instead. Stashing them hid the task from the Phase 2 check

@@ -87,6 +87,19 @@ open(p, "w", encoding="utf-8").write("\n".join(lines))
 print(f"[task] {tid}: {status} (attempts {attempts})")
 PY
 
+# Task budget (runlock.sh start --tasks N): count completed tasks and stop at N
+if [ "$cmd" = done ] && [ -f .autopilot/RUN ] && grep -q '^tasks:' .autopilot/RUN; then
+  n="$(sed -n 's/^tasks:[[:space:]]*//p' .autopilot/RUN | head -1)"
+  k="$(sed -n 's/^done:[[:space:]]*//p' .autopilot/RUN | head -1)"; k=$(( ${k:-0} + 1 ))
+  { grep -v '^done:' .autopilot/RUN; echo "done: $k"; } > .autopilot/RUN.tmp && mv .autopilot/RUN.tmp .autopilot/RUN
+  if [ "$k" -ge "${n:-0}" ] && [ ! -f .autopilot/STOP ]; then
+    printf 'Stopped after %s task(s) as asked\n- The person set a budget of %s task(s) for this run (runlock.sh start --tasks)\n- Invoke autopilot again to continue\n' "$k" "$n" > .autopilot/STOP
+    echo "[task] task budget used ($k/$n): wrote .autopilot/STOP. Record this task (LOG, commit), then end."
+  else
+    echo "[task] task budget: $k/$n done"
+  fi
+fi
+
 case "$cmd" in
   start)
     echo "$id $head" > .autopilot/.task

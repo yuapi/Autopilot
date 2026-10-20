@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Session-mode run marker (.autopilot/RUN) that knows which session owns it.
-#   bash runlock.sh start [repo]   claim RUN for this session; exit 2 if another live loop owns it
+#   bash runlock.sh start [--tasks N] [repo]   claim RUN for this session; exit 2 if another live loop owns it.
+#                                  --tasks N: stop after N completed tasks (task.sh done writes STOP)
 #   bash runlock.sh touch [repo]   record activity (run at the start of every task)
 #   bash runlock.sh owner [repo]   print the owning session ID (empty if none or unknown)
 #   bash runlock.sh stop [repo]    a person stops the loop: write .autopilot/STOP (the loop ends after its
@@ -8,8 +9,17 @@
 # The session ID comes from CLAUDE_CODE_SESSION_ID (set by Claude Code). RUN whose last activity is
 # older than AUTOPILOT_RUN_STALE_MIN minutes (default 120) counts as abandoned and is taken over.
 set -eu
-cmd="${1:-}"
-root="$(git -C "${2:-.}" rev-parse --show-toplevel 2>/dev/null || true)"
+cmd="${1:-}"; [ $# -gt 0 ] && shift
+budget=""; repo=.
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --tasks) shift; budget="${1:-}"
+      case "$budget" in ''|*[!0-9]*|0) echo "[runlock] --tasks needs a positive number" >&2; exit 1;; esac;;
+    *) repo="$1";;
+  esac
+  shift
+done
+root="$(git -C "$repo" rev-parse --show-toplevel 2>/dev/null || true)"
 [ -n "$root" ] || { echo "[runlock] not inside a git repository" >&2; exit 1; }
 cd "$root"
 RUN=.autopilot/RUN
@@ -18,7 +28,13 @@ stale_min="${AUTOPILOT_RUN_STALE_MIN:-120}"
 
 owner() { [ -f "$RUN" ] && sed -n 's/^session:[[:space:]]*//p' "$RUN" | head -1 || true; }
 age_min() { python3 -c 'import os,sys,time; print(int((time.time()-os.path.getmtime(sys.argv[1]))//60))' "$RUN"; }
-write() { mkdir -p .autopilot; printf 'session: %s\nstarted: %s\n' "$me" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$RUN"; }
+write() { mkdir -p .autopilot; printf 'session: %s\nstarted: %s\n' "$me" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$RUN"; set_budget; }
+set_budget() {  # task budget lines (tasks: N, done: 0); without --tasks an existing budget is kept
+  [ -n "$budget" ] || return 0
+  grep -v '^tasks:\|^done:' "$RUN" > "$RUN.tmp" || true
+  printf 'tasks: %s\ndone: 0\n' "$budget" >> "$RUN.tmp" && mv "$RUN.tmp" "$RUN"
+  echo "[runlock] this loop stops after $budget completed task(s)."
+}
 
 case "$cmd" in
   start)
@@ -30,7 +46,7 @@ case "$cmd" in
         echo "[runlock] Let it finish, or create .autopilot/STOP to stop it. A marker idle for $stale_min min is taken over." >&2
         exit 2
       fi
-      if [ "$o" = "$me" ]; then touch "$RUN"; exit 0; fi
+      if [ "$o" = "$me" ]; then set_budget; touch "$RUN"; exit 0; fi
     fi
     write ;;
   touch)
@@ -50,5 +66,5 @@ case "$cmd" in
       echo "[runlock] wrote .autopilot/STOP. No loop was running; the next run will treat it as a request to stop until a person invokes autopilot again."
     fi ;;
   *)
-    echo "usage: runlock.sh start|touch|owner|stop [repository path]" >&2; exit 1 ;;
+    echo "usage: runlock.sh start [--tasks N]|touch|owner|stop [repository path]" >&2; exit 1 ;;
 esac
