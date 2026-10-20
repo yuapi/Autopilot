@@ -11,6 +11,7 @@
 #   - 3 runs in a row change neither LOG.md nor the commits → writes STOP, 1
 #   - bad argument, not in a git repository, no claude CLI  → 1
 #   - no git user.name / user.email (every commit would fail) → 1
+#   - no commit yet but uncommitted files (nothing can start)  → 1
 #
 # Environment variables:
 #   AUTOPILOT_SLEEP        seconds to wait between runs (default 10)
@@ -76,6 +77,14 @@ done
 if [ -z "$(git config user.name 2>/dev/null)" ] || [ -z "$(git config user.email 2>/dev/null)" ]; then
   echo "[driver] git has no user.name or user.email here, so every commit would fail." >&2
   echo "[driver] Set them first, e.g.: git config user.name \"Your Name\" && git config user.email you@example.com" >&2
+  exit 1
+fi
+
+# A repository without a first commit, with files in it: the first task's checks refuse to start
+# (uncommitted files) and nothing can be stashed. Committing people's files for them is not ours to do.
+if ! git rev-parse -q --verify HEAD >/dev/null 2>&1 && [ -n "$(git status --porcelain -- . ':!.autopilot' ':!.gitignore' 2>/dev/null | head -1)" ]; then
+  echo "[driver] this repository has no commit yet, and its files are not committed." >&2
+  echo "[driver] Commit them first (git add -A && git commit -m \"initial commit\"), then run the driver again." >&2
   exit 1
 fi
 
