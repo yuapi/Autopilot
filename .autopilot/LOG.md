@@ -432,3 +432,8 @@
 - 변경: scripts/log.sh(date -u, Z), SKILL.md LOG 형식 예시·대체 명령, tests/test_log.sh(+1: 서울·LA 같은 시각), CHANGELOG
 - 검증: validate PASS. 이 항목부터 UTC+Z (이 컨테이너는 원래 UTC라 이전 항목과 순서 그대로)
 - 판단: 대체 수단인 레포 훅 사본은 사용자 레포에 .gitattributes가 없으면 Windows에서 CRLF가 될 수 있으나, 기본은 스킬 frontmatter 훅이라 사용자 레포의 .gitattributes는 건드리지 않음
+
+## 2026-10-20T14:39Z | - | retro | skill 1.28.2
+- 범위: T-057~T-066 (10건). done 10 / failed 0 / blocked 0. 유형: fix 5, feature 2, test 2, enhance 1, docs 1(T-059). 출처: 시나리오 6, eval·관찰 3, 정독 1
+- 실패 원인 없음. eval --fixture all(세션 모드) 5개 예제 100%. 새 결함은 대부분 플랫폼·환경 시나리오(Windows CRLF 2건, 시간대 1건)에서 나옴
+- "배운 것"에 1줄 추가(Windows 시나리오)
