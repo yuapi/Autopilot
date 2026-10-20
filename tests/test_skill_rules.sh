@@ -4,7 +4,7 @@
 SKILL="$REPO/$SKILL_REL/SKILL.md"
 
 # Phase 4 롤백 명령: "실패 시:" 줄의 첫 번째 `...` 코드
-rollback="$(grep -m1 '실패 시:' "$SKILL" | sed -n 's/^[^`]*`\([^`]*\)`.*/\1/p')"
+rollback="$(grep -m1 'On failure:' "$SKILL" | sed -n 's/^[^`]*`\([^`]*\)`.*/\1/p')"
 check "Phase 4 롤백 명령 추출" test -n "$rollback"
 
 d="$(mktemp -d "$TMPROOT/r.XXXX")"
@@ -28,7 +28,7 @@ check "Stop 훅 설정 예시가 유효한 JSON" python3 -c 'import json,sys; js
 check "Stop 훅 명령이 \$CLAUDE_PROJECT_DIR 기준" grep -q 'CLAUDE_PROJECT_DIR' <<<"$json"
 
 # Phase 0 작업 트리 정리 명령: .autopilot 밖만 치우고 .autopilot 미커밋 상태는 남김
-tidy="$(grep -m1 '작업 트리 확인:' "$SKILL" | sed -n 's/^[^`]*`[^`]*`[^`]*`\([^`]*\)`.*/\1/p')"
+tidy="$(grep -m1 'Working tree check:' "$SKILL" | sed -n 's/^[^`]*`[^`]*`[^`]*`\([^`]*\)`.*/\1/p')"
 check "Phase 0 정리 명령 추출" grep -q '^git stash' <<<"$tidy"
 d="$(mktemp -d "$TMPROOT/r.XXXX")"
 (
@@ -51,7 +51,7 @@ check "CONFIG 기본 integration=local" test "$(val integration)" = local
 check "CONFIG 기본 merge=off" test "$(val merge)" = off
 check "CONFIG 기본 release=off" test "$(val release)" = off
 keys="$(sed -n 's/^\([a-z_]*\):.*/\1/p' "$cfg" | sort | tr '\n' ' ')"
-check "CONFIG 키 목록" test "$keys" = "base_branch branch_prefix integration merge release "
-check "SKILL.md: CONFIG는 Claude가 바꾸지 않음" grep -q "Claude가 만들거나 값을 바꾸지 않는다" "$REPO/$SKILL_REL/SKILL.md"
+check "CONFIG 키 목록" test "$keys" = "base_branch branch_prefix integration language merge release "
+check "SKILL.md: CONFIG는 Claude가 바꾸지 않음" grep -q "Claude never creates it or changes its values" "$REPO/$SKILL_REL/SKILL.md"
 
 finish

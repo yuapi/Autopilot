@@ -1,12 +1,12 @@
-# PROPOSALS (autopilot 기능 제안)
+# PROPOSALS (autopilot feature proposals)
 
-루프가 스스로 하지 않는 큰 변경을 사람에게 넘기는 곳. 상태 칸만 바꾸면 된다.
-- `채택`: 다음 발굴에서 기능 문서와 작업으로 만든다 (공개 인터페이스 변경도 여기 적힌 범위까지 허용)
-- `거절`: 다시 제안하지 않는다
-- `보류`: 나중에 다시 본다
-- `제안`(새 항목) → 사람이 위 셋 중 하나로 바꾼다. 채택된 항목은 루프가 `진행` → `완료`로 바꾼다
+Large changes the loop does not make on its own are handed to people here. Change only the Status column:
+- `adopted`: the next discovery turns it into a feature document and tasks (public interface changes are allowed within the scope written here)
+- `rejected`: it will not be proposed again
+- `deferred`: look at it again later
+- `proposed` (new item) → a person changes it to one of the three above. The loop moves adopted items to `in_progress` → `done`
 
 next_id: 1
 
-| ID | 상태 | 제목 | 문제·근거 | 제안 | 대안 | 영향·호환성 | 비용(작업 수) | 위험 | 날짜 |
+| ID | Status | Title | Problem & evidence | Proposal | Alternatives | Impact & compatibility | Cost (tasks) | Risk | Date |
 |---|---|---|---|---|---|---|---|---|---|

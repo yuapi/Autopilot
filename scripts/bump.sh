@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # 버전 올리기 (release/<ver> 브랜치에서): bash scripts/bump.sh <major|minor|patch> ["<추가 요약>"]
-# 갱신 대상: SKILL.md(metadata.version, 본문 **버전 x.y.z**, LOG 예시 skill x.y.z),
+# 갱신 대상: SKILL.md(metadata.version, 본문 **Version x.y.z**, LOG 예시 skill x.y.z),
 #            plugin.json version, CHANGELOG.md (## Unreleased → ## x.y.z — 날짜). 커밋은 하지 않는다.
 set -eu
 cd "$(dirname "$0")/.."
@@ -54,7 +54,7 @@ def sub(pattern, repl, text, label):
 
 esc = re.escape(cur)
 s = sub(rf"(^metadata:\n\s+version:\s*['\"]?){esc}", rf"\g<1>{new}", s, "metadata.version")
-s = sub(rf"\*\*버전 {esc}\*\*", f"**버전 {new}**", s, "본문 **버전**")
+s = sub(rf"\*\*Version {esc}\*\*", f"**Version {new}**", s, "본문 **Version**")
 s = sub(rf"skill {esc}\b", f"skill {new}", s, "LOG 형식 skill 버전")
 
 p["version"] = new

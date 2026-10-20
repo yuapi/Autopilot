@@ -1,1 +1,1 @@
-# LOG (autopilot 실행 기록, append only)
+# LOG (autopilot run log, append only)

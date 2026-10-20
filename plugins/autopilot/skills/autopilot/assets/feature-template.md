@@ -1,22 +1,22 @@
-# <기능 이름>
+# <Feature name>
 
 slug: <slug>
-상태: 진행 중 | 완료
-시작: YYYY-MM-DD
+status: in progress | done
+started: YYYY-MM-DD
 
-## 목적
-(왜 필요한가. 기능 지도의 "빠진 것"/"약한 것" 어느 항목에서 왔는가)
+## Purpose
+(Why it is needed. Which "Missing"/"Weak" item in the feature map, or which adopted proposal, it comes from)
 
-## 인터페이스
-(새로 추가되는 명령 / 엔드포인트 / 옵션 / 함수. 기존 것은 변경하지 않음)
+## Interface
+(New commands / endpoints / options / functions. Existing ones are not changed)
 
-## 데이터 흐름
-(입력 → 처리 → 출력. 건드리는 모듈)
+## Data flow
+(Input → processing → output. Modules touched)
 
-## 단계
-| 단계 | 작업 ID | 내용 | 완료 기준 | 상태 |
+## Stages
+| Stage | Task ID | Content | Done when | Status |
 |---|---|---|---|---|
 | 1/N | T-… | … | … | open |
 
-## 결정 사항
-(구현 중 내린 선택과 이유)
+## Decisions
+(Choices made during implementation and why)

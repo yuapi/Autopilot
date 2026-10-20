@@ -36,7 +36,7 @@ open(p,"w").write(s)
 PY
 check "bump minor (Unreleased 사용)" bash "$d/scripts/bump.sh" minor
 check "bump: plugin.json $new" test "$(ver_of "$d")" = "$new"
-check "bump: SKILL.md 본문·LOG 예시" grep -q "버전 $new" "$d/$SKILL_REL/SKILL.md"
+check "bump: SKILL.md 본문·LOG 예시" grep -q "Version $new" "$d/$SKILL_REL/SKILL.md"
 check "bump: CHANGELOG 새 섹션에 항목 이동" python3 - "$d/CHANGELOG.md" "$new" <<'PY'
 import re,sys
 s=open(sys.argv[1]).read(); v=sys.argv[2]
