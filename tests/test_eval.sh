@@ -62,4 +62,37 @@ out="$(FIRST_TYPE=fix CLAUDE_BIN="$FAKE2" bash "$EV" --fixture wordcount 2>&1)"
 check "wordcount: fixing first instead of the harness is graded as a miss" grep -q "MISSED  harness-first" <<<"$out"
 check_not "an unknown fixture is refused" bash "$EV" --fixture nope
 
+# --iterations: later runs are graded too
+FAKE3="$TMPROOT/fake-claude-3"
+cat > "$FAKE3" <<'SH'
+#!/usr/bin/env bash
+mkdir -p .autopilot
+n=$(( $(cat .autopilot/n 2>/dev/null || echo 0) + 1 )); echo "$n" > .autopilot/n
+id="T-00$n"; [ -n "${SAME_ID:-}" ] && id=T-001
+status=done; [ "$n" = "${FAIL_AT:-0}" ] && status=failed
+[ -f .autopilot/LOG.md ] || echo "# LOG" > .autopilot/LOG.md
+printf '\n## 2026-01-01T00:0%s | %s | %s | skill 1.0.0\n- x\n' "$n" "$id" "$status" >> .autopilot/LOG.md
+{ echo "| ID | Type | Status | Attempts | Task | Done when | Source | Completed |"
+  echo "|---|---|---|---|---|---|---|---|"
+  echo "| T-001 | fix | done | 1 | done <n> is off by one | test_done passes | baseline | |"
+  echo "| T-002 | fix | open | 0 | list crashes when todos.json does not exist | x | x | |"
+  echo "| T-003 | security | open | 0 | os.system shell injection | x | x | |"
+  echo "| T-004 | feature | open | 0 | implement remove | x | x | |"
+  echo "| T-005 | todo | open | 0 | due dates | x | x | |"
+} > .autopilot/BACKLOG.md
+SH
+chmod +x "$FAKE3"
+out="$(CLAUDE_BIN="$FAKE3" bash "$EV" --iterations 3 2>&1)"; rc=$?
+check "--iterations 3 runs the driver three times" grep -q "iteration 3 finished" <<<"$out"
+check "three clean runs → 8/8 with the multi-run checks" grep -q "Score: 8/8" <<<"$out"
+out="$(SAME_ID=1 CLAUDE_BIN="$FAKE3" bash "$EV" --iterations 2 2>&1)"
+check "the same task completed twice is caught" grep -q "FAILED  no task completed twice" <<<"$out"
+out="$(FAIL_AT=2 CLAUDE_BIN="$FAKE3" bash "$EV" --iterations 2 2>&1)"
+check "a failed run is caught" grep -q "FAILED  no failed or blocked runs (1)" <<<"$out"
+check "a failed run also misses 'every iteration completed a task'" grep -q "FAILED  every iteration completed a task (1/2)" <<<"$out"
+out="$(CLAUDE_BIN="$FAKE3" bash "$EV" 2>&1)"
+check_not "one iteration (default) adds no multi-run checks" grep -q "Multi-run checks" <<<"$out"
+check_not "--iterations 0 is refused" bash "$EV" --iterations 0
+check_not "--iterations abc is refused" bash "$EV" --iterations abc
+
 finish
