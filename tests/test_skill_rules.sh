@@ -79,4 +79,7 @@ for readme in README.md README.ko.md; do
   done
 done
 
+# Phase 0 does not stash the work of a task still in progress
+check "Phase 0 tidy keeps an in-progress task's changes" grep -q "Except\*\* when a BACKLOG row is \`in_progress\`" "$SKILL"
+
 finish
