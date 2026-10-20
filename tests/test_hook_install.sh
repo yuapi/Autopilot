@@ -52,4 +52,22 @@ d="$(newrepo)"; mkdir -p "$d/sub"
 bash "$HI" install "$d/sub" >/dev/null
 check "works from a subfolder (installs at the root)" test -f "$d/.claude/hooks/autopilot-stop.sh"
 
+# uninstall: removes only autopilot's copy and entry
+d="$(newrepo)"; mkdir -p "$d/.claude"
+echo '{"permissions":{"allow":["Bash"]},"hooks":{"Stop":[{"hooks":[{"type":"command","command":"echo other"}]}]}}' > "$d/.claude/settings.json"
+bash "$HI" install "$d" >/dev/null
+check "status.sh suggests uninstall when a copy exists" bash -c "bash '$ST' '$d' | grep -q 'hook.sh uninstall'"
+out="$(bash "$HI" uninstall "$d")"
+check "uninstall → copy and entry removed" grep -q "hook script: removed; settings.json: entry removed" <<<"$out"
+check "uninstall → copy gone" test ! -e "$d/.claude/hooks/autopilot-stop.sh"
+check "uninstall keeps other hooks and settings" python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["permissions"]["allow"]==["Bash"]; assert [h["command"] for g in d["hooks"]["Stop"] for h in g["hooks"]]==["echo other"]' "$d/.claude/settings.json"
+out="$(bash "$HI" uninstall "$d")"
+check "second uninstall → nothing to do" grep -q "hook script: not present; settings.json: no entry" <<<"$out"
+d="$(newrepo)"; bash "$HI" install "$d" >/dev/null; bash "$HI" uninstall "$d" >/dev/null
+check "uninstall drops the emptied hooks key" python3 -c 'import json,sys; assert json.load(open(sys.argv[1]))=={}' "$d/.claude/settings.json"
+d="$(newrepo)"; mkdir -p "$d/.claude"; echo '[' > "$d/.claude/settings.json"
+check_not "uninstall with invalid settings.json → exit 1" bash "$HI" uninstall "$d"
+check "invalid settings.json left unchanged" test "$(cat "$d/.claude/settings.json")" = "["
+check_not "unknown subcommand → exit 1" bash "$HI" remove "$d"
+
 finish

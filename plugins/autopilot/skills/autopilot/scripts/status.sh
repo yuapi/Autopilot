@@ -43,6 +43,7 @@ if os.path.exists(hook):
         print(f"  Fix: run the skill's scripts/hook.sh install, or create .autopilot/STOP for now.")
     elif os.path.exists(asset) and open(asset, encoding="utf-8", errors="replace").read() != installed:
         print("Note: the installed Stop hook is a copy from another skill version. The next run updates it (or run scripts/hook.sh install).")
+    print("Note: the skill declares its own Stop hook since 1.16; the copy in .claude/hooks is only needed where skill hooks are ignored. Remove it with scripts/hook.sh uninstall.")
 
 cfg = dict(re.findall(r"^(integration|merge|release|language):\s*([^\s#]+)", read("CONFIG.md"), re.M))
 print("Integration: " + (", ".join(f"{k}={v}" for k, v in cfg.items()) if cfg else "local (no CONFIG)"))

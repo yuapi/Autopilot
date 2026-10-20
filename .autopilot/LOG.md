@@ -187,3 +187,21 @@
 - 변경: SKILL.md(frontmatter hooks.Stop, Phase 0는 기존 사본만 갱신, "The Stop hook" 절), assets/autopilot-stop.sh(transcript 크기로 같은 종료를 1회만 집계), tests/test_hook.sh(+7), README 2종, docs/skill-design.md·plugin-structure.md
 - 검증: validate PASS(claude plugin validate 포함). CLAUDE_PLUGIN_ROOT=플러그인 루트·스킬 폴더 둘 다에서 frontmatter 명령이 block
 - 판단: 이 레포의 .claude 훅 사본은 대체 수단으로 남김(두 훅이 같이 돌아도 카운터는 1회)
+
+## 2026-10-20T10:50 | - | release | skill 1.16.0
+- 1.16.0 릴리즈: release/1.16.0 → main 병합, main → develop 역병합
+- 태그 대기: v1.16.0 (git 태그 push 403, Release API "not permitted for this session type"). 누적 대기 v1.11.0~v1.16.0
+
+## 2026-10-20T10:52 | - | discover | skill 1.16.0
+- 큐 비어 재발굴. scan.sh 0건, 이슈 0건. 시나리오: 1.15 이하에서 1.16으로 업그레이드한 사용자 — 레포 사본이 남아 스킬 훅과 같이 돔(카운터는 T-031로 1회), 지울 방법 없음
+- 추가: T-032(feature, hook.sh uninstall)
+
+## 2026-10-20T10:58 | T-032 | done | skill 1.16.0
+- 변경: scripts/hook.sh(uninstall), scripts/status.sh(사본 있으면 uninstall 안내), tests/test_hook_install.sh(+9), SKILL.md, README 2종
+- 검증: validate PASS
+- 판단: 이 레포의 .claude 사본은 아직 지우지 않음(다른 세션에 동기화된 플러그인이 1.16 미만이면 사본이 유일한 훅)
+
+## 2026-10-20T11:05 | T-033 | done | skill 1.16.0
+- 발견: 탐색 실행에서 파일 하나짜리 레포의 scan.sh 출력이 `1:# ...`(파일 이름 없음). grep에 파일이 하나만 넘어가면 이름을 생략함. 한글 이름 파일은 core.quotePath 때문에 아예 빠짐
+- 변경: scripts/scan.sh(grep -H, git -c core.quotePath=false), tests/test_scan.sh(+1), CHANGELOG
+- 검증: validate PASS

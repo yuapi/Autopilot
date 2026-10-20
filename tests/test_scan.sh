@@ -56,4 +56,9 @@ check "scanning the fixture directly finds its seeded defects" bash -c "bash '$S
 check_not "fails cleanly on a missing directory" bash "$SC" "$TMPROOT/nope"
 check "this repository scans clean" bash -c "cd '$REPO' && test \"\$(bash '$SC' | grep -c '^## ')\" -eq 0"
 
+# a repository with a single matching file still prints file:line; non-ASCII and spaced names are kept
+d="$(mktemp -d "$TMPROOT/s1.XXXX")"; git -C "$d" init -q; echo "# TODO: only one" > "$d/한글 name.py"
+out="$(bash "$SC" "$d")"
+check "single file → file name in the output" grep -q "한글 name.py:1:# TODO: only one" <<<"$out"
+
 finish

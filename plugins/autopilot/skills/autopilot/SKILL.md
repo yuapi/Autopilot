@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.16.0
+  version: 1.17.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.16.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.17.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -331,7 +331,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30 | T-042 | done | skill 1.16.0
+## 2026-10-01T14:30 | T-042 | done | skill 1.17.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
@@ -355,7 +355,7 @@ To release it: create `.autopilot/STOP` (or `/autopilot:stop`) or delete `.autop
 {"hooks":{"Stop":[{"hooks":[{"type":"command","command":"bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/autopilot-stop.sh\""}]}]}}
 ```
 
-It also refreshes such a copy whenever it differs from this skill's version. If a permission check blocks it, record that in the LOG and rely on the rules alone.
+It also refreshes such a copy whenever it differs from this skill's version. `hook.sh uninstall` removes the copy and only its settings entry. If a permission check blocks it, record that in the LOG and rely on the rules alone.
 
 ## Never
 
