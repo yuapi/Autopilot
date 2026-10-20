@@ -8,7 +8,7 @@ root="$(git -C "$target" rev-parse --show-toplevel 2>/dev/null || (cd "$target" 
 cd "$root"
 [ -d .autopilot ] || { echo "[status] no .autopilot/ in $root. autopilot has not run in this repository yet." >&2; exit 1; }
 python3 - "$root" "$self" << 'PY'
-import os, re, signal, sys
+import os, re, signal, sys, time
 signal.signal(signal.SIGPIPE, signal.SIG_DFL)  # exit quietly when the output is cut off (e.g. `| head`)
 root = sys.argv[1]; A = ".autopilot"
 def read(p):
@@ -25,7 +25,6 @@ stop = read("STOP").strip()
 if stop:
     print(f"Run: stopped — {stop.splitlines()[0]}")
 elif os.path.exists(os.path.join(A, "RUN")):
-    import time
     run = read("RUN")
     sess = (re.findall(r"^session:\s*(\S+)", run, re.M) or ["unknown"])[0]
     idle = int((time.time() - os.path.getmtime(os.path.join(A, "RUN"))) // 60)
@@ -63,6 +62,15 @@ if os.environ.get("CLAUDE_CODE_REMOTE") == "true" and cfg.get("integration", "lo
 
 done = count(rows, "done") + count(archived, "done")
 print(f"Tasks: open {count(rows,'open')} · in progress {count(rows,'in_progress')} · done {done} · blocked {count(rows,'blocked') + count(archived,'blocked')}")
+
+cur = [r for r in rows if r[2] == "in_progress"]
+if cur:
+    since = ""
+    marker = os.path.join(A, ".task")
+    if os.path.exists(marker) and read(".task").split()[:1] == [cur[0][0]]:
+        mins = int((time.time() - os.path.getmtime(marker)) // 60)
+        since = f", started {mins} min ago"
+    print(f"Now: {cur[0][0]} [{cur[0][1]}] {cur[0][4][:70]} (attempt {cur[0][3]}{since})")
 
 log = read("LOG.md")
 heads = re.findall(r"^## (\S+) \| ([^|]*?) \| (\w+) \|", log, re.M)

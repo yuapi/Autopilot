@@ -199,4 +199,14 @@ kept="$(sed -n 's/^\[eval\] kept the run in \([^ ]*\).*/\1/p' <<<"$out")"
 check "--model reaches claude" grep -q -- "--model some-model" "$kept/.autopilot/args"
 rm -rf "$kept"
 
+# kv fixture (Go): the seeded state is what the expectations describe
+if command -v go >/dev/null 2>&1; then
+  k="$(mktemp -d "$TMPROOT/kv.XXXX")"; cp -R "$REPO/tests/eval/fixture-kv/." "$k/"
+  check "kv: go test fails at the start" bash -c "cd '$k' && ! go test ./... >/dev/null 2>&1"
+  check "kv: go vet reports unreachable code" bash -c "cd '$k' && go vet ./... 2>&1 | grep -q unreachable"
+else
+  echo "  skip kv fixture checks (no go)"
+fi
+check "kv fixture listed" grep -qx kv <<<"$(bash "$EV" --fixture list)"
+
 finish

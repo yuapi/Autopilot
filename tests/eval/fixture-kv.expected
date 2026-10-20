@@ -1,0 +1,7 @@
+# autopilot-scan: ignore-file
+# id | what autopilot should find | regex matched (case-insensitive) against BACKLOG task and criteria text
+comments | `#` comment lines are not ignored (failing TestParseIgnoresComments) | comment|TestParseIgnoresComments|주석
+no-equals | a line without "=" panics (index out of range) | panic|index out of range|without (an? )?["'`]?=|no ["'`]?=|missing ["'`]?=|malformed|invalid line|잘못된 줄
+vet | `go vet` reports unreachable code | vet|unreachable|도달할 수 없는
+missing-file | a missing file is silently ignored; README promises an error and exit 1 | missing file|does not exist|nonexistent|not found|ReadFile|error (is )?(ignored|discarded|swallowed)|없는 파일|exit 1
+keys-flag | README documents `--keys`, which is not implemented | --keys|keys flag|list (the )?keys|키 목록

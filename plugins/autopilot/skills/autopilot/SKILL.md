@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.25.0
+  version: 1.26.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.25.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.26.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -76,7 +76,7 @@ In session mode, also run `bash <skill folder>/scripts/runlock.sh touch` at the 
    - BACKLOG: the header, `open` and `in_progress` rows, and the 10 most recent completed rows. Find anything else with grep when needed.
    - LOG: only the last 20 entries. Everything the repeat-failure and same-file rules need is in that range. The retrospective reads the entries since `last_retro`.
    - Housekeeping: run `bash <skill folder>/scripts/archive.sh`. When BACKLOG has more than 50 `done`/`blocked` rows it moves the oldest to `BACKLOG.archive.md`; when LOG has more than 300 entries it moves the oldest to `LOG.archive.md` (content unchanged, archives are never deleted). If the script cannot run, move them yourself by the same rule.
-2. Working tree check: if there are changes outside `.autopilot/`, put them away with `git stash push -u -m autopilot-phase0 -- . ':!.autopilot'` and note it in the LOG. Uncommitted changes inside `.autopilot/` are the previous task's state (attempts, failure records), so leave them.
+2. Working tree check: if there are changes outside `.autopilot/`, put them away with `git stash push -u -m autopilot-phase0 -- . ':!.autopilot'` and note it in the LOG. **Except** when a BACKLOG row is `in_progress`: then the changes are that unfinished task's work, so do not stash them; finish the task (Phase 4–5) or roll it back (Phase 4 failure, `task.sh fail`) first. Stashing them would hide the unfinished task from the Phase 2 check and lose its work in a stash. Uncommitted changes inside `.autopilot/` are the previous task's state (attempts, failure records), so leave them.
 3. Baseline: find the test, lint and build commands, run them and record the current pass/fail counts.
    - Search order: commands recorded under ROADMAP "Maintenance status" (reuse them) → repository docs (`CLAUDE.md`, `CONTRIBUTING.md`, the development section of the README) → task runners (`Makefile`, `justfile`, `Taskfile.yml`, `package.json` scripts) → ecosystem config (`pyproject.toml`/`tox.ini`/`noxfile.py`, `go.mod` → `go test ./...` and `go vet ./...`, `Cargo.toml` → `cargo test` and `cargo clippy`, `build.gradle`/`pom.xml`, `Gemfile`, `composer.json`, `*.sln`/`*.csproj` → `dotnet test`, `deno.json`, `mix.exs`) → CI config (the run steps in `.github/workflows` and similar). For mostly-shell repositories, `bash -n` and `shellcheck` if installed.
    - Write the commands found and how long they take under ROADMAP "Maintenance status". Later tasks reuse them instead of searching again.
@@ -341,7 +341,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30 | T-042 | done | skill 1.25.0
+## 2026-10-01T14:30 | T-042 | done | skill 1.26.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
@@ -414,7 +414,7 @@ The driver only gives Claude Bash and file tools, not MCP servers, so in `pr` mo
 bash <skill folder>/scripts/status.sh [repository path]
 ```
 
-Shows on one screen whether the loop is running or stopped and why (and which session owns the run and when it was last active), the integration settings, task counts (open, in progress, done, blocked), the success rate of the last 10 runs, open tasks, blocked tasks that need a person, proposals awaiting a decision and the latest LOG entries, plus the installed skill version with a warning when the LOG was written by a newer one. It only reads the state files. When someone asks "what is autopilot doing" or "autopilot status", run it and show the output. With the plugin installed, people can also type `/autopilot:status`, and `/autopilot:stop` to stop the loop after its current task (`runlock.sh stop` writes `.autopilot/STOP`).
+Shows on one screen whether the loop is running or stopped and why (and which session owns the run and when it was last active), the integration settings, task counts (open, in progress, done, blocked), the task in progress and how long ago it started, the success rate of the last 10 runs, open tasks, blocked tasks that need a person, proposals awaiting a decision and the latest LOG entries, plus the installed skill version with a warning when the LOG was written by a newer one. It only reads the state files. When someone asks "what is autopilot doing" or "autopilot status", run it and show the output. With the plugin installed, people can also type `/autopilot:status`, and `/autopilot:stop` to stop the loop after its current task (`runlock.sh stop` writes `.autopilot/STOP`).
 
 ## When the repository has its own Stop hook
 

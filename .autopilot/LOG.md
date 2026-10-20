@@ -344,3 +344,25 @@
 ## 2026-10-20T13:03 | T-053 | done | skill 1.24.1
 - 변경: scripts/autopilot.sh(AUTOPILOT_MODEL → --model), scripts/eval.sh(--model, 사용법에 --grade도), tests(driver +3, eval +1), SKILL.md 드라이버 절, README 2종, CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-20T13:07 | - | release | skill 1.25.0
+- 1.25.0 릴리즈: release/1.25.0 → main, main → develop 역병합. 태그 대기: v1.25.0 (403, 누적 v1.11.0~v1.25.0)
+
+## 2026-10-20T13:13 | T-054 | done | skill 1.25.0
+- 변경: tests/eval/fixture-kv(Go 모듈, 결함 5)·.expected, tests/test_eval.sh(+3: 시작 상태 확인, go 없으면 건너뜀), README 2종, CHANGELOG
+- 검증: validate PASS. 실제 eval --fixture kv --mode session --iterations 2: 10/10, 규칙 검사 전부 ok, 기준선에 go test ./...·go vet ./... 기록
+- 메모: printf 형식 오류는 go test가 vet 일부를 돌려 빌드가 깨져 실패 테스트를 가림 → go test가 안 돌리는 unreachable로 바꿈
+
+## 2026-10-20T13:17 | T-055 | done | skill 1.25.0
+- 발굴: driver eval stats 2회 6/6·규칙 ok. 심화 발굴 1단계(SKILL.md 정독)에서 Phase 0 단계 2(작업 트리 stash)와 Phase 2 첫 검사(이전 작업 끝내기)가 충돌
+- 변경: SKILL.md Phase 0 단계 2(in_progress 행이 있으면 stash하지 않음), tests/test_skill_rules.sh(+1), CHANGELOG
+- 검증: validate PASS(정리 명령 추출 테스트 그대로 통과)
+
+## 2026-10-20T13:19 | T-056 | done | skill 1.25.0
+- 변경: scripts/status.sh("Now:" 줄), SKILL.md 상태 확인 절, tests/test_status.sh(+3), CHANGELOG
+- 검증: validate PASS. 이 레포에서 "Now: T-056 … (attempt 1, started 0 min ago)" 확인
+
+## 2026-10-20T13:20 | - | retro | skill 1.25.0
+- 범위: T-047~T-056 (10건). done 10 / failed 0 / blocked 0. 유형: enhance 3, test 3, fix 3, feature 2(T-048, T-053). 출처: eval 실제 실행 3, 직접 사용 2, 정독 2, 시나리오·품질 3
+- 실패 원인 없음. 반복된 사실: 새 장치(task.sh)는 이 레포에서 직접 써 보면서 결함 2건이 나옴(T-049, T-052)
+- "배운 것"에 2줄 추가(task.sh 순서, eval 예제 결함 가림)
