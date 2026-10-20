@@ -84,4 +84,11 @@ done
 # Phase 0 does not stash the work of a task still in progress
 check "Phase 0 tidy keeps an in-progress task's changes" grep -q "Except\*\* when a BACKLOG row is \`in_progress\`" "$SKILL"
 
+# Phase 5 publishes only after task.sh done accepted the task
+p5="$(sed -n '/^### Phase 5/,/^## Integration policy/p' "$SKILL")"
+check "Phase 5: no push before task.sh done" grep -q "Do not push yet" <<<"$p5"
+check "Phase 5: publish after done accepts" grep -q "Only after \`done\` accepts, publish" <<<"$p5"
+done_line="$(grep -n 'task.sh done <ID>' <<<"$p5" | head -1 | cut -d: -f1)"; pub_line="$(grep -n 'Only after `done` accepts' <<<"$p5" | cut -d: -f1)"
+check "Phase 5: done comes before publishing" test "${done_line:-99}" -lt "${pub_line:-0}"
+
 finish
