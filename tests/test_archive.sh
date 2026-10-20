@@ -56,4 +56,11 @@ check "rerun: archive header appears once" test "$(grep -c '^# LOG archive' "$d/
 
 check_not "fails without .autopilot" bash "$ARCH" "$TMPROOT"
 
+# a CRLF checkout (Windows) stays CRLF
+d="$(mk 60 320)"; for f in BACKLOG LOG; do sedi 's/$/\r/' "$d/.autopilot/$f.md"; done
+bash "$ARCH" "$d" >/dev/null
+check "CRLF BACKLOG keeps CRLF after archiving" bash -c "! grep -qv \$'\\r\$' '$d/.autopilot/BACKLOG.md'"
+check "CRLF LOG keeps CRLF after archiving" bash -c "! grep -qv \$'\\r\$' '$d/.autopilot/LOG.md'"
+check "archived rows keep CRLF" bash -c "grep '^| T-001 ' '$d/.autopilot/BACKLOG.archive.md' | grep -q \$'\\r\$'"
+
 finish

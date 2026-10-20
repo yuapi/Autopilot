@@ -52,7 +52,7 @@ python3 - "$cmd" "$id" <<'PY'
 import datetime, re, sys
 cmd, tid = sys.argv[1], sys.argv[2]
 p = ".autopilot/BACKLOG.md"
-lines = open(p, encoding="utf-8").read().split("\n")
+lines = open(p, encoding="utf-8", newline="").read().split("\n")   # newline="": a CRLF file stays CRLF
 row = re.compile(r"^\|\s*(T-\d+)\s*\|")
 def cells(l): return l.strip().strip("|").split("|")
 target = None
@@ -91,8 +91,8 @@ elif cmd == "drop":
 else:
     status = "blocked" if attempts >= 3 else "open"
 c[2] = f" {status} "; c[3] = f" {attempts} "
-lines[target] = "|" + "|".join(c) + "|"
-open(p, "w", encoding="utf-8").write("\n".join(lines))
+lines[target] = "|" + "|".join(c) + "|" + ("\r" if lines[target].endswith("\r") else "")
+open(p, "w", encoding="utf-8", newline="").write("\n".join(lines))
 print(f"[task] {tid}: {status} (attempts {attempts})")
 PY
 

@@ -41,4 +41,10 @@ for st in $(sed -n 's/^The third column (status) is one of \(.*\)\. "The last.*/
 done
 check "SKILL.md status list was found" test -n "$(sed -n 's/^The third column (status) is one of \(.*\)\. "The last.*/\1/p' "$REPO/$SKILL_REL/SKILL.md")"
 
+# a CRLF LOG (Windows checkout) gets CRLF lines
+d="$(mktemp -d "$TMPROOT/c.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"; printf '# LOG\r\n' > "$d/.autopilot/LOG.md"
+printf -- '- one\n- two\n' | bash "$LG" T-001 done "$d" >/dev/null
+check "CRLF LOG: every line ends in CRLF after appending" bash -c "! grep -qv \$'\\r\$' '$d/.autopilot/LOG.md'"
+check "CRLF LOG: body lines kept" grep -q "^- two" "$d/.autopilot/LOG.md"
+
 finish
