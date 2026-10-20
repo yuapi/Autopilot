@@ -7,6 +7,10 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.15.0 — 2026-10-20
+- Plugin commands `/autopilot:status` (the status summary, without knowing the skill folder) and `/autopilot:stop` (new `runlock.sh stop` writes `.autopilot/STOP` and says which loop it stops). Plugin installs only; the `.skill` package has no commands
+- `scripts/eval.sh --iterations <n>` runs the driver n times and also checks the later runs: each completes one task, no task is completed twice, nothing fails
+
 ## 1.14.0 — 2026-10-20
 - In a repository with no way to verify, the test harness task now comes before every other task, `fix` included (it used to come right after `fix`, which produced an unverified fix commit in the eval)
 - `scripts/eval.sh --fixture <name>`: second fixture `wordcount`, a Node CLI with no tests, checks that the first task sets up a test runner (expectations can grade the completed task's type with `type=`). Expectations moved to `tests/eval/fixture-<name>.expected`

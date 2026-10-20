@@ -39,7 +39,7 @@ Start on a dedicated branch at the root of the repository you want to work on.
 
 Ask Claude in a session, for example "run autopilot". The skill keeps working task after task in the same session until `.autopilot/STOP` exists. On first entry it installs a Stop hook (`.claude/hooks/autopilot-stop.sh`) so the session does not end early, and refreshes that copy whenever the skill's version differs. The hook only acts while `.autopilot/RUN` exists and only on the session that started the loop, so ordinary sessions and other sessions you open in the same repository are never blocked. Only one loop runs per repository: a second session or driver is refused while one is active (a marker idle for 2 hours is taken over). The hook writes `STOP` and lets go after three consecutive blocks without progress. This is the only mode available in cloud sessions without a terminal.
 
-To stop: `touch .autopilot/STOP`.
+To stop: `/autopilot:stop` (with the plugin installed) or `touch .autopilot/STOP`. The loop ends after its current task.
 
 ### Driver mode (terminal, optional)
 
@@ -55,6 +55,8 @@ AUTOPILOT_PERMISSION=skip bash <skill folder>/scripts/autopilot.sh   # opt-in, s
 `<skill folder>` is where the skill is installed, for example `plugins/autopilot/skills/autopilot` in a clone of this repository. The driver stops when `.autopilot/STOP` appears or at the iteration limit (exit code 0), and after 3 consecutive Claude crashes, on a bad argument or when the `claude` CLI is missing (exit code 1). It can be started from any folder inside the repository. `AUTOPILOT_SLEEP` sets the pause between runs (default 10 seconds). With `integration: pr` the driver opens PRs with the `gh` CLI and warns at start if `gh` is missing or cannot push to the repository.
 
 ### Checking on a run
+
+With the plugin installed, type `/autopilot:status` in a session. Otherwise:
 
 ```bash
 bash <skill folder>/scripts/status.sh [repo path]
@@ -108,6 +110,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/](docs/) for branching, version
 ```bash
 bash scripts/eval.sh                        # the todo fixture; add --keep to inspect the run afterwards
 bash scripts/eval.sh --fixture wordcount    # a repository with no tests: is the first task a test harness?
+bash scripts/eval.sh --iterations 3         # three driver runs: one new task each, nothing repeated, nothing failed
 ```
 
 Copies `tests/eval/fixture-todo/` (a tiny todo CLI with five seeded defects: an off-by-one with a failing test, a crash on first run, a shell injection, a command the README documents but the code lacks, and a TODO marker) into a temp repository, runs the working-copy skill once in driver mode, and scores how many of the defects `tests/eval/fixture-todo.expected` lists landed in its BACKLOG. The `wordcount` fixture has no tests at all and checks that the first task sets up a test runner. It needs the `claude` CLI and spends one real driver run, so it is not part of `validate.sh`; run it after changing discovery rules to see whether they find more or less.
