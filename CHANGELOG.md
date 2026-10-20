@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- task.sh added its `.gitignore` entry even when it refused to start a task; a refusal now changes nothing
 - `pr` integration on GitLab: merge requests and issues through `glab` when `origin` is on GitLab; the driver preflight checks `glab` (installed, logged in) instead of warning that `gh` is missing
 
 ## 1.22.0 — 2026-10-20
