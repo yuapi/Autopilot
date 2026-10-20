@@ -31,6 +31,12 @@ Claude Code 세션에서:
 
 [Releases](https://github.com/yuapi/Autopilot/releases)에서 `autopilot-<버전>.skill`을 내려받아 claude.ai의 스킬로 업로드한다 (Settings → Capabilities → Skills). `autopilot/` 스킬 폴더를 담은 zip이므로 `~/.claude/skills/`에 풀어도 된다.
 
+### 업데이트
+
+- Claude Code 플러그인: `claude plugin marketplace update autopilot-marketplace` 다음 `claude plugin update autopilot@autopilot-marketplace`.
+- claude.ai 계정에 추가한 플러그인: 새 버전은 저절로 동기화되지만 **세션은 시작할 때 불러온 버전을 계속 쓴다.** 업데이트를 쓰려면 새 세션을 연다.
+- `/autopilot:status`는 설치된 버전을 보여 주고, 이 레포가 그보다 새 버전으로 이미 실행된 적이 있으면 경고한다.
+
 ## 사용법
 
 작업할 레포 루트에서, 전용 브랜치를 만든 뒤 시작한다.
