@@ -508,3 +508,7 @@
 ## 2026-10-20T16:10Z | T-077 | done | skill 1.30.0
 - 변경: scripts/log.sh·status.sh(version 값의 작은따옴표 허용), tests(log +3: 따옴표 없음·큰·작은, status +1), CHANGELOG
 - 검증: validate PASS. 실제 동기화본(autopilot~g3, version: '1.30.0')에서 1.30.0 파싱
+
+## 2026-10-20T16:12Z | T-078 | done | skill 1.30.0
+- 변경: scripts/task.sh(CONFIG.md가 있을 때만 scope 읽기), tests/test_task.sh(+1: stderr 비어 있음), CHANGELOG
+- 검증: validate PASS. 이 레포에서 done 실행 시 오류 출력 사라짐

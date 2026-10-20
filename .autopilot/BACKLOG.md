@@ -84,4 +84,4 @@ next_id: 79
 | T-075 | feature | done | 1 | 드라이버 비용 한도 AUTOPILOT_MAX_COST(USD): 실행마다 claude JSON 결과의 비용을 더해 넘으면 STOP 후 종료, 실행마다 비용 출력, 로그는 읽을 수 있는 텍스트 유지 | 가짜 claude JSON으로 한도·합계·출력 테스트 | 빠진 것: 무인 장시간 실행을 비용으로 제한할 수 없음 | 2026-10-20 |
 | T-076 | fix | done | 1 | 드라이버 프롬프트 "exactly one task"를 모델이 사람의 작업 수 예산으로 해석 → runlock --tasks 1 → task.sh가 STOP → 드라이버가 1회 후 멈춤. 드라이버 모드에서는 예산 무시(runlock·task.sh), 프롬프트 명확히 | AUTOPILOT_DRIVER=1에서 --tasks 무시·STOP 안 씀 테스트, 실제 드라이버 2회 | T-075 실제 드라이버 실행 | 2026-10-20 |
 | T-077 | fix | done | 1 | 계정 동기화 플러그인의 SKILL.md는 version: '1.10.2'(작은따옴표) → log.sh "skill unknown", status.sh 버전 줄 없음 | 작은·큰따옴표·따옴표 없음 모두 파싱 테스트 | T-075 실제 드라이버 실행(LOG "skill unknown") | 2026-10-20 |
-| T-078 | fix | open | 0 | CONFIG.md가 없으면 task.sh done이 셸 리디렉션 오류를 출력(tr < 없는 파일) | CONFIG 없이 done 출력에 오류 없음 테스트 | T-075 실제 드라이버 실행 | |
+| T-078 | fix | done | 1 | CONFIG.md가 없으면 task.sh done이 셸 리디렉션 오류를 출력(tr < 없는 파일) | CONFIG 없이 done 출력에 오류 없음 테스트 | T-075 실제 드라이버 실행 | 2026-10-20 |
