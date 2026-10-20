@@ -7,6 +7,10 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.11.0 — 2026-10-20
+- One loop per repository: new `scripts/runlock.sh` writes the owning session (`CLAUDE_CODE_SESSION_ID`) into `.autopilot/RUN` and refuses a second session-mode loop while the first is active (taken over after 2 h idle). The driver refuses while another driver (`.autopilot/driver.lock`) or a session loop runs. status.sh shows the owner and last activity
+- Stop hook blocks only the session that owns RUN, so other sessions opened in the same repository while the loop runs can end normally. It reads its stdin with a 2-second limit so it can never hang
+
 ## 1.10.2 — 2026-10-20
 - tests/test_portability.sh builds its PATH without tac/timeout from the ~40 tools the scripts use instead of linking every executable on PATH (6.3 s → 2.8 s here, far more on large PATHs). validate.sh shows how long each test file took
 

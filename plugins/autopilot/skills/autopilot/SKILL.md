@@ -1,13 +1,13 @@
 ---
 name: autopilot
 metadata:
-  version: 1.10.2
+  version: 1.11.0
 description: Autonomous development loop that finds, selects, implements, verifies and records the next task in a repository with no human in the loop. Finds bug fixes, improvements and new features from code analysis, running the software, user scenarios and the issue tracker, and leaves large changes it must not make alone as proposals. Keeps going in the same session until .autopilot/STOP exists (driver mode when a terminal is available) and, if .autopilot/CONFIG.md allows, pushes branches, opens and merges PRs and releases. Writes its notes in the repository's or user's language. Use whenever someone says "autopilot", "autonomous development", "work on the next task", "keep developing on your own", "unattended loop", "work through the backlog", "handle the issues", or "자율 개발", "알아서 개발해", "다음 작업 알아서", "무인 루프", "백로그 처리", or when the driver invokes it, and follow this procedure exactly.
 ---
 
 # Autopilot — autonomous development loop
 
-**Version 1.10.2** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.11.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -56,10 +56,13 @@ Create missing files from the `assets/` templates.
 
 Before anything else, on every task in both modes: run `bash <skill folder>/scripts/workbranch.sh`. In `local` mode it moves you off a default branch (`main`, `master`, `develop`, `trunk`, the remote's default, or a detached HEAD) onto a new `autopilot/<YYYYMMDD-HHMM>` branch, so the loop never commits straight onto a branch people share. On any other branch it does nothing, so it is safe to run every time. It never pushes. `local_branch: current` in CONFIG turns this off. If the script cannot run, do the same by hand with `git switch -c`.
 
+In session mode, also run `bash <skill folder>/scripts/runlock.sh touch` at the start of every task so the run marker shows the loop is alive.
+
 0. **Only on first entry in session mode**:
    - If a person invoked the skill again while `.autopilot/STOP` exists, treat it as a request to resume: move the STOP content into the LOG and delete STOP.
-   - Add `.autopilot/STOP`, `.autopilot/RUN`, `.autopilot/.hook-state` and `.autopilot/driver-logs/` to `.gitignore` if they are missing.
-   - Create `.autopilot/RUN` and install the Stop hook (see "Installing the Stop hook" below). Skip if already installed.
+   - Add `.autopilot/STOP`, `.autopilot/RUN`, `.autopilot/.hook-state`, `.autopilot/driver-logs/` and `.autopilot/driver.lock` to `.gitignore` if they are missing.
+   - Claim the run marker with `bash <skill folder>/scripts/runlock.sh start`. It writes this session's ID (`CLAUDE_CODE_SESSION_ID`) into `.autopilot/RUN`. **If it exits with 2, another loop is already running in this repository**: tell the person what it printed and stop without changing any state; two loops on one repository corrupt the BACKLOG and fight over commits. A marker idle for 2 hours counts as abandoned and is taken over.
+   - Install the Stop hook (see "Installing the Stop hook" below). Skip if already installed.
 1. If the three core files are missing, create them from the templates (never create CONFIG). If the integration mode is not `local`, update the base branch as described in "Integration policy".
    Read the state. Keep the amount read constant even in long runs:
    - ROADMAP, CONFIG, PROPOSALS: all of it.
@@ -309,7 +312,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30 | T-042 | done | skill 1.10.2
+## 2026-10-01T14:30 | T-042 | done | skill 1.11.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
@@ -321,7 +324,7 @@ The third column (status) is one of `done` / `failed` / `blocked` / `retro` / `d
 
 When Claude tries to end the session on its own while there is no STOP file, the hook blocks it and asks for the next task. Rules alone sometimes let a long session decide "that's enough", so the hook is insurance.
 
-The hook acts only while `.autopilot/RUN` exists, so ordinary sessions and fresh clones that are not running the loop are never blocked. After 3 consecutive blocks with no change to the LOG or commits (no way to make progress, e.g. permission denials), the hook writes STOP itself and lets the session end.
+The hook acts only while `.autopilot/RUN` exists and only on the session that owns it (the `session:` line written by `runlock.sh`), so ordinary sessions, other sessions opened in the same repository while the loop runs, and fresh clones are never blocked. After 3 consecutive blocks with no change to the LOG or commits (no way to make progress, e.g. permission denials), the hook writes STOP itself and lets the session end.
 
 1. Create `.claude/hooks/autopilot-stop.sh` with the content of `assets/autopilot-stop.sh` and make it executable.
 2. **Merge** the following into `.claude/settings.json`. If hooks already exist, add an entry to the `Stop` array; never remove existing ones.
@@ -369,7 +372,7 @@ The default is an `--allowedTools` allowlist. In a dedicated container, `AUTOPIL
 bash <skill folder>/scripts/status.sh [repository path]
 ```
 
-Shows on one screen whether the loop is running or stopped and why, the integration settings, task counts (open, in progress, done, blocked), the success rate of the last 10 runs, open tasks, blocked tasks that need a person, proposals awaiting a decision and the latest LOG entries. It only reads the state files. When someone asks "what is autopilot doing" or "autopilot status", run it and show the output.
+Shows on one screen whether the loop is running or stopped and why (and which session owns the run and when it was last active), the integration settings, task counts (open, in progress, done, blocked), the success rate of the last 10 runs, open tasks, blocked tasks that need a person, proposals awaiting a decision and the latest LOG entries. It only reads the state files. When someone asks "what is autopilot doing" or "autopilot status", run it and show the output.
 
 ## When the repository has its own Stop hook
 

@@ -68,4 +68,24 @@ check "no artifacts in the subfolder" test ! -e "$d/sub/dir/.autopilot"
 d="$(mktemp -d "$TMPROOT/nogit.XXXX")"
 check_not "outside a git repository → fails" drive "$d" 1
 
+# one loop per repository
+d="$(newrepo)"; sleep 300 & live=$!; echo "$live" > "$d/.autopilot/driver.lock"
+out="$(FAKE_MODE=ok drive "$d" 1 2>&1)"; rc=$?
+kill "$live" 2>/dev/null; wait "$live" 2>/dev/null
+check "another live driver → exit 1" test "$rc" -eq 1
+check "another live driver → claude not called" test ! -e "$d/.autopilot/calls"
+check "another live driver → says so" grep -q "another driver" <<<"$out"
+d="$(newrepo)"; echo 999999 > "$d/.autopilot/driver.lock"
+FAKE_MODE=ok drive "$d" 1 >/dev/null 2>&1
+check "a stale driver.lock (dead pid) is ignored" test -f "$d/.autopilot/calls"
+check "driver.lock removed on exit" test ! -e "$d/.autopilot/driver.lock"
+check ".gitignore has .autopilot/driver.lock" grep -qxF .autopilot/driver.lock "$d/.gitignore"
+d="$(newrepo)"; printf 'session: s1\n' > "$d/.autopilot/RUN"
+out="$(FAKE_MODE=ok drive "$d" 1 2>&1)"; rc=$?
+check "a live session-mode loop → exit 1" test "$rc" -eq 1
+check "a live session-mode loop → says so" grep -q "session-mode autopilot loop" <<<"$out"
+python3 -c 'import os,time; t=time.time()-3*3600; os.utime("'"$d"'/.autopilot/RUN",(t,t))'
+FAKE_MODE=ok drive "$d" 1 >/dev/null 2>&1
+check "an abandoned RUN (3 h idle) does not stop the driver" test -f "$d/.autopilot/calls"
+
 finish

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # autopilot Stop hook (session mode).
-# - Acts only while .autopilot/RUN exists. Sessions not running the loop are never blocked.
+# - Acts only while .autopilot/RUN exists, and only on the session that owns it (the "session:" line
+#   in RUN, matched against the session_id Claude Code passes on stdin). Other sessions are never blocked.
 # - If .autopilot/STOP exists, removes RUN and lets the session end.
 # - After AUTOPILOT_STALL_LIMIT (default 3) consecutive blocks with no change to the LOG
 #   or commits, writes STOP and lets the session end (no endless blocking without progress).
@@ -8,6 +9,15 @@
 cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0
 A=.autopilot
 [ -f "$A/RUN" ] || exit 0
+# Claude Code passes JSON on stdin and closes it. Never wait on a terminal, and give up after 2 s
+# on a pipe that stays open, so the hook can never hang.
+input=""
+[ -t 0 ] || IFS= read -r -d '' -t 2 input || true
+sid="$(printf '%s' "$input" | sed -n 's/.*"session_id"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)"
+owner="$(sed -n 's/^session:[[:space:]]*//p' "$A/RUN" | head -1)"
+if [ -n "$owner" ] && [ "$owner" != unknown ] && [ -n "$sid" ] && [ "$sid" != "$owner" ]; then
+  exit 0
+fi
 if [ -f "$A/STOP" ]; then
   rm -f "$A/RUN" "$A/.hook-state"
   exit 0

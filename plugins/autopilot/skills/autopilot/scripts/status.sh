@@ -24,7 +24,12 @@ stop = read("STOP").strip()
 if stop:
     print(f"Run: stopped — {stop.splitlines()[0]}")
 elif os.path.exists(os.path.join(A, "RUN")):
-    print("Run: running (session mode)")
+    import time
+    run = read("RUN")
+    sess = (re.findall(r"^session:\s*(\S+)", run, re.M) or ["unknown"])[0]
+    idle = int((time.time() - os.path.getmtime(os.path.join(A, "RUN"))) // 60)
+    note = " — idle for over 2 h, a new run will take it over" if idle >= 120 else ""
+    print(f"Run: running (session mode, session {sess}, last active {idle} min ago{note})")
 else:
     print("Run: idle (no RUN or STOP)")
 
