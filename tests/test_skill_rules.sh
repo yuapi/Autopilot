@@ -65,4 +65,9 @@ for c in "$PLUGIN"/commands/*.md; do
 done
 check "status and stop commands exist" test -f "$PLUGIN/commands/status.md" -a -f "$PLUGIN/commands/stop.md"
 
+# pr integration comes back to its own open PRs (pending CI, failures, conflicts)
+check "SKILL.md revisits its own open PRs" grep -q 'Revisit your own open PRs' "$SKILL"
+check "revisit merges PRs whose CI passed since" grep -q 'CI now passed, no conflicts, `merge: auto` → merge it now' "$SKILL"
+check "conflicts are resolved by merging the base, never rebasing" grep -q 'merge the base into that branch (never rebase or force push)' "$SKILL"
+
 finish
