@@ -52,7 +52,7 @@ bash <스킬 폴더>/scripts/autopilot.sh 20     # 최대 20회
 AUTOPILOT_PERMISSION=skip bash <스킬 폴더>/scripts/autopilot.sh   # opt-in, 샌드박스 전용
 ```
 
-`<스킬 폴더>`는 스킬이 설치된 위치다. 예를 들어 이 레포 클론에서는 `plugins/autopilot/skills/autopilot`. 드라이버는 `.autopilot/STOP`이 생기거나 반복 한도에 도달하면 종료 코드 0으로, Claude가 연속 3회 비정상 종료하거나 인자가 잘못됐거나 `claude` CLI가 없으면 종료 코드 1로 멈춘다. 레포 안 어느 폴더에서 실행해도 된다. `AUTOPILOT_SLEEP`으로 반복 사이 대기 시간(기본 10초)을 바꿀 수 있다. `integration: pr`에서는 `gh` CLI로 PR을 만들며, `gh`가 없거나 이 레포에 push할 수 없으면 시작할 때 경고한다.
+`<스킬 폴더>`는 스킬이 설치된 위치다. 예를 들어 이 레포 클론에서는 `plugins/autopilot/skills/autopilot`. 드라이버는 `.autopilot/STOP`이 생기거나 반복 한도에 도달하면 종료 코드 0으로, Claude가 연속 3회 비정상 종료하거나, LOG도 커밋도 바뀌지 않은 실행이 3회 연속이거나(이유를 `STOP`에 남긴다. 횟수는 `AUTOPILOT_STALL_LIMIT`), 인자가 잘못됐거나 `claude` CLI가 없으면 종료 코드 1로 멈춘다. 실행마다 그 실행의 LOG 항목을 출력한다. 레포 안 어느 폴더에서 실행해도 된다. `AUTOPILOT_SLEEP`으로 반복 사이 대기 시간(기본 10초)을 바꿀 수 있다. `integration: pr`에서는 `gh` CLI로 PR을 만들며, `gh`가 없거나 이 레포에 push할 수 없으면 시작할 때 경고한다.
 
 ### 실행 상태 확인
 
