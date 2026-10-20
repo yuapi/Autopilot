@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 79
+next_id: 80
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -85,3 +85,4 @@ next_id: 79
 | T-076 | fix | done | 1 | 드라이버 프롬프트 "exactly one task"를 모델이 사람의 작업 수 예산으로 해석 → runlock --tasks 1 → task.sh가 STOP → 드라이버가 1회 후 멈춤. 드라이버 모드에서는 예산 무시(runlock·task.sh), 프롬프트 명확히 | AUTOPILOT_DRIVER=1에서 --tasks 무시·STOP 안 씀 테스트, 실제 드라이버 2회 | T-075 실제 드라이버 실행 | 2026-10-20 |
 | T-077 | fix | done | 1 | 계정 동기화 플러그인의 SKILL.md는 version: '1.10.2'(작은따옴표) → log.sh "skill unknown", status.sh 버전 줄 없음 | 작은·큰따옴표·따옴표 없음 모두 파싱 테스트 | T-075 실제 드라이버 실행(LOG "skill unknown") | 2026-10-20 |
 | T-078 | fix | done | 1 | CONFIG.md가 없으면 task.sh done이 셸 리디렉션 오류를 출력(tr < 없는 파일) | CONFIG 없이 done 출력에 오류 없음 테스트 | T-075 실제 드라이버 실행 | 2026-10-20 |
+| T-079 | test | done | 1 | eval 드라이버 모드가 자체 프롬프트("Read SKILL.md…")를 써서 실제 드라이버 프롬프트 결함(T-076)을 못 잡음 → autopilot.sh의 PROMPT와 허용 도구를 그대로 쓰고 작업 사본을 --plugin-dir로 | 가짜 claude로 프롬프트 일치 테스트, 실제 드라이버 eval 2회 | 회고: T-076은 eval로 안 보였음 | 2026-10-20 |
