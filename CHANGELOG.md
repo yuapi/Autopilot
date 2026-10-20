@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- `pr` integration on GitLab: merge requests and issues through `glab` when `origin` is on GitLab; the driver preflight checks `glab` (installed, logged in) instead of warning that `gh` is missing
 
 ## 1.22.0 — 2026-10-20
 - New `scripts/task.sh start|done|fail <ID>` makes BACKLOG transitions mechanical: `start` refuses while another task is in progress or code changes are uncommitted; `done` refuses unless the task has its own commit that names no other task; `fail` returns it to open or blocks it from the third attempt. Phases 2, 4 and 5 use it. A session-mode eval run still combined two tasks in one commit after 1.20

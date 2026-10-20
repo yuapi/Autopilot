@@ -110,6 +110,17 @@ ln -sf "$FAKEBIN/claude" "$NOGH/claude"
 out="$(cd "$d" && PATH="$NOGH" FAKE_MODE=ok bash "$DRIVER" 1 2>&1)"
 check "pr without gh installed → warns" grep -q "needs the gh CLI" <<<"$out"
 
+# GitLab origin: preflight checks glab instead of gh
+printf '#!/usr/bin/env bash\n[ "$1 $2" = "auth status" ] && exit "${FAKE_GLAB_AUTH:-0}"\n' > "$GHBIN/glab"; chmod +x "$GHBIN/glab"
+d="$(newrepo)"; cfg "$d" pr; git -C "$d" remote add origin https://gitlab.com/x/y.git
+out="$(FAKE_MODE=ok drive_gh "$d" 1 2>&1)"
+check "pr + GitLab origin + glab logged in → confirms" grep -q "glab can open and merge merge requests" <<<"$out"
+check_not "pr + GitLab origin → no gh message" grep -q "gh can open\|needs gh" <<<"$out"
+out="$(FAKE_GLAB_AUTH=1 FAKE_MODE=ok drive_gh "$d" 1 2>&1)"
+check "pr + GitLab origin + glab not logged in → warns" grep -q "needs glab logged in" <<<"$out"
+out="$(cd "$d" && PATH="$NOGH" FAKE_MODE=ok bash "$DRIVER" 1 2>&1)"
+check "pr + GitLab origin without glab → warns" grep -q "needs the glab CLI" <<<"$out"
+
 d="$(newrepo)"; cfg "$d" branch
 out="$(FAKE_MODE=ok drive_gh "$d" 1 2>&1)"
 check "branch mode without origin → warns" grep -q "needs a remote named origin" <<<"$out"

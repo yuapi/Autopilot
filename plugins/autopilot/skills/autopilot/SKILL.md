@@ -181,7 +181,7 @@ Discovery rules:
 
 What people already wrote down is a stronger signal than guesses. Use it when you can read it.
 
-1. Means: the `gh` CLI (`gh issue list --state open --json number,title,labels,body,updatedAt`), or a GitHub/GitLab/Jira MCP in the session. If neither exists, skip and write "no issue tracker" in the LOG once.
+1. Means: the `gh` CLI (`gh issue list --state open --json number,title,labels,body,updatedAt`), `glab issue list` for a GitLab origin, or a GitHub/GitLab/Jira MCP in the session. If neither exists, skip and write "no issue tracker" in the LOG once.
 2. Scope: open issues, and unresolved review comments on this repository's open PRs.
 3. Type: label `bug` → `fix`, `security` → `security`, `enhancement`/`feature` → `enhance`/`feature`; without a label, judge from the content. Skip `question`, `wontfix`, `duplicate` and issues assigned to a person.
 4. Write `issue #N` in the BACKLOG source column. Do not create a second task for the same issue. Split large ones into a feature document as in 1-D.
@@ -311,7 +311,7 @@ On success:
 | Phase 0 | leave a default branch for `autopilot/<date>` (`workbranch.sh`), otherwise stay | fetch the base and start from its latest commit | same |
 | Phase 3 start | - | create branch `<prefix><task ID>-<slug>` | same |
 | Phase 4 failure | roll back | roll back, return to the base, delete the local task branch | same |
-| Phase 5 success | commit | commit → `git push -u origin <branch>` | push → open a PR (`gh` or MCP) → merge if `merge: auto` |
+| Phase 5 success | commit | commit → `git push -u origin <branch>` | push → open a PR (`gh`; `glab mr create` for a GitLab origin; or MCP) → merge if `merge: auto` |
 
 Handling the state files (`.autopilot/`):
 - While running, the `.autopilot/` in the working directory is the only truth. When switching branches, copy `.autopilot/` somewhere temporary and copy it back after switching. That way attempts and done records survive even when PRs are not merged yet.
@@ -405,7 +405,7 @@ bash <skill folder>/scripts/autopilot.sh 20       # 20 runs at most
 
 The default is an `--allowedTools` allowlist. In a dedicated container, `AUTOPILOT_PERMISSION=skip`.
 
-The driver only gives Claude Bash and file tools, not MCP servers, so in `pr` mode PRs are opened with the `gh` CLI. Before the loop starts, the driver checks the integration mode and warns if `origin` is missing (`branch`/`pr`) or if `gh` is missing or cannot push to the repository (`pr`).
+The driver only gives Claude Bash and file tools, not MCP servers, so in `pr` mode PRs are opened with the `gh` CLI (merge requests with `glab` when `origin` is on GitLab). Before the loop starts, the driver checks the integration mode and warns if `origin` is missing (`branch`/`pr`) or if `gh` (`glab`) is missing or cannot push to the repository (`pr`).
 
 ## Checking status (for people)
 
