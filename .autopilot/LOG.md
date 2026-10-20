@@ -487,3 +487,11 @@
 - 발굴: SKILL.md 전체 정독(심화 1단계). 결함 1(branch/pr에서 publish가 task.sh done 검사보다 먼저), 불일치 5(사람에게 남기지 않기↔scope, CONFIG 설명, 예산 문장 위치, 템플릿 설명, gitignore 목록)
 - 변경: SKILL.md Phase 5 순서(커밋 → done → publish), 원칙·표·Phase 0·Templates·마지막 절 갱신, tests/test_skill_rules.sh(+3), CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-20T15:54Z | - | release | skill 1.30.0
+- 1.30.0 릴리즈: release/1.30.0 → main, main → develop 역병합. 태그 대기: v1.30.0 (403, 누적 v1.11.0~v1.30.0)
+
+## 2026-10-20T16:00Z | T-074 | done | skill 1.30.0
+- 발굴(심화 4단계): 하지 않기로 한 것(Actions CI) 이유 유지, 이슈 0, 제안 2개 결정 대기. validate.sh 2분 16초 중 test_eval 90초 발견
+- 변경: scripts/eval.sh(AUTOPILOT_EVAL_POLL), tests/test_eval.sh(주기 0.1초, 가짜 대기 단축), CHANGELOG
+- 검증: test_eval 90초 → 24초, 3회 연속 83/83, validate PASS
