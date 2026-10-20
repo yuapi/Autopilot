@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 47
+next_id: 48
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -53,3 +53,4 @@ next_id: 47
 | T-044 | docs | done | 1 | README 2종 파일 트리에 scan·hook·log·finalstop 스크립트와 commands/ 폴더 누락 | 트리가 모든 스크립트를 이름으로 언급하는 테스트 | 심화 발굴 3단계(문서 예제 정확성) | 2026-10-20 |
 | T-045 | enhance | done | 1 | Stop 훅 block 메시지가 finalstop.sh를 안내(끝났다고 생각하면 무엇이 빠졌는지 기계적으로 확인) | 출력이 유효한 JSON이고 finalstop.sh를 언급하는 테스트 | 심화 발굴 3단계(사용성: 세션이 일찍 끝나려 할 때의 안내) | 2026-10-20 |
 | T-046 | enhance | done | 1 | 클라우드 세션 + integration local이면 커밋이 컨테이너와 함께 사라짐 → Phase 0 첫 진입에 한 줄 안내·LOG, status.sh 경고 (CONFIG는 바꾸지 않음) | 클라우드/비클라우드/pr 모드 status 테스트, validate 통과 | 심화 발굴 2단계 새 시나리오: 클라우드 세션에서 플러그인 첫 실행 | 2026-10-20 |
+| T-047 | enhance | done | 1 | scripts/task.sh start/done/fail: 진행 중 작업·커밋 안 된 코드가 있으면 start 거부, 자기 커밋(다른 작업 ID 없음)이 없으면 done 거부, fail은 open/3회째 blocked | task.sh 테스트, eval session 2회 규칙 검사 ok | ROADMAP 약한 것: 세션 모드 작업 묶기 잔존 | 2026-10-20 |
