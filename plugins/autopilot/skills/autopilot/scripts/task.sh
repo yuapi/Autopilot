@@ -37,6 +37,13 @@ if [ "$cmd" = done ]; then
   range="$start..HEAD"; [ "$start" = none ] && range=HEAD
   code="$(git log --format= --name-only "$range" | grep -v '^$' | grep -v '^\.autopilot/' | grep -vx '.gitignore' | head -1 || true)"
   [ -n "$code" ] || { echo "[task] refused: the commits since $id started change only .autopilot/" >&2; exit 1; }
+  scope="$(sed -n 's/^scope:[[:space:]]*\([^#]*\).*/\1/p' .autopilot/CONFIG.md 2>/dev/null | head -1 | xargs || true)"
+  if [ -n "$scope" ] && [ "$scope" != . ] && [ "$scope" != auto ]; then
+    outside="$(git log --format= --name-only "$range" -- . ':!.autopilot' ':!.gitignore' | grep -v '^$' | sort -u | while IFS= read -r f; do
+      inside=0; for p in $scope; do p="${p#./}"; p="${p%/}"; case "$f" in "$p"|"$p"/*) inside=1;; esac; done
+      [ "$inside" = 1 ] || printf '%s ' "$f"; done)"
+    [ -z "$outside" ] || { echo "[task] refused: changes outside scope ($scope) from .autopilot/CONFIG.md: $outside— roll them back or leave them to a person" >&2; exit 1; }
+  fi
   others="$(git log --format=%s "$range" -- . ':!.autopilot' ':!.gitignore' | grep -oE 'T-[0-9]+' | grep -vx "$id" | sort -u | tr '\n' ' ' || true)"
   [ -z "$others" ] || { echo "[task] refused: commits since $id started also name $others— one task per commit. Roll back and redo them one at a time" >&2; exit 1; }
 fi
@@ -60,7 +67,9 @@ if target is None:
     sys.exit(f"[task] no BACKLOG row {tid}")
 c = cells(lines[target])
 if len(c) < 8:
-    sys.exit(f"[task] BACKLOG row {tid} has {len(c)} columns, expected 8")
+    sys.exit(f"[task] BACKLOG row {tid} has {len(c)} columns, expected 8. Fix the row first, e.g.\n"
+             f"  | ID | Type | Status | Attempts | Task | Done when | Source | Completed |\n"
+             f"  | {tid} | fix | open | 0 | what to do | how to verify | where it came from | |")
 status = c[2].strip()
 try: attempts = int(c[3].strip() or 0)
 except ValueError: attempts = 0

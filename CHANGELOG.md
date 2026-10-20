@@ -7,6 +7,10 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.28.0 — 2026-10-20
+- New CONFIG key `scope` (set by people) limits autopilot to some paths, e.g. one package of a monorepo: discovery reads and runs only there, tasks change only files there, `task.sh done` refuses a commit that changes anything outside, and status.sh shows it
+- task.sh shows the expected BACKLOG layout and an example row when a row has the wrong number of columns, instead of only the count
+
 ## 1.27.1 — 2026-10-20
 - `eval.sh --fixture all` runs every fixture with the same options and prints one summary of the scores (exit 1 if any fails); CLAUDE.md points to it for discovery rule changes
 - `eval.sh --mode session` asks for `--iterations` tasks and checks that the run stopped itself on that task budget; the eval writes STOP only one task later, as a safety net

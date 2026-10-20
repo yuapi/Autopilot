@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 61
+next_id: 63
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -67,3 +67,5 @@ next_id: 61
 | T-058 | test | done | 1 | eval --mode session이 "N개 작업" 예산으로 요청하고, 예산으로 끝났는지(STOP이 task.sh가 쓴 것) 채점. 감시자는 N+1에서만 개입 | 가짜 claude 테스트, 실제 실행 1회 | T-057: 예산 기능이 eval로 계속 측정되지 않음 | 2026-10-20 |
 | T-059 | docs | done | 1 | README 2종 "업데이트" 절: 계정 플러그인은 자동 동기화되지만 실행 중인 세션은 시작 때 버전을 유지 → 새 세션 시작, /autopilot:status로 버전 확인 | README 2종 | 관찰: 이 세션은 1.10.2를 로드했고 계정 동기화본은 1.27.0(generation 3) | 2026-10-20 |
 | T-060 | enhance | done | 1 | eval.sh --fixture all: 모든 예제를 같은 옵션으로 돌리고 예제별 점수·규칙 결과 요약, 하나라도 실패하면 exit 1 | 가짜 claude 테스트, CLAUDE.md 안내 갱신 | CLAUDE.md: 발굴 규칙 변경 시 모든 예제 eval — 지금은 명령 4개 | 2026-10-20 |
+| T-061 | enhance | done | 1 | task.sh: 칸 수가 틀린 BACKLOG 행(사람이 손으로 추가 등)에 기대 형식과 예시를 보여 주고 고치게 안내 | 7칸 행 거부 메시지 테스트 | 심화 발굴 2단계 시나리오: 사람이 Completed 칸 없이 행 추가 | 2026-10-20 |
+| T-062 | feature | done | 1 | CONFIG scope: 모노레포에서 지정한 경로 안에서만 발굴·수정, task.sh done이 범위 밖 변경 거부, status.sh 표시 | task.sh·status 테스트, SKILL.md 규칙, CONFIG 템플릿 | 시나리오: 모노레포의 패키지 하나만 맡기기 | 2026-10-20 |

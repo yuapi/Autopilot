@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.27.1
+  version: 1.28.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.27.1** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.28.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -106,6 +106,8 @@ Run discovery if any of these holds:
 - The last 3 runs were all `blocked`
 
 Separately, if the issue tracker is readable, check **in every task's Phase 1** only the issues opened or updated since ROADMAP `last_issue_check` and queue them (1-E below). What people asked for is picked up right away.
+
+If CONFIG sets `scope` (paths other than `.`), discovery covers only those paths: run `scan.sh <path>` for each, read and run only the code there, and queue only tasks that change files there. Baseline commands may still run repository-wide.
 
 Discovery runs on two axes. Running only the **maintenance axis** piles up tests and lint. The **product axis** must always run too.
 
@@ -274,7 +276,7 @@ Claim it with `bash <skill folder>/scripts/task.sh start <ID>`: it refuses while
 
 ### Phase 3 — implement
 
-- Do not touch files outside the task's scope. If you find a problem outside the scope, only add a new BACKLOG task for it.
+- Do not touch files outside the task's scope. If you find a problem outside the scope, only add a new BACKLOG task for it. With CONFIG `scope`, never change files outside those paths (`.autopilot/` aside); `task.sh done` refuses such a commit, and a problem found outside the scope is written in the LOG for a person instead of queued.
 - If the task turns out to be unnecessary (the defect does not reproduce, it is already fixed, the premise was wrong), do not invent a change: roll back anything you changed, run `bash <skill folder>/scripts/task.sh drop <ID>` (status `blocked`, no commit) and write the evidence under ROADMAP "Not doing" and in the LOG (`blocked`). It counts as neither done nor failed work.
 - Public interfaces may **grow but not change or shrink.** Add new commands, endpoints, options and functions freely. Keep existing signatures, behavior and defaults. If something must change, add it under a new name and leave the old one. The only exception is the scope written in an `adopted` proposal.
 - Add a new dependency only if all of these hold: widely used (a standard of its ecosystem), permissive license (MIT/Apache/BSD), pinned version, and the reason written in the commit message. Otherwise mark the task `blocked`.
@@ -341,7 +343,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30 | T-042 | done | skill 1.27.1
+## 2026-10-01T14:30 | T-042 | done | skill 1.28.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
