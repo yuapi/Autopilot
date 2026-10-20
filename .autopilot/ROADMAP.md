@@ -2,7 +2,7 @@
 
 last_scan: 2026-10-20
 last_issue_check: 2026-10-20 (open 이슈 0건, open PR 0건)
-last_retro: 2026-10-20T13:20
+last_retro: 2026-10-20T14:39Z
 
 ## 제품
 
@@ -77,6 +77,7 @@ last_retro: 2026-10-20T13:20
 - LOG 항목은 log.sh로만 쓴다. 손으로 쓴 시각은 지어낸 값이었다(이 레포 포함)
 - 작업은 task.sh start로 먼저 잡고 구현한다. 먼저 고치면 start가 거부한다(T-048에서 직접 겪음). 스크립트가 거부하면 우회하지 말고 순서를 바로잡는다
 - eval 예제를 새로 만들 때 결함이 서로 가리지 않는지 먼저 돌려 본다(go test가 vet 일부를 돌려 빌드가 깨지며 실패 테스트를 가렸다)
+- Windows를 시나리오에 넣는다: CRLF 체크아웃(core.autocrlf)에서 상태 파일 재작성과 .sh 실행이 둘 다 깨졌었다. Python으로 상태 파일을 쓸 때는 newline=""
 
 ## 하지 않기로 한 것
 - GitHub Actions CI: 레포 규칙상 로컬 검증만 (CLAUDE.md)
