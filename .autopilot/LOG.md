@@ -563,3 +563,10 @@
 ## 2026-10-20T17:03Z | T-085 | done | skill 1.33.0
 - 변경: scripts/autopilot.sh(git 정체 없으면 첫 실행 전 이유·고치는 법과 함께 exit 1), SKILL.md Phase 0(정체 없으면 STOP, 스스로 설정 금지), tests/test_driver.sh(+5, 테스트 레포에 로컬 정체 설정), CHANGELOG
 - 검증: validate PASS. GIT_CONFIG_GLOBAL=/dev/null로 정체 없는 환경 재현
+
+## 2026-10-20T17:06Z | - | release | skill 1.34.0
+- 1.34.0 릴리즈: release/1.34.0 → main, main → develop 역병합. 태그 대기: v1.34.0 (403, 누적 v1.11.0~v1.34.0)
+
+## 2026-10-20T17:09Z | T-086 | done | skill 1.34.0
+- 변경: scripts/autopilot.sh(첫 커밋 없고 파일이 있으면 첫 실행 전 고치는 법과 함께 exit 1), SKILL.md Phase 0(같은 경우 STOP, 대신 커밋하지 않음), tests/test_driver.sh(+5: 파일 있음 → 멈춤, 빈 새 레포는 실행), CHANGELOG
+- 검증: validate PASS. 재현: stash "You do not have the initial commit yet", task.sh start "uncommitted changes (?? app.py)"
