@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.12.0 — 2026-10-20
 - Discovery no longer skips steps: new `scripts/scan.sh` lists code markers (in comments) and risky patterns (shell built from strings, eval/exec, unsafe deserialization, disabled TLS checks, hard-coded secrets) with file:line, and every line must become a task or a reason under "Not doing". Phase 1 ends with a done-check (feature map filled, commands actually run, three scenarios). Generated files are never committed. Eval score 4/5 → 5/5
 - `scripts/eval.sh` measures discovery quality: runs the working-copy skill once in driver mode on a fixture repository with five seeded defects (`tests/eval/`) and scores how many reached the BACKLOG. Opt-in (needs the claude CLI), not part of validate.sh
 
