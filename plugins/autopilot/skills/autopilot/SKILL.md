@@ -355,7 +355,7 @@ To release it: create `.autopilot/STOP` (or `/autopilot:stop`) or delete `.autop
 {"hooks":{"Stop":[{"hooks":[{"type":"command","command":"bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/autopilot-stop.sh\""}]}]}}
 ```
 
-It also refreshes such a copy whenever it differs from this skill's version. If a permission check blocks it, record that in the LOG and rely on the rules alone.
+It also refreshes such a copy whenever it differs from this skill's version. `hook.sh uninstall` removes the copy and only its settings entry. If a permission check blocks it, record that in the LOG and rely on the rules alone.
 
 ## Never
 

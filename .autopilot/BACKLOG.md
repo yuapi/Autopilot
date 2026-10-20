@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 32
+next_id: 33
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -38,3 +38,4 @@ next_id: 32
 | T-029 | enhance | done | 1 | eval.sh --iterations N: 드라이버를 N회 돌려 둘째 작업부터의 동작(상태 이어받기, 같은 작업 반복 없음, 실패 없음)을 함께 보고·채점 | test_eval에 반복 경우, 실제 todo 3회 실행 | 시나리오: 밤새 드라이버 | 2026-10-20 |
 | T-030 | feature | done | 1 | 플러그인 명령 /autopilot:status, /autopilot:stop (스킬 폴더 경로를 몰라도 상태 보기·멈추기) | claude plugin validate 통과, 명령이 status.sh·STOP을 호출하는 테스트, README | 사용성: 첫 실행 안내 | 2026-10-20 |
 | T-031 | enhance | done | 1 | Stop 훅을 SKILL.md frontmatter에 선언(레포 복사·settings.json 수정 없이 스킬을 호출한 세션에서만 동작) | 두 설치 형태에서 frontmatter 명령이 block하는 테스트, 사본과 같이 돌 때 정체 카운터 1회, validate·plugin validate 통과 | T-030 발견(skill hooks) | 2026-10-20 |
+| T-032 | feature | done | 1 | hook.sh uninstall: 1.16부터 필요 없는 레포 훅 사본과 settings.json 항목 제거(다른 훅 보존) | 제거·재실행·빈 키 정리·잘못된 JSON 거부 테스트, status.sh 안내 | 시나리오: 1.15 이하 사용자가 1.16으로 업그레이드 | 2026-10-20 |
