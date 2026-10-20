@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.35.1 — 2026-10-20
 - finalstop.sh refused the final stop because of the `.gitignore` line `task.sh start` adds; it now treats `.gitignore` as state, like task.sh
 
 ## 1.35.0 — 2026-10-20
