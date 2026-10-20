@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 25
+next_id: 26
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -31,3 +31,4 @@ next_id: 25
 | T-022 | enhance | open | 0 | 동시 실행 방지: 같은 레포에서 세션 두 개가 autopilot을 돌리면 BACKLOG·커밋이 충돌. RUN 마커에 세션 정보·시각을 쓰고, 다른 세션의 RUN이 살아 있으면 시작하지 않음 | SKILL.md 규칙 + 훅·status 테스트 | 시나리오: 두 터미널에서 실행 | |
 | T-023 | enhance | open | 0 | 드라이버가 `.autopilot/CONFIG.md` 통합 모드가 pr일 때 필요한 도구(gh 또는 MCP)를 시작 전에 확인하고, 없으면 안내 후 local로 동작함을 출력 | test_driver에 경우 추가 | 품질 속성: 첫 실행 안내 | |
 | T-024 | fix | done | 1 | status.sh 출력을 `| head`로 자르면 BrokenPipeError 트레이스가 노출됨 | 끊겨도 오류 출력 없음 테스트 | 관찰 2026-10-19 | 2026-10-19 |
+| T-025 | fix | done | 1 | local 모드가 기본 브랜치(main 등)에 바로 커밋함 → workbranch.sh로 autopilot/<날짜> 브랜치로 옮김 | tests/test_workbranch.sh 통과 | 사람 요청 | 2026-10-20 |
