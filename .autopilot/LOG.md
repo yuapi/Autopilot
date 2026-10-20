@@ -352,3 +352,8 @@
 - 변경: tests/eval/fixture-kv(Go 모듈, 결함 5)·.expected, tests/test_eval.sh(+3: 시작 상태 확인, go 없으면 건너뜀), README 2종, CHANGELOG
 - 검증: validate PASS. 실제 eval --fixture kv --mode session --iterations 2: 10/10, 규칙 검사 전부 ok, 기준선에 go test ./...·go vet ./... 기록
 - 메모: printf 형식 오류는 go test가 vet 일부를 돌려 빌드가 깨져 실패 테스트를 가림 → go test가 안 돌리는 unreachable로 바꿈
+
+## 2026-10-20T13:17 | T-055 | done | skill 1.25.0
+- 발굴: driver eval stats 2회 6/6·규칙 ok. 심화 발굴 1단계(SKILL.md 정독)에서 Phase 0 단계 2(작업 트리 stash)와 Phase 2 첫 검사(이전 작업 끝내기)가 충돌
+- 변경: SKILL.md Phase 0 단계 2(in_progress 행이 있으면 stash하지 않음), tests/test_skill_rules.sh(+1), CHANGELOG
+- 검증: validate PASS(정리 명령 추출 테스트 그대로 통과)
