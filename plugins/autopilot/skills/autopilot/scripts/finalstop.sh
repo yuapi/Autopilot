@@ -8,6 +8,8 @@
 # external signals); no BACKLOG task is open or in progress; nothing outside .autopilot/ is uncommitted.
 # Then writes STOP from stdin, removes RUN and adds a `stop` LOG entry. Exit 1 with the reasons otherwise.
 set -eu
+PY="$(command -v python3 || command -v python || true)"   # Windows Git Bash often has only python
+[ -n "$PY" ] || { echo "[autopilot] needs Python 3 on PATH (python3 or python)" >&2; exit 1; }
 here="$(cd "$(dirname "$0")" && pwd)"
 root="$(git -C "${1:-.}" rev-parse --show-toplevel 2>/dev/null || true)"
 [ -n "$root" ] || { echo "[finalstop] not inside a git repository" >&2; exit 1; }
@@ -15,7 +17,7 @@ cd "$root"
 summary=""
 [ -t 0 ] || summary="$(cat)"
 
-problems="$(python3 - <<'PY'
+problems="$("$PY" - <<'PY'
 import re
 def read(p):
     try: return open(p, encoding="utf-8").read()

@@ -10,6 +10,8 @@
 # The start commit is kept in .autopilot/.task (ignored by git). Prints what it did; exit 1 with the reason
 # when it refuses. Only the status, attempts and completed cells of the row are changed.
 set -eu
+PY="$(command -v python3 || command -v python || true)"   # Windows Git Bash often has only python
+[ -n "$PY" ] || { echo "[autopilot] needs Python 3 on PATH (python3 or python)" >&2; exit 1; }
 cmd="${1:-}"; id="${2:-}"
 usage() { echo "usage: task.sh start|done|fail|drop <task ID> [repository path]" >&2; exit 1; }
 case "$cmd" in start|done|fail|drop) ;; *) usage;; esac
@@ -48,7 +50,7 @@ if [ "$cmd" = done ]; then
   [ -z "$others" ] || { echo "[task] refused: commits since $id started also name $others— one task per commit. Roll back and redo them one at a time" >&2; exit 1; }
 fi
 
-python3 - "$cmd" "$id" <<'PY'
+"$PY" - "$cmd" "$id" <<'PY'
 import datetime, re, sys
 cmd, tid = sys.argv[1], sys.argv[2]
 p = ".autopilot/BACKLOG.md"

@@ -42,4 +42,20 @@ start=$(date +%s)
 PATH="$NOGNU" bash -c ". '$REPO/tests/lib.sh'; with_timeout 1 sleep 5" >/dev/null 2>&1
 check "without timeout, perl fallback enforces the limit" test $(( $(date +%s) - start )) -lt 4
 
+# Windows Git Bash often has only `python`: the skill scripts must find it
+ONLYPY="$TMPROOT/onlypy"; mkdir -p "$ONLYPY"
+for f in "$NOGNU"/*; do [ "$(basename "$f")" = python3 ] || ln -s "$(readlink "$f")" "$ONLYPY/$(basename "$f")"; done
+ln -s "$(command -v python3)" "$ONLYPY/python"
+check "setup: no python3, only python" bash -c "PATH='$ONLYPY' command -v python && ! PATH='$ONLYPY' command -v python3"
+S="$REPO/$SKILL_REL/scripts"
+d="$(mktemp -d "$TMPROOT/py.XXXX")"
+(cd "$d" && git init -q && git config user.email t@t && git config user.name t && mkdir .autopilot \
+  && printf '| T-001 | fix | open | 0 | x | t | s | |\n' > .autopilot/BACKLOG.md && echo a > c && git add -A && git commit -qm i) >/dev/null
+check "runlock.sh start with only python" bash -c "cd '$d' && PATH='$ONLYPY' CLAUDE_CODE_SESSION_ID=s bash '$S/runlock.sh' start"
+check "task.sh start with only python" bash -c "cd '$d' && PATH='$ONLYPY' bash '$S/task.sh' start T-001 >/dev/null"
+check "status.sh with only python" bash -c "PATH='$ONLYPY' bash '$S/status.sh' '$d' | grep -q 'Now: T-001'"
+check "archive.sh with only python" bash -c "cd '$d' && PATH='$ONLYPY' bash '$S/archive.sh'"
+NOPY="$TMPROOT/nopy"; mkdir -p "$NOPY"; for f in "$ONLYPY"/*; do [ "$(basename "$f")" = python ] || ln -s "$(readlink "$f")" "$NOPY/$(basename "$f")"; done
+check "no Python at all → a clear error" bash -c "PATH='$NOPY' bash '$S/status.sh' '$d' 2>&1 | grep -q 'needs Python 3 on PATH'"
+
 finish

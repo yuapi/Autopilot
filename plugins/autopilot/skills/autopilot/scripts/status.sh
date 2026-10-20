@@ -2,12 +2,14 @@
 # autopilot run status summary: bash status.sh [repository path, default: current directory]
 # Only reads the .autopilot/ state files.
 set -eu
+PY="$(command -v python3 || command -v python || true)"   # Windows Git Bash often has only python
+[ -n "$PY" ] || { echo "[autopilot] needs Python 3 on PATH (python3 or python)" >&2; exit 1; }
 self="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
 target="${1:-.}"
 root="$(git -C "$target" rev-parse --show-toplevel 2>/dev/null || (cd "$target" && pwd))"
 cd "$root"
 [ -d .autopilot ] || { echo "[status] no .autopilot/ in $root. autopilot has not run in this repository yet." >&2; exit 1; }
-python3 - "$root" "$self" << 'PY'
+"$PY" - "$root" "$self" << 'PY'
 import os, re, signal, sys, time
 signal.signal(signal.SIGPIPE, signal.SIG_DFL)  # exit quietly when the output is cut off (e.g. `| head`)
 root = sys.argv[1]; A = ".autopilot"
