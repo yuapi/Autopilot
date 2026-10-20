@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.17.0 — 2026-10-20
 - scan.sh printed matches as `<line>:<text>` without the file name when only one file matched, and skipped files with non-ASCII names (git quoted the path). Both fixed
 - `scripts/hook.sh uninstall` removes the repository hook copy and only its `settings.json` entry, now that the skill carries its own hook. status.sh suggests it when a copy is present
 
