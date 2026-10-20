@@ -164,4 +164,11 @@ echo "Final stop: no progress" > "$d/.autopilot/STOP"; printf '' > "$d/.autopilo
 check "the Stop hook's no-progress stop is not a final stop" grep -q "ok      final stop only after.*(no final stop)" <<<"$(grade "$d")"
 check_not "--grade on a non-run → exit 1" bash "$EV" --grade "$TMPROOT/nope"
 
+# wordings real runs used for the seeded defects are graded as found (todo fixture)
+match() { python3 -c 'import re,sys; rx=[l for l in open(sys.argv[1]) if l.startswith(sys.argv[2]+" |")][0].split("|",2)[2].strip(); sys.exit(0 if re.search(rx, sys.argv[3], re.I) else 1)' "$REPO/tests/eval/fixture-todo.expected" "$1" "$2"; }
+check "off-by-one: 'done N should mark item N (1-based)'" match off-by-one "done N should mark item N (1-based) and report bad numbers cleanly"
+check "missing-db: 'list crashes when DB missing'" match missing-db "list crashes when DB missing"
+check "missing-db: 'list works without a DB'" match missing-db "list works without a DB"
+check_not "off-by-one does not match the remove task" match off-by-one "implement remove per README, update usage"
+
 finish

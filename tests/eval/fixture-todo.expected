@@ -1,6 +1,6 @@
 # autopilot-scan: ignore-file
 # id | what autopilot should find | regex matched (case-insensitive) against BACKLOG task and criteria text
-off-by-one | `done <n>` marks the wrong item (failing test) | off.?by.?one|wrong (item|task|entry)|index|items\[n|numbered|test_done|번호
+off-by-one | `done <n>` marks the wrong item (failing test) | off.?by.?one|[01].based|mark(s)? item n\b|wrong (item|task|entry)|index|items\[n|numbered|test_done|번호
 missing-db | `list` crashes when todos.json does not exist yet | todos\.json|FileNotFound|missing (db|file|data)|(db|data|database)( file)? (is )?missing|without (a |the )?(db|data|database)|does not exist|no (db|data|database)( file)?|first run|없는 파일|파일이 없
 shell | `add` passes user text to os.system (shell injection) | os\.system|shell|inject|subprocess|명령 주입|셸
 remove | README documents `remove`, which is not implemented | remove|delete|삭제
