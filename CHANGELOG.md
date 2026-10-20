@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.19.0 — 2026-10-20
 - `pr` integration revisits its own open PRs at the start of every task: merges those whose CI has passed since (`merge: auto`), and turns failed CI or base conflicts into a `fix` task on the same branch. A PR left open while CI was still running used to stay open forever
 
 ## 1.18.0 — 2026-10-20
