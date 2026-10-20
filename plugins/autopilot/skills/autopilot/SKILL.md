@@ -404,7 +404,7 @@ bash <skill folder>/scripts/autopilot.sh          # unlimited
 bash <skill folder>/scripts/autopilot.sh 20       # 20 runs at most
 ```
 
-The default is an `--allowedTools` allowlist. In a dedicated container, `AUTOPILOT_PERMISSION=skip`.
+The default is an `--allowedTools` allowlist. In a dedicated container, `AUTOPILOT_PERMISSION=skip`. `AUTOPILOT_MODEL` picks the model for every run.
 
 The driver only gives Claude Bash and file tools, not MCP servers, so in `pr` mode PRs are opened with the `gh` CLI (merge requests with `glab` when `origin` is on GitLab). Before the loop starts, the driver checks the integration mode and warns if `origin` is missing (`branch`/`pr`) or if `gh` (`glab`) is missing or cannot push to the repository (`pr`).
 

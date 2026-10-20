@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- Model choice: the driver passes `AUTOPILOT_MODEL` to `claude --model` for every run, and `scripts/eval.sh --model <name>` runs an eval with another model to compare
 
 ## 1.24.1 — 2026-10-20
 - `task.sh done` refused when a bookkeeping commit since `start` (changing only `.autopilot/`, e.g. queueing a follow-up task) named another task ID; only commits that change code count now

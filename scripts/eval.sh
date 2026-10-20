@@ -14,13 +14,14 @@
 # Rule checks (one commit per task, LOG only appended, deep discovery before a final stop) are reported
 # separately; any broken rule fails the eval whatever the score.
 # Exit codes: 0 score >= AUTOPILOT_EVAL_THRESHOLD (default 0.6) and no broken rule · 1 otherwise · 3 skipped (no claude CLI)
+# --model <name> runs the eval with that model (claude --model) to compare models.
 # --grade <dir> grades a run kept with --keep again without running anything (pass the same --fixture,
 # --iterations and --mode).
 # CLAUDE_BIN overrides the claude command (the tests use a fake).
 set -u
 cd "$(dirname "$0")/.."
 REPO="$(pwd)"
-keep=0; timeout_s=1200; fixture=todo; iterations=1; mode=driver; grade=""
+keep=0; timeout_s=1200; fixture=todo; iterations=1; mode=driver; grade=""; model=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --keep) keep=1;;
@@ -29,7 +30,8 @@ while [ $# -gt 0 ]; do
     --iterations) shift; iterations="${1:?--iterations needs a number}";;
     --mode) shift; mode="${1:?--mode needs driver or session}";;
     --grade) shift; grade="${1:?--grade needs a directory kept with --keep}";;
-    *) echo "usage: eval.sh [--fixture <name>] [--iterations <n>] [--mode driver|session] [--keep] [--timeout <seconds>]" >&2; exit 1;;
+    --model) shift; model="${1:?--model needs a model name}";;
+    *) echo "usage: eval.sh [--fixture <name>] [--iterations <n>] [--mode driver|session] [--model <name>] [--grade <dir>] [--keep] [--timeout <seconds>]" >&2; exit 1;;
   esac
   shift
 done
@@ -50,6 +52,7 @@ fi
 
 SKILL="$REPO/plugins/autopilot/skills/autopilot"
 timed_out=0
+model_args=(); [ -z "$model" ] || model_args=(--model "$model")
 if [ -n "$grade" ]; then
   work="$(cd "$grade" && pwd)"; keep=0
 else
@@ -86,7 +89,7 @@ else
   if [ "$mode" = session ]; then
     prompt="Run the autopilot skill (autopilot:autopilot) in this repository with the Skill tool and follow it in session mode. Do not ask questions."
     echo "[eval] fixture $fixture: one session-mode run until $iterations task(s) are logged, in $work (timeout $((timeout_s * iterations))s)…"
-    run_claude $((timeout_s * iterations)) "$iterations" env -u AUTOPILOT_DRIVER "$CLAUDE_BIN" -p "$prompt" \
+    run_claude $((timeout_s * iterations)) "$iterations" env -u AUTOPILOT_DRIVER "$CLAUDE_BIN" -p "$prompt" ${model_args[@]+"${model_args[@]}"} \
       --plugin-dir "$REPO/plugins/autopilot" --allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,TodoWrite,Skill"
   else
     prompt="Read $SKILL/SKILL.md and follow its procedure exactly, in driver mode (AUTOPILOT_DRIVER=1 is set): do exactly one task in this repository, then exit. <skill folder> in the rules means $SKILL. Do not ask questions."
@@ -94,7 +97,7 @@ else
     for it in $(seq 1 "$iterations"); do
       [ -f "$work/.autopilot/STOP" ] && { echo "[eval] STOP appeared, no more iterations"; break; }
       echo "[eval] iteration $it"
-      run_claude "$timeout_s" 0 env AUTOPILOT_DRIVER=1 "$CLAUDE_BIN" -p "$prompt" \
+      run_claude "$timeout_s" 0 env AUTOPILOT_DRIVER=1 "$CLAUDE_BIN" -p "$prompt" ${model_args[@]+"${model_args[@]}"} \
         --allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,TodoWrite" --add-dir "$SKILL"
     done
   fi

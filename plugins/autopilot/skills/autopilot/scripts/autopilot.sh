@@ -13,6 +13,7 @@
 # Environment variables:
 #   AUTOPILOT_SLEEP        seconds to wait between runs (default 10)
 #   AUTOPILOT_STALL_LIMIT  runs in a row without progress before stopping (default 3, same as the Stop hook)
+#   AUTOPILOT_MODEL        model for every run, passed to claude --model (default: the CLI's default)
 #
 # Permission mode (AUTOPILOT_PERMISSION):
 #   allowlist (default) : --allowedTools allows only the needed tools. Works as root.
@@ -107,6 +108,10 @@ case "${AUTOPILOT_PERMISSION:-allowlist}" in
     PERM_ARGS=(--allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,Skill,TodoWrite")
     ;;
 esac
+if [ -n "${AUTOPILOT_MODEL:-}" ]; then
+  PERM_ARGS+=(--model "$AUTOPILOT_MODEL")
+  echo "[driver] model: $AUTOPILOT_MODEL"
+fi
 
 # Progress = LOG.md or HEAD changed during the run
 progress_sig() { { cat .autopilot/LOG.md 2>/dev/null; git rev-parse HEAD 2>/dev/null; } | cksum | cut -d' ' -f1; }
