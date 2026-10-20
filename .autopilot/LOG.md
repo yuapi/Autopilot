@@ -373,3 +373,6 @@
 ## 2026-10-20T13:29 | T-057 | done | skill 1.26.0
 - 변경: scripts/runlock.sh(start --tasks N, 인자 파싱), scripts/task.sh(done이 예산을 세고 N개째에 STOP), scripts/status.sh(예산 진행 표시), SKILL.md Phase 0(사람이 작업 수를 말하면 --tasks), README 2종, tests/test_task.sh(+12), CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-20T13:30 | - | discover | skill 1.26.0
+- T-057 실제 확인: claude -p "… for 2 tasks" --plugin-dir(todo 예제)에서 모델이 runlock.sh start --tasks 2를 쓰고 2작업(작업마다 커밋) 후 task.sh done이 STOP 작성, 훅이 세션을 놓아 줌, RUN 삭제
