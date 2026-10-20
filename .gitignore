@@ -1,7 +1,7 @@
 dist/
 .DS_Store
 
-# autopilot 실행 산출물
+# autopilot run artifacts
 .autopilot/STOP
 .autopilot/RUN
 .autopilot/driver-logs/
