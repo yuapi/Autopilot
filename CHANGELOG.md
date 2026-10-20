@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- Eval grader: the todo fixture's off-by-one pattern accepts "mark item N (1-based)" wording a real run used
 
 ## 1.20.0 — 2026-10-20
 - New `scripts/finalstop.sh` takes the STOP summary and refuses the final stop while ROADMAP "Deep discovery" lacks a stage, a task is open or in progress, or changes outside `.autopilot/` are uncommitted; otherwise writes STOP, removes RUN and logs it. Phase 2 starts by checking that the previous task was committed or rolled back (one task = one commit), and noticed defects are queued instead of being "left for a person". A session-mode eval run had broken all three
