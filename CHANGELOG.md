@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.29.0 — 2026-10-20
 - Plugin command `/autopilot:run [N]` starts the loop, with N as the task budget (`/autopilot:run 3` stops after three tasks)
 - eval.sh prints the cost and turns claude reported for the runs (`--output-format json`), so `--model` comparisons include cost
 
