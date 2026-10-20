@@ -102,4 +102,11 @@ check_not "runlock --tasks abc → refused" bash -c "cd '$d' && bash '$RL' start
 d="$(newrepo)"; (cd "$d" && CLAUDE_CODE_SESSION_ID=s1 bash "$RL" start --tasks 5 >/dev/null && CLAUDE_CODE_SESSION_ID=s1 bash "$RL" start >/dev/null)
 check "re-entry without --tasks keeps the budget" grep -qx "tasks: 5" "$d/.autopilot/RUN"
 
+# a malformed row (7 columns) is refused with the expected layout
+d="$(newrepo)"; echo "| T-010 | fix | open | 0 | added by hand | t | s |" >> "$d/.autopilot/BACKLOG.md"
+out="$(t "$d" start T-010)"
+check "7-column row → refused with the column count" grep -q "T-010 has 7 columns, expected 8" <<<"$out"
+check "the refusal shows the expected layout" grep -q "| ID | Type | Status | Attempts | Task | Done when | Source | Completed |" <<<"$out"
+check "the malformed row is left as it was" grep -qx "| T-010 | fix | open | 0 | added by hand | t | s |" "$d/.autopilot/BACKLOG.md"
+
 finish

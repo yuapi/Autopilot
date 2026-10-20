@@ -60,7 +60,9 @@ if target is None:
     sys.exit(f"[task] no BACKLOG row {tid}")
 c = cells(lines[target])
 if len(c) < 8:
-    sys.exit(f"[task] BACKLOG row {tid} has {len(c)} columns, expected 8")
+    sys.exit(f"[task] BACKLOG row {tid} has {len(c)} columns, expected 8. Fix the row first, e.g.\n"
+             f"  | ID | Type | Status | Attempts | Task | Done when | Source | Completed |\n"
+             f"  | {tid} | fix | open | 0 | what to do | how to verify | where it came from | |")
 status = c[2].strip()
 try: attempts = int(c[3].strip() or 0)
 except ValueError: attempts = 0
