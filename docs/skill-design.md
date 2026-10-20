@@ -66,7 +66,7 @@ Several rules read the LOG in order ("the last 3 runs", "7 of the last 10", the 
 
 ## Why the final stop and task boundaries are checked by scripts
 
-A real session-mode eval scored 10/10 on discovery and still broke three rules in one run: five tasks in one commit, a final stop after a single discovery pass with a known defect "left for a person", and LOG lines rewritten. The model judged "this repository is small, so this is enough". Rules a model can talk itself out of are made mechanical where possible: `finalstop.sh` refuses a final stop until the four deep discovery stages are recorded, the queue is empty and the last task is committed, and Phase 2 starts by checking that nothing outside `.autopilot/` is uncommitted. The eval's rule checks measure the same things, so a regression shows up as a broken rule even when the score is perfect.
+A real session-mode eval scored 10/10 on discovery and still broke three rules in one run: five tasks in one commit, a final stop after a single discovery pass with a known defect "left for a person", and LOG lines rewritten. The model judged "this repository is small, so this is enough". Rules a model can talk itself out of are made mechanical where possible: `finalstop.sh` refuses a final stop until the four deep discovery stages are recorded, the queue is empty and the last task is committed, and `task.sh` refuses to start a task while another is in progress or code is uncommitted, and refuses to mark one done unless it has its own commit naming no other task. The eval's rule checks measure the same things, so a regression shows up as a broken rule even when the score is perfect.
 
 ## Why open PRs are revisited
 

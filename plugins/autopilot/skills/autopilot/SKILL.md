@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.21.0
+  version: 1.22.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.21.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.22.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -66,7 +66,7 @@ In session mode, also run `bash <skill folder>/scripts/runlock.sh touch` at the 
 
 0. **Only on first entry in session mode**:
    - If a person invoked the skill again while `.autopilot/STOP` exists, treat it as a request to resume: move the STOP content into the LOG and delete STOP.
-   - Add `.autopilot/STOP`, `.autopilot/RUN`, `.autopilot/.hook-state`, `.autopilot/driver-logs/` and `.autopilot/driver.lock` to `.gitignore` if they are missing.
+   - Add `.autopilot/STOP`, `.autopilot/RUN`, `.autopilot/.hook-state`, `.autopilot/driver-logs/`, `.autopilot/driver.lock` and `.autopilot/.task` to `.gitignore` if they are missing.
    - Claim the run marker with `bash <skill folder>/scripts/runlock.sh start`. It writes this session's ID (`CLAUDE_CODE_SESSION_ID`) into `.autopilot/RUN`. **If it exits with 2, another loop is already running in this repository**: tell the person what it printed and stop without changing any state; two loops on one repository corrupt the BACKLOG and fight over commits. A marker idle for 2 hours counts as abandoned and is taken over.
    - If `CLAUDE_CODE_REMOTE` is `true` (a cloud session) and the integration mode is `local`, the commits exist only in this container and are lost when it is reclaimed. Tell the person once, in one line at the start (a notice, not a question): set `integration: branch` or `pr` in `.autopilot/CONFIG.md` to keep them. Write it in the LOG and continue in `local` mode. Never change CONFIG yourself.
    - The Stop hook comes with this skill (see "The Stop hook" below); nothing needs installing. If an older version left a copy at `.claude/hooks/autopilot-stop.sh`, refresh it with `bash <skill folder>/scripts/hook.sh install` and commit what it changed.
@@ -270,7 +270,7 @@ Within the same priority: issue-sourced (`issue #N`) first, then fewer `attempts
 - If the last 5 LOG entries all touched only the same file, exclude tasks on that file this time
 - If 7 or more of the last 10 runs failed, create `.autopilot/STOP` and exit (content: "repeated failures" and the failed task IDs)
 
-Increase the chosen task's `attempts` by 1 and set its status to `in_progress`.
+Claim it with `bash <skill folder>/scripts/task.sh start <ID>`: it refuses while another task is `in_progress` or changes outside `.autopilot/` are uncommitted, and otherwise increases `attempts` by 1 and sets `in_progress`. If the script cannot run, make the same change by hand.
 
 ### Phase 3 — implement
 
@@ -286,14 +286,14 @@ Increase the chosen task's `attempts` by 1 and set its status to `in_progress`.
 1. Run every test, lint and build command found in Phase 0 again.
 2. If anything is worse than the baseline: **failure**.
 3. If the task's completion criteria are not met: **failure**.
-4. On failure: undo only the task's changes with `git checkout -- . ':!.autopilot' && git clean -fd -e .autopilot`. Reverting `.autopilot/` too would erase the `attempts` increase from Phase 2 and retry the same task forever, so it must be excluded. Set the BACKLOG status back to `open` (keep attempts) and record the failure reason in the LOG. If the integration mode is `local`, commit only the state change (add only `.autopilot/`, message `autopilot(<task ID>): record failure` or the repository's commit convention). In driver mode exit; in session mode go back to Phase 0.
+4. On failure: undo only the task's changes with `git checkout -- . ':!.autopilot' && git clean -fd -e .autopilot`. Reverting `.autopilot/` too would erase the `attempts` increase from Phase 2 and retry the same task forever, so it must be excluded. Run `bash <skill folder>/scripts/task.sh fail <ID>` (back to `open` with attempts kept, or `blocked` from the third attempt) and record the failure reason in the LOG. If the integration mode is `local`, commit only the state change (add only `.autopilot/`, message `autopilot(<task ID>): record failure` or the repository's commit convention). In driver mode exit; in session mode go back to Phase 0.
 
 ### Phase 5 — record
 
 On success:
 1. Commit: in the repository's commit convention (CONTRIBUTING, CLAUDE.md, …) if it has one, else `autopilot(<task ID>): <one-line summary>`. For issue-sourced tasks put `Refs #N` in the body.
    - If the integration mode is not `local`, make this commit on the task branch and publish it as described in "Integration policy".
-2. Set the BACKLOG status to `done` with the completion date.
+2. Run `bash <skill folder>/scripts/task.sh done <ID>`. It sets `done` with the date only if the task has its own commit since `start` that changes files outside `.autopilot/` and names no other task. If it refuses, fix the cause instead of editing the row by hand: commit the change, or, when the commit also covers another task, undo that unpushed commit with `git reset --soft HEAD~1` (the changes stay) and commit each task on its own.
 3. Add follow-up tasks found during implementation to the BACKLOG.
 4. Append to the LOG with `scripts/log.sh` (see "LOG format").
    Never commit generated files (`__pycache__`, build output, coverage, logs). If the task created them, add them to `.gitignore` instead; if they were already tracked, queue a `cleanup` task rather than deleting them in this one.
@@ -340,7 +340,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30 | T-042 | done | skill 1.21.0
+## 2026-10-01T14:30 | T-042 | done | skill 1.22.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)

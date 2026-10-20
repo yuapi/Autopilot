@@ -34,7 +34,7 @@ check "no more calls after STOP (2 calls)" test "$(calls "$d")" -eq 2
 check "calls with AUTOPILOT_DRIVER=1" grep -qx "driver=1" "$d/.autopilot/calls"
 check "one log file per run" test "$(ls "$d/.autopilot/driver-logs" | wc -l)" -eq 2
 check ".gitignore: newline added before appending" grep -qx "node_modules/" "$d/.gitignore"
-for ig in .autopilot/driver-logs/ .autopilot/STOP .autopilot/RUN .autopilot/.hook-state; do
+for ig in .autopilot/driver-logs/ .autopilot/STOP .autopilot/RUN .autopilot/.hook-state .autopilot/.task; do
   check ".gitignore has $ig" grep -qxF "$ig" "$d/.gitignore"
 done
 rm -f "$d/.autopilot/STOP"; FAKE_MODE=ok drive "$d" 1 >/dev/null 2>&1
