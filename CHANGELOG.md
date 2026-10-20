@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.29.2 — 2026-10-20
 - A CONFIG saved with CRLF line endings no longer breaks `scope`: task.sh read `pkg/a\r` and refused every commit
 
 ## 1.29.1 — 2026-10-20
