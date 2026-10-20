@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.20.2 — 2026-10-20
 - The Stop hook's block message points to `finalstop.sh` when Claude believes nothing is left, so an early stop gets the list of missing conditions instead of only "keep going"
 
 ## 1.20.1 — 2026-10-20
