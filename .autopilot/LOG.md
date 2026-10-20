@@ -314,3 +314,7 @@
 - 변경: scripts/autopilot.sh(GitLab origin이면 glab 사전 점검), SKILL.md(1-E glab issue, Phase 5 glab mr create, 드라이버 절), tests/test_driver.sh(+4), CHANGELOG, .gitignore(.autopilot/.task)
 - 검증: validate PASS. task.sh start → 구현 → 커밋 → task.sh done 순서로 처음 사용(먼저 구현하자 start가 거부함: 의도대로)
 - 발견: task.sh 거부 시에도 .gitignore를 고침 → T-049
+
+## 2026-10-20T12:30 | T-049 | done | skill 1.22.0
+- 변경: scripts/task.sh(.gitignore 추가를 start 성공 뒤로), tests/test_task.sh(+2: 거부 시 트리·.gitignore 그대로, .task 없음), CHANGELOG
+- 검증: validate PASS
