@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 37
+next_id: 38
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -43,3 +43,4 @@ next_id: 37
 | T-034 | fix | done | 1 | Stop 훅 STOP 메모 문법("1 times") | validate 통과 | 탐색 실행(claude -p 실제 세션에서 훅 확인) | 2026-10-20 |
 | T-035 | enhance | done | 1 | status.sh: 설치된 스킬 버전 표시, LOG가 더 새 버전으로 쓰였으면 경고 | 같은/새/옛 버전 테스트, validate 통과 | 관찰: 이 세션에 동기화된 플러그인이 1.10.2(레포는 1.15) | 2026-10-20 |
 | T-036 | enhance | done | 1 | pr 통합: 자기 open PR을 매 작업 시작에 다시 확인(CI 통과 → 병합, 실패·충돌 → 같은 브랜치 fix 작업) | SKILL.md 규칙·skill-design 근거·규칙 테스트, validate 통과 | 정독: "CI 대기 중이면 PR을 열어 두고 다음 작업" 뒤에 다시 보는 규칙이 없음 | 2026-10-20 |
+| T-037 | fix | done | 1 | 드라이버: 정상 종료지만 LOG·커밋이 안 바뀌는 실행을 무한 반복 → 3회 연속이면 STOP, 실행마다 LOG 항목 출력 | 가짜 claude idle/ok 테스트, validate 통과 | 정독: 훅에는 정체 한도가 있는데 드라이버엔 충돌 한도만 있음 | 2026-10-20 |
