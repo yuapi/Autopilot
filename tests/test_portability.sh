@@ -7,6 +7,8 @@ NOGNU="$TMPROOT/nognu"; mkdir -p "$NOGNU"
 IFS=: read -r -a dirs <<<"$PATH"
 for dir in "${dirs[@]}"; do
   [ -d "$dir" ] || continue
+  # skip Windows drives mounted in WSL: thousands of files on a slow filesystem, none needed here
+  case "$dir" in /mnt/[a-z]/*) continue;; esac
   for f in "$dir"/*; do
     b="${f##*/}"
     case "$b" in tac|timeout|gtimeout) continue;; esac
@@ -30,10 +32,14 @@ check "catch-up works without tac" grep -q "(dry-run) v.* ← " <<<"$out"
 check_not "no tac error" grep -q "tac" <<<"$out"
 
 # validate.sh's test time limit (used timeout before)
-d="$(sandbox)"; mkdir -p "$d/tests"
+d="$(sandbox)"
+# only a trivial test in the copy: with the real tests the nested validate.sh would run this file
+# again, which runs validate.sh again, and so on until the time limits kill it
+rm -f "$d"/tests/test_*.sh
 printf '#!/usr/bin/env bash\necho "  ok   x"\n' > "$d/tests/test_zz.sh"
 out="$(cd "$d" && env -u AUTOPILOT_IN_TESTS PATH="$NOGNU" AUTOPILOT_TEST_TIMEOUT=20 bash scripts/validate.sh 2>&1)"
 check "validate runs tests without timeout" grep -q "tests/test_zz.sh (1 passed)" <<<"$out"
+check "nested validate runs only the trivial test (no recursion)" test "$(grep -cE '^  (OK|FAIL)  +tests/test_.*\(' <<<"$out")" -eq 1
 check_not "no timeout error" grep -q "timeout: command not found" <<<"$out"
 
 # The perl fallback really enforces the time limit
