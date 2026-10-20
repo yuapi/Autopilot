@@ -132,4 +132,11 @@ t "$d" start T-001 >/dev/null
 check "CRLF BACKLOG: every line still ends in CRLF after start" bash -c "! grep -qv \$'\\r\$' '$d/.autopilot/BACKLOG.md'"
 check "CRLF BACKLOG: the row was updated" grep -q "| T-001 | fix | in_progress | 1 |" "$d/.autopilot/BACKLOG.md"
 
+# a CONFIG saved with CRLF (Windows editor) still gives the right scope
+d="$(newrepo)"; mkdir -p "$d/pkg/a"; printf 'scope: pkg/a\r\nintegration: local\r\n' > "$d/.autopilot/CONFIG.md"; (cd "$d" && git add -A && git commit -qm c >/dev/null)
+t "$d" start T-001 >/dev/null; (cd "$d" && echo x > pkg/a/f && git add -A && git commit -qm "autopilot(T-001): in scope")
+check "CRLF CONFIG: change inside the scope → accepted" bash -c "cd '$d' && bash '$TS' done T-001 >/dev/null"
+t "$d" start T-002 >/dev/null; (cd "$d" && echo y >> code.txt && git commit -qam "autopilot(T-002): outside")
+check "CRLF CONFIG: change outside → still refused" grep -q "changes outside scope (pkg/a)" <<<"$(t "$d" done T-002)"
+
 finish

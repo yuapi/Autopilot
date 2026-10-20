@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- A CONFIG saved with CRLF line endings no longer breaks `scope`: task.sh read `pkg/a\r` and refused every commit
 
 ## 1.29.1 — 2026-10-20
 - scan.sh builds its file list once, in one process: 5000 files took 2 min 18 s (several processes per file for each of the six searches), now 0.25 s with the same output
