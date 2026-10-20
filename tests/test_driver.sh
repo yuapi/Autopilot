@@ -13,7 +13,8 @@ n=$(wc -l < .autopilot/calls)
 case "${FAKE_MODE:-ok}" in
   fail) exit 1;;
   stop2) [ "$n" -ge 2 ] && echo "final stop" > .autopilot/STOP; exit 0;;
-  *) exit 0;;
+  idle) exit 0;;
+  *) printf '\n## 2026-01-01T00:00 | T-%03d | done | skill 0\n' "$n" >> .autopilot/LOG.md; exit 0;;
 esac
 SH
 chmod +x "$FAKEBIN/claude"
@@ -118,5 +119,20 @@ check "unknown integration value → warns" grep -q "unknown integration value" 
 d="$(newrepo)"
 out="$(FAKE_MODE=ok drive_gh "$d" 1 2>&1)"
 check_not "local mode (no CONFIG) → no integration message" grep -q "integration" <<<"$out"
+
+# no progress: runs that change neither LOG.md nor commits stop the driver
+d="$(newrepo)"
+out="$(FAKE_MODE=idle drive "$d" 2>&1)"; rc=$?
+check "3 runs without progress → exit code 1" test "$rc" -eq 1
+check "stops after 3 runs without progress" test "$(calls "$d")" -eq 3
+check "no progress → STOP written with the reason" grep -q "no progress (driver)" "$d/.autopilot/STOP"
+check "no progress is reported per run" grep -q "made no progress" <<<"$out"
+d="$(newrepo)"
+out="$(FAKE_MODE=idle AUTOPILOT_STALL_LIMIT=1 drive "$d" 2>&1)"
+check "AUTOPILOT_STALL_LIMIT=1 stops after one idle run" test "$(calls "$d")" -eq 1
+d="$(newrepo)"
+out="$(FAKE_MODE=ok drive "$d" 2 2>&1)"
+check "progress → the run's LOG entry is printed" grep -q "#2 → 2026-01-01T00:00 | T-002 | done" <<<"$out"
+check "progress → no STOP" test ! -e "$d/.autopilot/STOP"
 
 finish
