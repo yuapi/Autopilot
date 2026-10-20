@@ -5,6 +5,8 @@
 # - If .autopilot/STOP exists, removes RUN and lets the session end.
 # - After AUTOPILOT_STALL_LIMIT (default 3) consecutive blocks with no change to the LOG
 #   or commits, writes STOP and lets the session end (no endless blocking without progress).
+# - The skill's frontmatter hook and an older repository copy may both run for the same stop. The
+#   transcript size tells them apart: same size = same stop, so it is counted once.
 # Release: create .autopilot/STOP, delete .autopilot/RUN, or remove this hook from settings.json
 cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0
 A=.autopilot
@@ -14,6 +16,8 @@ A=.autopilot
 input=""
 [ -t 0 ] || IFS= read -r -d '' -t 2 input || true
 sid="$(printf '%s' "$input" | sed -n 's/.*"session_id"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)"
+tpath="$(printf '%s' "$input" | sed -n 's/.*"transcript_path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)"
+tsz=""; [ -n "$tpath" ] && [ -f "$tpath" ] && tsz="$(wc -c < "$tpath" | tr -d ' ')"
 owner="$(sed -n 's/^session:[[:space:]]*//p' "$A/RUN" | head -1)"
 if [ -n "$owner" ] && [ "$owner" != unknown ] && [ -n "$sid" ] && [ "$sid" != "$owner" ]; then
   exit 0
@@ -24,10 +28,12 @@ if [ -f "$A/STOP" ]; then
 fi
 
 sig="$({ cat "$A/LOG.md" 2>/dev/null; git rev-parse HEAD 2>/dev/null; } | cksum | cut -d' ' -f1)"
-prev=""; n=0
-if [ -f "$A/.hook-state" ]; then read -r prev n < "$A/.hook-state" || true; fi
+prev=""; n=0; ptsz=""
+if [ -f "$A/.hook-state" ]; then read -r prev n ptsz < "$A/.hook-state" || true; fi
 case "$n" in ''|*[!0-9]*) n=0;; esac
-if [ "$sig" = "$prev" ]; then n=$((n + 1)); else n=0; fi
+if [ "$sig" != "$prev" ]; then n=0
+elif [ -z "$tsz" ] || [ "$tsz" != "$ptsz" ]; then n=$((n + 1))
+fi
 
 limit="${AUTOPILOT_STALL_LIMIT:-3}"
 if [ "$n" -ge "$limit" ]; then
@@ -39,7 +45,7 @@ if [ "$n" -ge "$limit" ]; then
   rm -f "$A/RUN" "$A/.hook-state"
   exit 0
 fi
-echo "$sig $n" > "$A/.hook-state"
+printf '%s %s%s\n' "$sig" "$n" "${tsz:+ $tsz}" > "$A/.hook-state"
 
 cat << 'JSON'
 {"decision":"block","reason":"autopilot session mode. Re-read the .autopilot/ state files and do the next task. If the queue is empty, start with rediscovery (including the product axis). Go straight on, no summary or report."}

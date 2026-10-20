@@ -56,4 +56,25 @@ check "legacy RUN without an owner → blocks any session (old behavior)" bash -
 d="$(newrepo)"; printf 'session: owner-1\n' > "$d/.autopilot/RUN"
 check "no session ID on stdin → blocks (cannot tell sessions apart)" bash -c "cd '$TMPROOT' && CLAUDE_PROJECT_DIR='$d' bash '$HOOK' </dev/null | grep -q block"
 
+# the same stop seen by two hook copies (skill frontmatter + old repository copy) counts once
+d="$(newrepo)"; printf 'session: s1\n' > "$d/.autopilot/RUN"; tr="$TMPROOT/transcript.jsonl"; echo '{}' > "$tr"
+stop_as() { (cd "$TMPROOT" && printf '{"session_id":"s1","transcript_path":"%s"}' "$tr" | CLAUDE_PROJECT_DIR="$d" bash "$HOOK"); }
+stop_as >/dev/null; stop_as >/dev/null
+check "two copies on the same stop → counter not advanced twice" grep -q ' 0 ' "$d/.autopilot/.hook-state"
+echo '{"next":1}' >> "$tr"; stop_as >/dev/null; stop_as >/dev/null
+check "next stop (transcript grew) → counted once" grep -q ' 1 ' "$d/.autopilot/.hook-state"
+echo '{"next":2}' >> "$tr"; stop_as >/dev/null
+echo '{"next":3}' >> "$tr"
+check_not "stall limit still applies with a transcript" bash -c "$(declare -f stop_as); TMPROOT='$TMPROOT' HOOK='$HOOK' d='$d' tr='$tr'; stop_as | grep -q block"
+
+# the frontmatter hook command finds the asset for a plugin install and for a plain skill install
+cmd="$(sed -n "s/^ *command: bash -c '\(.*\)'$/\1/p" "$REPO/$SKILL_REL/SKILL.md" | head -1)"
+check "SKILL.md frontmatter declares a Stop hook command" test -n "$cmd"
+for root in "$REPO/plugins/autopilot" "$REPO/$SKILL_REL"; do
+  d="$(newrepo)"; touch "$d/.autopilot/RUN"
+  check "frontmatter hook blocks with CLAUDE_PLUGIN_ROOT=${root#$REPO/}" bash -c "cd '$TMPROOT' && CLAUDE_PLUGIN_ROOT='$root' CLAUDE_PROJECT_DIR='$d' bash -c '$cmd' </dev/null | grep -q block"
+done
+d="$(newrepo)"
+check_not "frontmatter hook without RUN → does not block" bash -c "cd '$TMPROOT' && CLAUDE_PLUGIN_ROOT='$REPO/plugins/autopilot' CLAUDE_PROJECT_DIR='$d' bash -c '$cmd' </dev/null | grep -q block"
+
 finish
