@@ -2,7 +2,7 @@
 
 last_scan: 2026-10-20
 last_issue_check: 2026-10-20 (open 이슈 0건, open PR 0건)
-last_retro: 2026-10-20T12:10
+last_retro: 2026-10-20T12:08
 
 ## 제품
 
