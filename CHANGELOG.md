@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- Without a git `user.name`/`user.email` every commit fails and the loop only burned attempts. The driver now stops before the first run and Phase 0 writes STOP, both with the fix; neither sets an identity itself
 
 ## 1.33.0 — 2026-10-20
 - Sixth eval fixture `watch`: `npm test` runs `node --test --watch` and never exits. New `roadmap=` expectations grade what the run recorded, here a one-shot test command

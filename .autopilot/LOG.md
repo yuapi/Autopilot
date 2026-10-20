@@ -556,3 +556,10 @@
 ## 2026-10-20T16:57Z | T-084 | done | skill 1.32.1
 - 변경: tests/eval/fixture-watch(npm test = node --test --watch)·.expected, scripts/eval.sh(roadmap= 기대값), tests/test_eval.sh(+3), README 2종, CHANGELOG
 - 검증: validate PASS. 실제 eval --fixture watch --mode session --iterations 1: 170초, 8/8, ROADMAP에 "node --test", "npm test hangs (--watch)" 기록하고 스크립트 수정 작업(T-002) 추가. 평소(약 60초)보다 길어 한 번은 watch에 걸렸다가 빠져나온 것으로 보임
+
+## 2026-10-20T17:00Z | - | release | skill 1.33.0
+- 1.33.0 릴리즈: release/1.33.0 → main, main → develop 역병합. 태그 대기: v1.33.0 (403, 누적 v1.11.0~v1.33.0)
+
+## 2026-10-20T17:03Z | T-085 | done | skill 1.33.0
+- 변경: scripts/autopilot.sh(git 정체 없으면 첫 실행 전 이유·고치는 법과 함께 exit 1), SKILL.md Phase 0(정체 없으면 STOP, 스스로 설정 금지), tests/test_driver.sh(+5, 테스트 레포에 로컬 정체 설정), CHANGELOG
+- 검증: validate PASS. GIT_CONFIG_GLOBAL=/dev/null로 정체 없는 환경 재현

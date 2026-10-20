@@ -10,6 +10,7 @@
 #   - claude exits abnormally 3 times in a row              → 1
 #   - 3 runs in a row change neither LOG.md nor the commits → writes STOP, 1
 #   - bad argument, not in a git repository, no claude CLI  → 1
+#   - no git user.name / user.email (every commit would fail) → 1
 #
 # Environment variables:
 #   AUTOPILOT_SLEEP        seconds to wait between runs (default 10)
@@ -69,6 +70,14 @@ if [ -s .gitignore ] && [ -n "$(tail -c1 .gitignore)" ]; then echo >> .gitignore
 for ig in .autopilot/driver-logs/ .autopilot/STOP .autopilot/RUN .autopilot/.hook-state .autopilot/driver.lock .autopilot/.task; do
   grep -qsxF "$ig" .gitignore || printf '%s\n' "$ig" >> .gitignore
 done
+
+# Every task ends in a commit: without a git identity each one fails and the runs only burn attempts.
+# Say so and stop before the first run. (Never set an identity here: commits would carry a made-up author.)
+if [ -z "$(git config user.name 2>/dev/null)" ] || [ -z "$(git config user.email 2>/dev/null)" ]; then
+  echo "[driver] git has no user.name or user.email here, so every commit would fail." >&2
+  echo "[driver] Set them first, e.g.: git config user.name \"Your Name\" && git config user.email you@example.com" >&2
+  exit 1
+fi
 
 # Integration preflight: branch/pr modes publish results. Say up front if the tools are missing,
 # instead of letting tasks fail one by one. The driver only gets Bash, so PRs need the gh CLI
