@@ -15,6 +15,8 @@ case "${FAKE_MODE:-ok}" in
   fail) exit 1;;
   stop2) [ "$n" -ge 2 ] && echo "final stop" > .autopilot/STOP; exit 0;;
   idle) exit 0;;
+  cost) printf '\n## 2026-01-01T00:00 | T-%03d | done | skill 0\n' "$n" >> .autopilot/LOG.md
+        echo '{"type":"result","result":"did one task","num_turns":4,"total_cost_usd":0.3}'; exit 0;;
   *) printf '\n## 2026-01-01T00:00 | T-%03d | done | skill 0\n' "$n" >> .autopilot/LOG.md; exit 0;;
 esac
 SH
@@ -154,5 +156,18 @@ check "AUTOPILOT_MODEL → claude --model" grep -q -- "--model some-model" "$d/.
 check "AUTOPILOT_MODEL is announced" grep -q "\[driver\] model: some-model" <<<"$out"
 d="$(newrepo)"; FAKE_MODE=ok drive "$d" 1 >/dev/null 2>&1
 check_not "no AUTOPILOT_MODEL → no --model" grep -q -- "--model" "$d/.autopilot/args"
+
+# cost: read from claude's JSON result; AUTOPILOT_MAX_COST stops the driver
+d="$(newrepo)"
+out="$(FAKE_MODE=cost AUTOPILOT_MAX_COST=0.5 drive "$d" 2>&1)"; rc=$?
+check "cost per run and total printed" grep -q '#1 cost \$0.3000 (total \$0.3000 of \$0.5)' <<<"$out"
+check "budget reached after the 2nd run → 2 calls" test "$(calls "$d")" -eq 2
+check "budget reached → exit 0" test "$rc" -eq 0
+check "budget reached → STOP says why" grep -q "cost budget reached" "$d/.autopilot/STOP"
+check "the run log holds the readable result and the cost" bash -c "grep -q 'did one task' '$d'/.autopilot/driver-logs/*0001.log && grep -q 'cost \$0.3000' '$d'/.autopilot/driver-logs/*0001.log"
+check "runs ask claude for JSON output" grep -q -- "--output-format json" "$d/.autopilot/args"
+d="$(newrepo)"; out="$(FAKE_MODE=ok drive "$d" 1 2>&1)"
+check_not "no JSON result → no cost line" grep -q "cost \\$" <<<"$out"
+check_not "AUTOPILOT_MAX_COST=abc → refused" bash -c "cd '$d' && AUTOPILOT_MAX_COST=abc PATH='$FAKEBIN:$PATH' bash '$DRIVER' 1 >/dev/null 2>&1"
 
 finish
