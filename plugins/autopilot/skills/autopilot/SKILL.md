@@ -54,6 +54,8 @@ Create missing files from the `assets/` templates.
 
 ### Phase 0 — load state
 
+Before anything else, on every task in both modes: run `bash <skill folder>/scripts/workbranch.sh`. In `local` mode it moves you off a default branch (`main`, `master`, `develop`, `trunk`, the remote's default, or a detached HEAD) onto a new `autopilot/<YYYYMMDD-HHMM>` branch, so the loop never commits straight onto a branch people share. On any other branch it does nothing, so it is safe to run every time. It never pushes. `local_branch: current` in CONFIG turns this off. If the script cannot run, do the same by hand with `git switch -c`.
+
 0. **Only on first entry in session mode**:
    - If a person invoked the skill again while `.autopilot/STOP` exists, treat it as a request to resume: move the STOP content into the LOG and delete STOP.
    - Add `.autopilot/STOP`, `.autopilot/RUN`, `.autopilot/.hook-state` and `.autopilot/driver-logs/` to `.gitignore` if they are missing.
@@ -280,7 +282,7 @@ On success:
 
 | Step | `local` | `branch` | `pr` |
 |---|---|---|---|
-| Phase 0 | stay on the current branch | fetch the base and start from its latest commit | same |
+| Phase 0 | leave a default branch for `autopilot/<date>` (`workbranch.sh`), otherwise stay | fetch the base and start from its latest commit | same |
 | Phase 3 start | - | create branch `<prefix><task ID>-<slug>` | same |
 | Phase 4 failure | roll back | roll back, return to the base, delete the local task branch | same |
 | Phase 5 success | commit | commit → `git push -u origin <branch>` | push → open a PR (`gh` or MCP) → merge if `merge: auto` |
