@@ -269,3 +269,11 @@
 - 발굴(eval 반복 측정): session 모드 todo 2회·wordcount 1회 모두 규칙 검사 ok(T-041 후 위반 0/3). 복합 명령 승인 문제는 재현 안 됨(allowlist에서 && 실행됨)
 - 변경: tests/eval/fixture-todo.expected(off-by-one에 "[01]-based", "mark item n"), tests/test_eval.sh(+4, 실제 표현 회귀), CHANGELOG
 - 검증: validate PASS. 남긴 실행 재채점 9/10 → 10/10, 다른 행에 오탐 없음
+
+## 2026-10-20T11:51 | - | release | skill 1.20.0
+- 1.20.0 릴리즈(11:42경): release/1.20.0 → main, main → develop 역병합. 태그 대기: v1.20.0 (403, 누적 v1.11.0~v1.20.0)
+- 이 항목은 log.sh가 release 상태를 거부해 그때 못 남겼음(T-043에서 고침)
+
+## 2026-10-20T11:51 | T-043 | done | skill 1.20.0
+- 변경: scripts/log.sh(release 상태), SKILL.md(LOG 상태 목록, Release 절에 release 항목 내용), tests/test_log.sh(+8: SKILL.md 목록의 모든 상태를 받는지), CHANGELOG
+- 검증: validate PASS
