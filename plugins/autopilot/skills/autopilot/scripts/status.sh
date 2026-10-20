@@ -2,11 +2,12 @@
 # autopilot run status summary: bash status.sh [repository path, default: current directory]
 # Only reads the .autopilot/ state files.
 set -eu
+self="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
 target="${1:-.}"
 root="$(git -C "$target" rev-parse --show-toplevel 2>/dev/null || (cd "$target" && pwd))"
 cd "$root"
 [ -d .autopilot ] || { echo "[status] no .autopilot/ in $root. autopilot has not run in this repository yet." >&2; exit 1; }
-python3 - "$root" << 'PY'
+python3 - "$root" "$self" << 'PY'
 import os, re, signal, sys
 signal.signal(signal.SIGPIPE, signal.SIG_DFL)  # exit quietly when the output is cut off (e.g. `| head`)
 root = sys.argv[1]; A = ".autopilot"
@@ -34,9 +35,14 @@ else:
     print("Run: idle (no RUN or STOP)")
 
 hook = ".claude/hooks/autopilot-stop.sh"
-if os.path.exists(hook) and ".autopilot/RUN" not in open(hook, encoding="utf-8", errors="replace").read():
-    print("Warning: an old (1.5.x) Stop hook is installed. Without STOP, even sessions not running autopilot cannot end.")
-    print(f"  Fix: overwrite {hook} with the skill's assets/autopilot-stop.sh, or create .autopilot/STOP for now.")
+asset = os.path.join(os.path.dirname(os.path.abspath(sys.argv[2])), "..", "assets", "autopilot-stop.sh")
+if os.path.exists(hook):
+    installed = open(hook, encoding="utf-8", errors="replace").read()
+    if ".autopilot/RUN" not in installed:
+        print("Warning: an old (1.5.x) Stop hook is installed. Without STOP, even sessions not running autopilot cannot end.")
+        print(f"  Fix: run the skill's scripts/hook.sh install, or create .autopilot/STOP for now.")
+    elif os.path.exists(asset) and open(asset, encoding="utf-8", errors="replace").read() != installed:
+        print("Note: the installed Stop hook is a copy from another skill version. The next run updates it (or run scripts/hook.sh install).")
 
 cfg = dict(re.findall(r"^(integration|merge|release|language):\s*([^\s#]+)", read("CONFIG.md"), re.M))
 print("Integration: " + (", ".join(f"{k}={v}" for k, v in cfg.items()) if cfg else "local (no CONFIG)"))

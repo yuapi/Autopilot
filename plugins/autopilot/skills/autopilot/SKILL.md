@@ -1,13 +1,13 @@
 ---
 name: autopilot
 metadata:
-  version: 1.12.0
+  version: 1.13.0
 description: Autonomous development loop that finds, selects, implements, verifies and records the next task in a repository with no human in the loop. Finds bug fixes, improvements and new features from code analysis, running the software, user scenarios and the issue tracker, and leaves large changes it must not make alone as proposals. Keeps going in the same session until .autopilot/STOP exists (driver mode when a terminal is available) and, if .autopilot/CONFIG.md allows, pushes branches, opens and merges PRs and releases. Writes its notes in the repository's or user's language. Use whenever someone says "autopilot", "autonomous development", "work on the next task", "keep developing on your own", "unattended loop", "work through the backlog", "handle the issues", or "자율 개발", "알아서 개발해", "다음 작업 알아서", "무인 루프", "백로그 처리", or when the driver invokes it, and follow this procedure exactly.
 ---
 
 # Autopilot — autonomous development loop
 
-**Version 1.12.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.13.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -62,7 +62,7 @@ In session mode, also run `bash <skill folder>/scripts/runlock.sh touch` at the 
    - If a person invoked the skill again while `.autopilot/STOP` exists, treat it as a request to resume: move the STOP content into the LOG and delete STOP.
    - Add `.autopilot/STOP`, `.autopilot/RUN`, `.autopilot/.hook-state`, `.autopilot/driver-logs/` and `.autopilot/driver.lock` to `.gitignore` if they are missing.
    - Claim the run marker with `bash <skill folder>/scripts/runlock.sh start`. It writes this session's ID (`CLAUDE_CODE_SESSION_ID`) into `.autopilot/RUN`. **If it exits with 2, another loop is already running in this repository**: tell the person what it printed and stop without changing any state; two loops on one repository corrupt the BACKLOG and fight over commits. A marker idle for 2 hours counts as abandoned and is taken over.
-   - Install the Stop hook (see "Installing the Stop hook" below). Skip if already installed.
+   - Install or update the Stop hook with `bash <skill folder>/scripts/hook.sh install` (see "Installing the Stop hook" below). It also replaces a copy left by an older skill version. If it changed `.claude/`, commit those files.
 1. If the three core files are missing, create them from the templates (never create CONFIG). If the integration mode is not `local`, update the base branch as described in "Integration policy".
    Read the state. Keep the amount read constant even in long runs:
    - ROADMAP, CONFIG, PROPOSALS: all of it.
@@ -324,7 +324,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30 | T-042 | done | skill 1.12.0
+## 2026-10-01T14:30 | T-042 | done | skill 1.13.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
@@ -338,7 +338,9 @@ When Claude tries to end the session on its own while there is no STOP file, the
 
 The hook acts only while `.autopilot/RUN` exists and only on the session that owns it (the `session:` line written by `runlock.sh`), so ordinary sessions, other sessions opened in the same repository while the loop runs, and fresh clones are never blocked. After 3 consecutive blocks with no change to the LOG or commits (no way to make progress, e.g. permission denials), the hook writes STOP itself and lets the session end.
 
-1. Create `.claude/hooks/autopilot-stop.sh` with the content of `assets/autopilot-stop.sh` and make it executable.
+`bash <skill folder>/scripts/hook.sh install` does steps 1 and 2 and is safe to run every time; do them by hand only if the script cannot run.
+
+1. Create `.claude/hooks/autopilot-stop.sh` with the content of `assets/autopilot-stop.sh` and make it executable. If it already exists but differs, overwrite it: it is a copy from an older skill version.
 2. **Merge** the following into `.claude/settings.json`. If hooks already exist, add an entry to the `Stop` array; never remove existing ones.
 
 ```json
@@ -348,7 +350,7 @@ The hook acts only while `.autopilot/RUN` exists and only on the session that ow
 3. Commit both files (the repository's own Stop hook may require committing untracked files).
 4. If a permission check blocks the installation, record it in the LOG and continue without the hook, relying on the rules alone.
 
-To release the hook: create `.autopilot/STOP`, delete `.autopilot/RUN`, or remove the entry from settings.json. If an older hook (without the RUN check) is installed, replace it with the content of `assets/autopilot-stop.sh`.
+To release the hook: create `.autopilot/STOP`, delete `.autopilot/RUN`, or remove the entry from settings.json.
 
 ## Never
 

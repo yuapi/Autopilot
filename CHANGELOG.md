@@ -7,6 +7,9 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.13.0 — 2026-10-20
+- The Stop hook copy in a repository is refreshed: new `scripts/hook.sh install` (run on first entry) replaces `.claude/hooks/autopilot-stop.sh` whenever it differs from the skill's asset and merges the settings.json entry without touching other hooks. Copies from 1.6–1.10 had the RUN check, so the old rule never replaced them and they kept blocking other sessions. status.sh notes an outdated copy
+
 ## 1.12.0 — 2026-10-20
 - Discovery no longer skips steps: new `scripts/scan.sh` lists code markers (in comments) and risky patterns (shell built from strings, eval/exec, unsafe deserialization, disabled TLS checks, hard-coded secrets) with file:line, and every line must become a task or a reason under "Not doing". Phase 1 ends with a done-check (feature map filled, commands actually run, three scenarios). Generated files are never committed. Eval score 4/5 → 5/5
 - `scripts/eval.sh` measures discovery quality: runs the working-copy skill once in driver mode on a fixture repository with five seeded defects (`tests/eval/`) and scores how many reached the BACKLOG. Opt-in (needs the claude CLI), not part of validate.sh
