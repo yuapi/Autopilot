@@ -134,3 +134,8 @@
 - 검증: validate PASS(테스트 169개)
 - 발견: 루프가 도는 동안 같은 레포에서 연 다른 세션도 훅에 막히던 버그를 함께 수정. 닫히지 않는 stdin에서 훅이 멈추는 문제를 테스트가 잡아 read -t로 수정
 - 이 레포: Phase 0에서 Stop 훅 설치(.claude/), RUN을 이 세션 소유로 기록
+
+## 2026-10-20T09:55 | T-023 | done | skill 1.11.0
+- 변경: scripts/autopilot.sh(통합 사전 점검), SKILL.md 드라이버 절, README, tests/test_driver.sh(+7)
+- 검증: validate PASS
+- 릴리스: 1.11.0 main 반영(PR #48, #49). 태그·Release는 세션 정책으로 막힘 → 태그 대기 v1.11.0. 사람이 로컬 catch-up으로 v1.5.1~v1.10.2 태그·Release 10개 생성 완료 확인

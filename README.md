@@ -52,7 +52,7 @@ bash <skill folder>/scripts/autopilot.sh 20     # at most 20 iterations
 AUTOPILOT_PERMISSION=skip bash <skill folder>/scripts/autopilot.sh   # opt-in, sandbox only
 ```
 
-`<skill folder>` is where the skill is installed, for example `plugins/autopilot/skills/autopilot` in a clone of this repository. The driver stops when `.autopilot/STOP` appears or at the iteration limit (exit code 0), and after 3 consecutive Claude crashes, on a bad argument or when the `claude` CLI is missing (exit code 1). It can be started from any folder inside the repository. `AUTOPILOT_SLEEP` sets the pause between runs (default 10 seconds).
+`<skill folder>` is where the skill is installed, for example `plugins/autopilot/skills/autopilot` in a clone of this repository. The driver stops when `.autopilot/STOP` appears or at the iteration limit (exit code 0), and after 3 consecutive Claude crashes, on a bad argument or when the `claude` CLI is missing (exit code 1). It can be started from any folder inside the repository. `AUTOPILOT_SLEEP` sets the pause between runs (default 10 seconds). With `integration: pr` the driver opens PRs with the `gh` CLI and warns at start if `gh` is missing or cannot push to the repository.
 
 ### Checking on a run
 
