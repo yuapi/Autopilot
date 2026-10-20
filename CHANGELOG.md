@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- The Stop hook's block message points to `finalstop.sh` when Claude believes nothing is left, so an early stop gets the list of missing conditions instead of only "keep going"
 
 ## 1.20.1 — 2026-10-20
 - `release` is a LOG status (log.sh rejected the release entries the Release rule produces); SKILL.md says what a release entry records

@@ -48,6 +48,6 @@ fi
 printf '%s %s%s\n' "$sig" "$n" "${tsz:+ $tsz}" > "$A/.hook-state"
 
 cat << 'JSON'
-{"decision":"block","reason":"autopilot session mode. Re-read the .autopilot/ state files and do the next task. If the queue is empty, start with rediscovery (including the product axis). Go straight on, no summary or report."}
+{"decision":"block","reason":"autopilot session mode. Re-read the .autopilot/ state files and do the next task. If the queue is empty, start with rediscovery (including the product axis). If you believe no substantive work is left, run the skill's scripts/finalstop.sh with the STOP summary: it refuses and lists what is missing until the final stop conditions hold. Go straight on, no summary or report."}
 JSON
 exit 0
