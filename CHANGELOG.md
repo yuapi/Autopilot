@@ -7,6 +7,9 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.16.0 — 2026-10-20
+- The Stop hook is declared in SKILL.md's frontmatter, so it runs from the installed skill and only in sessions that invoked it. Phase 0 no longer copies the hook into the repository or edits `.claude/settings.json`; `hook.sh install` remains as a fallback and still refreshes a copy left by an older version. When the skill hook and such a copy both run for the same stop, the no-progress counter advances once (identified by the transcript size)
+
 ## 1.15.0 — 2026-10-20
 - Plugin commands `/autopilot:status` (the status summary, without knowing the skill folder) and `/autopilot:stop` (new `runlock.sh stop` writes `.autopilot/STOP` and says which loop it stops). Plugin installs only; the `.skill` package has no commands
 - `scripts/eval.sh --iterations <n>` runs the driver n times and also checks the later runs: each completes one task, no task is completed twice, nothing fails
