@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.28.3 — 2026-10-20
 - LOG times are UTC with a `Z` (`2026-10-01T14:30Z`). Local time made entries from machines in different time zones (a laptop and a cloud session) run backwards
 
 ## 1.28.2 — 2026-10-20
