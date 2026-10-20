@@ -6,3 +6,4 @@ dist/
 .autopilot/RUN
 .autopilot/driver-logs/
 .autopilot/.hook-state
+__pycache__/

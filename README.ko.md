@@ -83,8 +83,10 @@ bash <스킬 폴더>/scripts/status.sh [레포 경로]
 ```
 .claude-plugin/marketplace.json          마켓플레이스 카탈로그
 plugins/autopilot/.claude-plugin/        플러그인 매니페스트 (plugin.json)
-plugins/autopilot/skills/autopilot/      스킬 본체 (SKILL.md, assets/, scripts/autopilot.sh)
+plugins/autopilot/skills/autopilot/      스킬 본체 (SKILL.md, assets/, scripts/: 드라이버·status·archive·workbranch·runlock)
 scripts/validate.sh, bump.sh, release.sh 로컬 검증, 버전 올리기, 릴리스
+scripts/eval.sh, tests/eval/             발굴 품질 평가 (선택, claude 필요)
+tests/                                   스크립트 테스트 (validate.sh가 실행)
 docs/                                    유지보수 문서
 CHANGELOG.md                             변경 이력
 ```
@@ -100,6 +102,14 @@ bash scripts/validate.sh
 ```
 
 브랜치·버전·릴리스 규칙은 [CONTRIBUTING.md](CONTRIBUTING.md)와 [docs/](docs/)를 참고.
+
+## 발굴 품질 측정
+
+```bash
+bash scripts/eval.sh            # 실행 결과를 보려면 --keep
+```
+
+`tests/eval/fixture-todo/`(결함 다섯 개를 심은 작은 할 일 CLI: 실패하는 테스트가 있는 off-by-one, 첫 실행 크래시, 셸 주입, README에만 있고 구현이 없는 명령, TODO 마커)를 임시 레포로 복사하고, 작업 사본의 스킬을 드라이버 모드로 한 번 돌린 뒤 `tests/eval/expected.txt`의 결함 중 몇 개가 BACKLOG에 들어갔는지 채점한다. `claude` CLI가 필요하고 실제 실행 비용이 들어 `validate.sh`에는 포함하지 않는다. 발굴 규칙을 바꾼 뒤 더 잘 찾는지 확인할 때 쓴다.
 
 ## 라이선스
 

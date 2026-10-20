@@ -1,13 +1,13 @@
 ---
 name: autopilot
 metadata:
-  version: 1.11.1
+  version: 1.12.0
 description: Autonomous development loop that finds, selects, implements, verifies and records the next task in a repository with no human in the loop. Finds bug fixes, improvements and new features from code analysis, running the software, user scenarios and the issue tracker, and leaves large changes it must not make alone as proposals. Keeps going in the same session until .autopilot/STOP exists (driver mode when a terminal is available) and, if .autopilot/CONFIG.md allows, pushes branches, opens and merges PRs and releases. Writes its notes in the repository's or user's language. Use whenever someone says "autopilot", "autonomous development", "work on the next task", "keep developing on your own", "unattended loop", "work through the backlog", "handle the issues", or "자율 개발", "알아서 개발해", "다음 작업 알아서", "무인 루프", "백로그 처리", or when the driver invokes it, and follow this procedure exactly.
 ---
 
 # Autopilot — autonomous development loop
 
-**Version 1.11.1** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.12.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -102,6 +102,8 @@ Separately, if the issue tracker is readable, check **in every task's Phase 1** 
 
 Discovery runs on two axes. Running only the **maintenance axis** piles up tests and lint. The **product axis** must always run too.
 
+Start every discovery cycle with `bash <skill folder>/scripts/scan.sh`. It lists code markers and risky patterns (shell built from strings, `eval`/`exec`, unsafe deserialization, disabled TLS checks, hard-coded secrets) with file and line, deterministically. **Every line it prints becomes a task or gets a one-line reason under ROADMAP "Not doing".** Lines marked `autopilot-scan: ignore` and fixture/testdata folders are skipped.
+
 #### 1-A. Understand the product (first step of every discovery cycle)
 
 Read the code and update the ROADMAP "Product" section:
@@ -122,14 +124,23 @@ Findings from 5 and 6 become tasks with their evidence (command and output summa
 - Safety: write only in a temporary directory and put a timeout (60 seconds by default) on every command. Always stop processes you started. Never run anything that touches the external network, payments, email, real accounts or production data. If you cannot run it (does not build, needs secrets), write that under "Observations" and read the code instead.
 - For a reproducible defect, the fix task's completion criteria include "add a regression test for this input".
 
+##### Discovery is done only when
+
+Check this before leaving Phase 1. If anything is missing, discovery is not finished: do the missing step now, do not move on.
+- The ROADMAP feature map has a row per feature (no template placeholder left).
+- "Observations" records at least one command you actually ran and what it did, or why nothing could be run.
+- "Scenarios" has three scenarios with where each got stuck (or "no friction").
+- Every `scan.sh` line is a BACKLOG task (a code marker becomes a `todo` task, or a `feature` task if it describes a feature) or has a one-line reason under "Not doing". Writing it only under "Missing" or "Weak" does not count.
+- `last_scan` is today.
+
 #### 1-B. Discovery sources
 
 | Axis | Source | Method | Type |
 |---|---|---|---|
 | People | Issue tracker | see 1-E | from labels and content |
 | Maintenance | Broken state | baseline failing tests and builds | `fix` |
-| Maintenance | Security | ① dependency vulnerabilities: only tools already installed or built into the package manager (`npm audit`, `pnpm audit`, `pip-audit`, `cargo audit`, `govulncheck`, `bundle audit`, …); use a security-scanning skill or MCP too if the session has one ② static patterns: hard-coded secrets, shell or SQL built by string concatenation, `eval`/`exec`, unvalidated deserialization, disabled TLS verification ③ with no tool, do only ② and write "no audit tool" in the LOG | `security` |
-| Maintenance | Code markers | `TODO`, `FIXME`, `HACK`, `XXX`, `NotImplementedError`, `pass # stub` | `todo` |
+| Maintenance | Security | ① dependency vulnerabilities: only tools already installed or built into the package manager (`npm audit`, `pnpm audit`, `pip-audit`, `cargo audit`, `govulncheck`, `bundle audit`, …); use a security-scanning skill or MCP too if the session has one ② static patterns: the security sections of `scan.sh` (hard-coded secrets, shell built from strings, `eval`/`exec`, unsafe deserialization, disabled TLS verification), plus SQL built by string concatenation, which needs reading ③ with no tool, do only ② and write "no audit tool" in the LOG | `security` |
+| Maintenance | Code markers | `scan.sh`: `TODO`, `FIXME`, `HACK`, `XXX` in comments, `NotImplementedError`, `pass # stub` <!-- autopilot-scan: ignore --> | `todo` |
 | Product | Unfinished features | "partial" and "stub" in the feature map | `feature` |
 | Product | Missing features | feature map "Missing" | `feature` |
 | Product | Weak features | feature map "Weak" — error handling, validation, configuration, retries, logging | `enhance` |
@@ -144,7 +155,7 @@ Findings from 5 and 6 become tasks with their evidence (command and output summa
 
 #### 1-C. Queue mix
 
-At least **half** of the tasks a cycle creates must come from the product axis. `fix`, `security` and issue-sourced tasks are exceptions and always all go in. Filling the queue with `test` while product candidates exist is forbidden. At most 2 `test` tasks per cycle.
+At least **half** of the tasks a cycle creates must come from the product axis. `fix`, `security`, issue-sourced tasks and the tasks for `scan.sh` lines are exceptions and always all go in. Filling the queue with `test` while product candidates exist is forbidden. At most 2 `test` tasks per cycle.
 
 #### 1-D. Large features
 
@@ -274,6 +285,7 @@ On success:
 2. Set the BACKLOG status to `done` with the completion date.
 3. Add follow-up tasks found during implementation to the BACKLOG.
 4. Append to the LOG.
+   Never commit generated files (`__pycache__`, build output, coverage, logs). If the task created them, add them to `.gitignore` instead; if they were already tracked, queue a `cleanup` task rather than deleting them in this one.
 5. If the integration mode is `pr` and `release: auto`, check the "Release" conditions below.
 6. **Driver mode**: exit. **Session mode**: drop what you remember about the task and go back to Phase 0. No summary, no report, no "next I will …". Go straight to the next task.
 
@@ -312,7 +324,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30 | T-042 | done | skill 1.11.1
+## 2026-10-01T14:30 | T-042 | done | skill 1.12.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)

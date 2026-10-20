@@ -139,3 +139,14 @@
 - 변경: scripts/autopilot.sh(통합 사전 점검), SKILL.md 드라이버 절, README, tests/test_driver.sh(+7)
 - 검증: validate PASS
 - 릴리스: 1.11.0 main 반영(PR #48, #49). 태그·Release는 세션 정책으로 막힘 → 태그 대기 v1.11.0. 사람이 로컬 catch-up으로 v1.5.1~v1.10.2 태그·Release 10개 생성 완료 확인
+
+## 2026-10-20T10:02 | T-021 | done | skill 1.11.1
+- 변경: scripts/eval.sh(신규), tests/eval/(결함 5개 예제 레포·expected.txt), tests/test_eval.sh(가짜 claude로 12개), README 2종, CLAUDE.md(발굴 규칙 변경 시 eval 점수 기록), .gitignore
+- 검증: validate PASS. 실제 eval 1회: 4/5(0.80), 42초, 커밋 1개(T-001 off-by-one 수정)
+- 발견: 스킬이 탐색적 실행·시나리오·기능 지도·코드 마커 검사를 건너뜀 → T-026. claude plugin eval은 있으나 case.yaml 스키마 문서가 없어 자체 하네스로 구현
+- 발견: 예제 레포에 __pycache__가 섞여 커밋됨 → 예제 .gitignore 추가, eval이 복사 후 제거
+
+## 2026-10-20T10:08 | T-026 | done | skill 1.11.1
+- 변경: scripts/scan.sh(신규, 주석 속 마커·보안 패턴, fixture/testdata·ignore 표시 제외), SKILL.md(Phase 1 scan.sh·발굴 완료 조건·1-C 예외·생성 파일 커밋 금지), tests/test_scan.sh(22), scripts/eval.sh(로그를 레포 밖에), docs/skill-design.md
+- 검증: validate PASS. eval 전 4/5(관찰·기능 지도 비어 있음) → 규칙 1차 4/5(관찰·시나리오 채움, 마커는 Missing에만) → 1-C 보강 후 5/5
+- 이 레포: scan.sh 결과 0건(예제 레포는 fixture로 제외, 설명용 두 곳은 ignore 표시)

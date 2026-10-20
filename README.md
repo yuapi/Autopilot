@@ -83,8 +83,10 @@ One screen with whether the loop is running or stopped (and why), the integratio
 ```
 .claude-plugin/marketplace.json          marketplace catalog
 plugins/autopilot/.claude-plugin/        plugin manifest (plugin.json)
-plugins/autopilot/skills/autopilot/      the skill (SKILL.md, assets/, scripts/autopilot.sh)
+plugins/autopilot/skills/autopilot/      the skill (SKILL.md, assets/, scripts/: driver, status, archive, workbranch, runlock)
 scripts/validate.sh, bump.sh, release.sh local validation, version bump, release
+scripts/eval.sh, tests/eval/             discovery quality eval (opt-in, needs claude)
+tests/                                   tests for the scripts, run by validate.sh
 docs/                                    maintainer documentation
 CHANGELOG.md                             version history
 ```
@@ -100,6 +102,14 @@ bash scripts/validate.sh
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/](docs/) for branching, versioning and release details.
+
+## Measuring discovery quality
+
+```bash
+bash scripts/eval.sh            # add --keep to inspect the run afterwards
+```
+
+Copies `tests/eval/fixture-todo/` (a tiny todo CLI with five seeded defects: an off-by-one with a failing test, a crash on first run, a shell injection, a command the README documents but the code lacks, and a TODO marker) into a temp repository, runs the working-copy skill once in driver mode, and scores how many of the defects `tests/eval/expected.txt` lists landed in its BACKLOG. It needs the `claude` CLI and spends one real driver run, so it is not part of `validate.sh`; run it after changing discovery rules to see whether they find more or less.
 
 ## License
 
