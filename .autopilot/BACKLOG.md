@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 44
+next_id: 45
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -50,3 +50,4 @@ next_id: 44
 | T-041 | fix | done | 1 | 세션 모드 규칙 위반 막기: 작업마다 커밋 후 다음 작업, 심화 발굴 4단계 없이 최종 정지 금지, 알려진 결함을 "사람에게" 남기지 말고 큐에 넣기 | eval --mode session 2회 이상에서 규칙 검사 전부 ok | T-040 규칙 검사(2회차 실행에서 3개 위반) | 2026-10-20 |
 | T-042 | test | done | 1 | eval 채점 정규식: off-by-one이 "mark item N (1-based)" 표현을 못 받음 | 실제 표현 회귀 검사, 남긴 실행 재채점 10/10 | eval session 실행(9/10, 실제로는 찾았음) | 2026-10-20 |
 | T-043 | fix | done | 1 | log.sh가 release 상태를 거부(SKILL.md 상태 목록에 없음) → release 상태 추가, 릴리스 항목 내용 규정 | SKILL.md 목록의 모든 상태를 log.sh가 받는 테스트 | 직접 사용(1.20.0 기록 실패) | 2026-10-20 |
+| T-044 | docs | done | 1 | README 2종 파일 트리에 scan·hook·log·finalstop 스크립트와 commands/ 폴더 누락 | 트리가 모든 스크립트를 이름으로 언급하는 테스트 | 심화 발굴 3단계(문서 예제 정확성) | 2026-10-20 |

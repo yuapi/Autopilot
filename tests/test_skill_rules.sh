@@ -70,4 +70,13 @@ check "SKILL.md revisits its own open PRs" grep -q 'Revisit your own open PRs' "
 check "revisit merges PRs whose CI passed since" grep -q 'CI now passed, no conflicts, `merge: auto` → merge it now' "$SKILL"
 check "conflicts are resolved by merging the base, never rebasing" grep -q 'merge the base into that branch (never rebase or force push)' "$SKILL"
 
+# the README file trees name every skill script (driver = autopilot.sh)
+for readme in README.md README.ko.md; do
+  line="$(grep -m1 'plugins/autopilot/skills/autopilot/ ' "$REPO/$readme")"
+  for f in "$REPO/$SKILL_REL"/scripts/*.sh; do
+    n="$(basename "$f" .sh)"; [ "$n" = autopilot ] && continue
+    check "$readme tree names scripts/$n.sh" grep -q "$n" <<<"$line"
+  done
+done
+
 finish

@@ -277,3 +277,11 @@
 ## 2026-10-20T11:51 | T-043 | done | skill 1.20.0
 - 변경: scripts/log.sh(release 상태), SKILL.md(LOG 상태 목록, Release 절에 release 항목 내용), tests/test_log.sh(+8: SKILL.md 목록의 모든 상태를 받는지), CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-20T11:59 | - | release | skill 1.20.1
+- 1.20.1 릴리즈: release/1.20.1 → main, main → develop 역병합. 태그 대기: v1.20.1 (403)
+
+## 2026-10-20T11:59 | T-044 | done | skill 1.20.1
+- 발굴: driver eval 3회 8/8·규칙 검사 전부 ok. 문서 정확성 확인에서 README 파일 트리가 스크립트 4개와 commands/를 빠뜨림
+- 변경: README 2종 트리, tests/test_skill_rules.sh(+16: 트리가 모든 스킬 스크립트를 언급)
+- 검증: validate PASS
