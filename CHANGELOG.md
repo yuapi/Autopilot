@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.14.0 — 2026-10-20
 - In a repository with no way to verify, the test harness task now comes before every other task, `fix` included (it used to come right after `fix`, which produced an unverified fix commit in the eval)
 - `scripts/eval.sh --fixture <name>`: second fixture `wordcount`, a Node CLI with no tests, checks that the first task sets up a test runner (expectations can grade the completed task's type with `type=`). Expectations moved to `tests/eval/fixture-<name>.expected`
 
