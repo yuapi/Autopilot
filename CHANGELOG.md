@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- finalstop.sh refused the final stop because of the `.gitignore` line `task.sh start` adds; it now treats `.gitignore` as state, like task.sh
 
 ## 1.35.0 — 2026-10-20
 - A repository with files but no commit yet: Phase 0's stash failed and `task.sh start` refused forever. The driver now stops before the first run and Phase 0 writes STOP, both saying to commit the existing files first; neither commits them

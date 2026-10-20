@@ -38,4 +38,8 @@ check "uncommitted .autopilot/ state is fine" bash -c "cd '$d' && printf '%s\n' 
 d="$(newrepo)"
 check "summary not starting with 'Final stop' → refused" grep -q 'must start with "Final stop"' <<<"$(stop "$d" "all done")"
 check_not "outside a git repository → exit 1" bash -c "cd '$TMPROOT' && echo 'Final stop' | bash '$FS'"
+# the .gitignore line task.sh start adds is state, not unfinished work
+d="$(newrepo)"; echo ".autopilot/.task" >> "$d/.gitignore"
+check "only .gitignore changed → final stop accepted" bash -c "cd '$d' && printf 'Final stop: x\n' | bash '$FS' >/dev/null 2>&1"
+
 finish
