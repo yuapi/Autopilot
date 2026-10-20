@@ -357,3 +357,7 @@
 - 발굴: driver eval stats 2회 6/6·규칙 ok. 심화 발굴 1단계(SKILL.md 정독)에서 Phase 0 단계 2(작업 트리 stash)와 Phase 2 첫 검사(이전 작업 끝내기)가 충돌
 - 변경: SKILL.md Phase 0 단계 2(in_progress 행이 있으면 stash하지 않음), tests/test_skill_rules.sh(+1), CHANGELOG
 - 검증: validate PASS(정리 명령 추출 테스트 그대로 통과)
+
+## 2026-10-20T13:19 | T-056 | done | skill 1.25.0
+- 변경: scripts/status.sh("Now:" 줄), SKILL.md 상태 확인 절, tests/test_status.sh(+3), CHANGELOG
+- 검증: validate PASS. 이 레포에서 "Now: T-056 … (attempt 1, started 0 min ago)" 확인
