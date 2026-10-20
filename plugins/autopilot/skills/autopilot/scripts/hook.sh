@@ -11,6 +11,8 @@
 # - uninstall removes only autopilot's entry; other hooks and settings stay. Empty Stop/hooks keys go too
 # Prints what it did. Exit 1 if settings.json exists but is not valid JSON (it is then left alone).
 set -eu
+PY="$(command -v python3 || command -v python || true)"   # Windows Git Bash often has only python
+[ -n "$PY" ] || { echo "[autopilot] needs Python 3 on PATH (python3 or python)" >&2; exit 1; }
 cmd="${1:-}"
 case "$cmd" in install|uninstall) ;; *) echo "usage: hook.sh install|uninstall [repository path]" >&2; exit 1;; esac
 here="$(cd "$(dirname "$0")/.." && pwd)"
@@ -24,7 +26,7 @@ if [ "$cmd" = uninstall ]; then
   rmdir .claude/hooks 2>/dev/null || true
   settings_state="not present"
   if [ -f .claude/settings.json ]; then
-    settings_state="$(python3 - <<'PY'
+    settings_state="$("$PY" - <<'PY'
 import json, sys
 p = ".claude/settings.json"
 try:
@@ -78,7 +80,7 @@ fi
 [ "$hook_state" = "up to date" ] || cp "$src" "$dst"
 chmod +x "$dst"
 
-settings_state="$(python3 - <<'PY'
+settings_state="$("$PY" - <<'PY'
 import json, os, sys
 p = ".claude/settings.json"
 want = 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/autopilot-stop.sh"'

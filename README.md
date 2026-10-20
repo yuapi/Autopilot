@@ -16,6 +16,8 @@ autopilot is a Claude Code skill, packaged as a plugin, that runs an autonomous 
 
 ## Install
 
+Requirements: `git`, `bash` and Python 3 (`python3` or `python`) on PATH. On Windows, use Git Bash or WSL.
+
 ### Option 1: Plugin marketplace (Claude Code)
 
 In a Claude Code session:

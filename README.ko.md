@@ -16,6 +16,8 @@ autopilot은 레포지토리에서 자율 개발 루프를 돌리는 Claude Code
 
 ## 설치
 
+필요한 것: PATH에 `git`, `bash`, Python 3(`python3` 또는 `python`). Windows에서는 Git Bash나 WSL을 쓴다.
+
 ### 방법 1: 플러그인 마켓플레이스 (Claude Code)
 
 Claude Code 세션에서:

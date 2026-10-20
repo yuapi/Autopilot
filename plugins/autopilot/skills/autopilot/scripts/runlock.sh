@@ -9,6 +9,8 @@
 # The session ID comes from CLAUDE_CODE_SESSION_ID (set by Claude Code). RUN whose last activity is
 # older than AUTOPILOT_RUN_STALE_MIN minutes (default 120) counts as abandoned and is taken over.
 set -eu
+PY="$(command -v python3 || command -v python || true)"   # Windows Git Bash often has only python
+[ -n "$PY" ] || { echo "[autopilot] needs Python 3 on PATH (python3 or python)" >&2; exit 1; }
 cmd="${1:-}"; [ $# -gt 0 ] && shift
 budget=""; repo=.
 while [ $# -gt 0 ]; do
@@ -27,7 +29,7 @@ me="${CLAUDE_CODE_SESSION_ID:-unknown}"
 stale_min="${AUTOPILOT_RUN_STALE_MIN:-120}"
 
 owner() { [ -f "$RUN" ] && sed -n 's/^session:[[:space:]]*//p' "$RUN" | head -1 || true; }
-age_min() { python3 -c 'import os,sys,time; print(int((time.time()-os.path.getmtime(sys.argv[1]))//60))' "$RUN"; }
+age_min() { "$PY" -c 'import os,sys,time; print(int((time.time()-os.path.getmtime(sys.argv[1]))//60))' "$RUN"; }
 write() { mkdir -p .autopilot; printf 'session: %s\nstarted: %s\n' "$me" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$RUN"; set_budget; }
 set_budget() {  # task budget lines (tasks: N, done: 0); without --tasks an existing budget is kept
   [ -n "$budget" ] || return 0
