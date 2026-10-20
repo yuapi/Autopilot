@@ -31,6 +31,12 @@ The skill is then available as `autopilot` (namespaced as `/autopilot:autopilot`
 
 Download `autopilot-<version>.skill` from the [Releases](https://github.com/yuapi/Autopilot/releases) page and upload it as a skill in claude.ai (Settings → Capabilities → Skills). It is a zip archive containing the `autopilot/` skill folder, so you can also unzip it into `~/.claude/skills/`.
 
+### Updating
+
+- Plugin in Claude Code: `claude plugin marketplace update autopilot-marketplace`, then `claude plugin update autopilot@autopilot-marketplace`.
+- Plugin added to a claude.ai account: new versions sync on their own, but **a session keeps the version it loaded when it started**. Start a new session to use an update.
+- `/autopilot:status` prints the installed version and warns when the repository was already run with a newer one.
+
 ## Usage
 
 Start on a dedicated branch at the root of the repository you want to work on.
