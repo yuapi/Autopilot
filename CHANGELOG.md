@@ -7,6 +7,9 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.10.1 — 2026-10-20
+- tests/test_portability.sh ran the whole test suite again inside its sandbox, which ran itself again, and so on; on machines with a large PATH (e.g. WSL with Windows paths) `validate.sh` and therefore `release.sh` looked stuck and then failed on the 5-minute limit. The sandbox now holds only a trivial test, and Windows drives under /mnt are skipped
+
 ## 1.10.0 — 2026-10-20
 - Local mode no longer commits onto a default branch: new `scripts/workbranch.sh`, run at the start of every task, switches from `main`/`master`/`develop`/`trunk`/the remote default/a detached HEAD to a new `autopilot/<YYYYMMDD-HHMM>` branch and leaves any other branch alone. `local_branch: current` in CONFIG restores the old behavior
 
