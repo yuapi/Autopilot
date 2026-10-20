@@ -81,4 +81,16 @@ out="$(cd "$d" && bash scripts/release.sh --catch-up --dry-run 2>&1)"
 check_not "catch-up: skips existing tags" grep -q "v$v1 ←" <<<"$out"
 check_not "release: rejects an unknown option" bash "$d/scripts/release.sh" --bogus
 
+# a clone with core.autocrlf=true (Windows default) still checks shell scripts out with LF
+if git -C "$REPO" rev-parse HEAD >/dev/null 2>&1; then
+  c="$(mktemp -d "$TMPROOT/crlf.XXXX")"
+  (cd "$REPO" && git ls-files -z -- '*.sh' | tar --null -T - -cf -) | (cd "$c" && tar -xf -)
+  [ ! -f "$REPO/.gitattributes" ] || cp "$REPO/.gitattributes" "$c/"
+  (cd "$c" && git init -q && git config core.autocrlf true && git config user.email t@t && git config user.name t \
+    && git add -A && git commit -qm x && rm -rf ./* && git checkout -q -- . ) >/dev/null 2>&1
+  n="$(cd "$c" && git ls-files '*.sh' | while IFS= read -r f; do grep -l $'\r$' "$f"; done | wc -l | tr -d ' ')"
+  check "autocrlf=true checkout keeps every .sh LF ($n with CRLF)" test "$n" -eq 0
+  check "a script from that checkout runs" bash -c "cd '$c' && bash -n '$SKILL_REL/scripts/task.sh'"
+fi
+
 finish

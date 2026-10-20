@@ -1,0 +1,6 @@
+# Shell scripts must keep LF line endings: with core.autocrlf=true (common on Windows) git would check
+# them out with CRLF, and bash then fails on every line ($'\r': command not found).
+*.sh text eol=lf
+# Plugin commands and the skill are read by Claude Code; keep them byte-identical across platforms too.
+*.md text
+*.json text eol=lf
