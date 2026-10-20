@@ -125,6 +125,7 @@ bash scripts/eval.sh --iterations 3         # 드라이버 3회: 매번 새 작�
 bash scripts/eval.sh --mode session --iterations 2   # 플러그인으로 세션 모드 1회, 작업 2개 요청: 계속 이어 가다가 예산에서 멈추는가
 bash scripts/eval.sh --grade <남긴 폴더> [같은 옵션]   # --keep으로 남긴 실행을 다시 채점
 bash scripts/eval.sh --model <이름>         # 같은 평가를 다른 모델로, 비교용
+bash scripts/eval.sh --fixture all          # 모든 예제를 같은 옵션으로, 요약 한 번
 ```
 
 `tests/eval/fixture-todo/`(결함 다섯 개를 심은 작은 할 일 CLI: 실패하는 테스트가 있는 off-by-one, 첫 실행 크래시, 셸 주입, README에만 있고 구현이 없는 명령, TODO 마커)를 임시 레포로 복사하고, 작업 사본의 스킬을 드라이버 모드로 한 번 돌린 뒤 `tests/eval/fixture-todo.expected`의 결함 중 몇 개가 BACKLOG에 들어갔는지 채점한다. `wordcount` 예제는 테스트가 전혀 없는 레포로, 첫 작업이 테스트 러너 구축인지 확인한다. 모든 실행은 규칙 검사도 받는다: 완료한 작업마다 커밋 하나, LOG는 끝에만 붙이고 시간 순서, 최종 정지는 심화 발굴 4단계를 기록한 뒤에만. 규칙을 하나라도 어기면 점수와 상관없이 실패다. `claude` CLI가 필요하고 실제 실행 비용이 들어 `validate.sh`에는 포함하지 않는다. 발굴 규칙을 바꾼 뒤 더 잘 찾는지 확인할 때 쓴다.
