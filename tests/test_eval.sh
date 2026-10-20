@@ -42,4 +42,24 @@ rm -rf "$kept"
 check "no claude CLI → skipped with exit 3" bash -c "CLAUDE_BIN=no-such-claude bash '$EV' >/dev/null 2>&1; test \$? -eq 3"
 check_not "rejects an unknown option" bash "$EV" --bogus
 
+# second fixture: a repository with no tests, graded on what the run completed first
+FAKE2="$TMPROOT/fake-claude-2"
+cat > "$FAKE2" <<'SH'
+#!/usr/bin/env bash
+mkdir -p .autopilot
+{ echo "| ID | Type | Status | Attempts | Task | Done when | Source | Completed |"
+  echo "|---|---|---|---|---|---|---|---|"
+  echo "| T-001 | ${FIRST_TYPE:-test} | done | 1 | set up node --test with a smoke test | npm test passes | no tests | |"
+  echo "| T-002 | fix | open | 0 | empty input prints 1 instead of 0 | test for empty input | using it | |"
+} > .autopilot/BACKLOG.md
+SH
+chmod +x "$FAKE2"
+check "--fixture list shows both fixtures" bash -c "bash '$EV' --fixture list | grep -qx wordcount && bash '$EV' --fixture list | grep -qx todo"
+out="$(CLAUDE_BIN="$FAKE2" bash "$EV" --fixture wordcount 2>&1)"; rc=$?
+check "wordcount: harness first → 3/3" grep -q "Score: 3/3" <<<"$out"
+check "wordcount: copies the right fixture" grep -q "fixture wordcount" <<<"$out"
+out="$(FIRST_TYPE=fix CLAUDE_BIN="$FAKE2" bash "$EV" --fixture wordcount 2>&1)"
+check "wordcount: fixing first instead of the harness is graded as a miss" grep -q "MISSED  harness-first" <<<"$out"
+check_not "an unknown fixture is refused" bash "$EV" --fixture nope
+
 finish
