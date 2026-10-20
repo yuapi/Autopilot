@@ -306,3 +306,11 @@
 ## 2026-10-20T12:21 | T-047 | done | skill 1.21.0
 - 변경: scripts/task.sh(신규), SKILL.md(Phase 2 start, Phase 4 fail, Phase 5 done, .gitignore에 .autopilot/.task), scripts/autopilot.sh(.gitignore 항목), tests/test_task.sh(23)·test_driver.sh, README 2종 트리, docs/skill-design.md, CHANGELOG
 - 검증: validate PASS. 실제 eval --mode session --iterations 3 두 번: 둘 다 10/10, 규칙 검사 전부 ok, 두 실행 모두 task.sh 사용(.gitignore에 .autopilot/.task), 작업마다 커밋 하나
+
+## 2026-10-20T12:25 | - | release | skill 1.22.0
+- 1.22.0 릴리즈: release/1.22.0 → main, main → develop 역병합. 태그 대기: v1.22.0 (403, 누적 v1.11.0~v1.22.0)
+
+## 2026-10-20T12:28 | T-048 | done | skill 1.22.0
+- 변경: scripts/autopilot.sh(GitLab origin이면 glab 사전 점검), SKILL.md(1-E glab issue, Phase 5 glab mr create, 드라이버 절), tests/test_driver.sh(+4), CHANGELOG, .gitignore(.autopilot/.task)
+- 검증: validate PASS. task.sh start → 구현 → 커밋 → task.sh done 순서로 처음 사용(먼저 구현하자 start가 거부함: 의도대로)
+- 발견: task.sh 거부 시에도 .gitignore를 고침 → T-049
