@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- Driver stops after 3 runs in a row that change neither LOG.md nor the commits, writing the reason to STOP (`AUTOPILOT_STALL_LIMIT`, same as the Stop hook). Runs that exit normally but get nowhere, e.g. on permission denials, used to repeat forever. After each run it prints that run's LOG entry
 
 ## 1.19.0 — 2026-10-20
 - `pr` integration revisits its own open PRs at the start of every task: merges those whose CI has passed since (`merge: auto`), and turns failed CI or base conflicts into a `fix` task on the same branch. A PR left open while CI was still running used to stay open forever

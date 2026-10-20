@@ -7,10 +7,12 @@
 #   - .autopilot/STOP exists (created by Claude)            → exit code 0
 #   - max runs reached (when given)                         → 0
 #   - claude exits abnormally 3 times in a row              → 1
+#   - 3 runs in a row change neither LOG.md nor the commits → writes STOP, 1
 #   - bad argument, not in a git repository, no claude CLI  → 1
 #
 # Environment variables:
-#   AUTOPILOT_SLEEP  seconds to wait between runs (default 10)
+#   AUTOPILOT_SLEEP        seconds to wait between runs (default 10)
+#   AUTOPILOT_STALL_LIMIT  runs in a row without progress before stopping (default 3, same as the Stop hook)
 #
 # Permission mode (AUTOPILOT_PERMISSION):
 #   allowlist (default) : --allowedTools allows only the needed tools. Works as root.
@@ -97,8 +99,14 @@ case "${AUTOPILOT_PERMISSION:-allowlist}" in
     ;;
 esac
 
+# Progress = LOG.md or HEAD changed during the run
+progress_sig() { { cat .autopilot/LOG.md 2>/dev/null; git rev-parse HEAD 2>/dev/null; } | cksum | cut -d' ' -f1; }
+STALL_LIMIT="${AUTOPILOT_STALL_LIMIT:-3}"
+case "$STALL_LIMIT" in ''|*[!0-9]*|0) STALL_LIMIT=3;; esac
+
 iter=0
 crash=0
+stall=0
 while :; do
   if [ -f .autopilot/STOP ]; then
     echo "[driver] STOP file found. Exiting."
@@ -115,8 +123,26 @@ while :; do
   log="$LOG_DIR/$ts-$(printf '%04d' "$iter").log"
   echo "[driver] #$iter start $ts"
 
+  before="$(progress_sig)"
   if AUTOPILOT_DRIVER=1 claude -p "$PROMPT" "${PERM_ARGS[@]}" > "$log" 2>&1; then
     crash=0
+    if [ "$(progress_sig)" = "$before" ]; then
+      stall=$((stall + 1))
+      echo "[driver] #$iter made no progress (LOG.md and commits unchanged, $stall/$STALL_LIMIT). Log: $log"
+      if [ "$stall" -ge "$STALL_LIMIT" ] && [ ! -f .autopilot/STOP ]; then
+        {
+          echo "Final stop: no progress (driver)"
+          echo "- $stall runs in a row changed neither LOG.md nor the commits"
+          echo "- Work may be stuck on permission denials or an environment problem. See $log"
+        } > .autopilot/STOP
+        echo "[driver] $stall runs in a row without progress. Wrote .autopilot/STOP and exiting." >&2
+        exit 1
+      fi
+    else
+      stall=0
+      last="$(grep '^## ' .autopilot/LOG.md 2>/dev/null | tail -1)"
+      [ -n "$last" ] && echo "[driver] #$iter → ${last#\#\# }"
+    fi
   else
     crash=$((crash + 1))
     echo "[driver] claude exited abnormally ($crash/$MAX_CONSECUTIVE_CRASH). Log: $log"

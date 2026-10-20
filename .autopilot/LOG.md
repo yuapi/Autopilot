@@ -232,3 +232,11 @@
 - 범위: T-027~T-036 (10건). done 10 / failed 0 / blocked 0. 유형: feature 3, enhance 4, fix 3. 출처: 탐색 실행 3, 시나리오 3, 정독·관찰 4
 - 실패 원인 없음. 반복된 사실: 태그·Release 403(매 릴리스), 자기 CHANGELOG 문장이 scan.sh에 걸림 1회
 - "배운 것"에 3줄 추가(실제 세션 확인 방법, 표식 단어, 최소 입력 탐색)
+
+## 2026-10-20T11:58 | - | release | skill 1.19.0
+- 1.19.0 릴리즈: release/1.19.0 → main, main → develop 역병합. 태그 대기: v1.19.0 (403)
+
+## 2026-10-20T12:05 | T-037 | done | skill 1.19.0
+- 발굴(품질 속성: 관찰성·안전한 기본값): 드라이버는 비정상 종료만 세고, 권한 거부로 아무것도 못 하고 정상 종료하는 실행은 끝없이 반복(비용만 듦). 실행 결과도 출력하지 않음
+- 변경: scripts/autopilot.sh(정체 한도, 실행별 LOG 항목 출력), tests/test_driver.sh(가짜 claude ok는 LOG 기록, idle 모드, +7), README 2종, docs/skill-design.md, CHANGELOG
+- 검증: validate PASS
