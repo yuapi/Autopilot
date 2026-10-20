@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# BACKLOG task transitions that keep "one task at a time, one task per commit" mechanical.
+#   bash task.sh start <ID> [repo]  refuse while another task is in progress or changes outside .autopilot/
+#                                   are uncommitted; then attempts + 1, status in_progress
+#   bash task.sh done <ID> [repo]   refuse unless the task has its own commit(s) since `start` that change
+#                                   files outside .autopilot/ and name no other task; then status done + date
+#   bash task.sh fail <ID> [repo]   status back to open (attempts kept), or blocked from the 3rd attempt
+# The start commit is kept in .autopilot/.task (ignored by git). Prints what it did; exit 1 with the reason
+# when it refuses. Only the status, attempts and completed cells of the row are changed.
+set -eu
+cmd="${1:-}"; id="${2:-}"
+usage() { echo "usage: task.sh start|done|fail <task ID> [repository path]" >&2; exit 1; }
+case "$cmd" in start|done|fail) ;; *) usage;; esac
+case "$id" in T-[0-9]*) ;; *) usage;; esac
+case "$id" in *[!T0-9-]*) usage;; esac
+root="$(git -C "${3:-.}" rev-parse --show-toplevel 2>/dev/null || true)"
+[ -n "$root" ] || { echo "[task] not inside a git repository" >&2; exit 1; }
+cd "$root"
+[ -f .autopilot/BACKLOG.md ] || { echo "[task] no .autopilot/BACKLOG.md" >&2; exit 1; }
+grep -qxF .autopilot/.task .gitignore 2>/dev/null || { [ -z "$(tail -c 1 .gitignore 2>/dev/null)" ] || echo >> .gitignore; echo .autopilot/.task >> .gitignore; }
+
+dirty="$(git status --porcelain -- . ':!.autopilot' ':!.gitignore' 2>/dev/null | head -5 | tr '\n' ' ')"
+head="$(git rev-parse -q --verify HEAD 2>/dev/null || echo none)"
+start=""; [ -f .autopilot/.task ] && read -r tid start < .autopilot/.task && [ "$tid" = "$id" ] || start=""
+
+if [ "$cmd" = start ] && [ -n "$dirty" ]; then
+  echo "[task] refused: uncommitted changes outside .autopilot/ ($dirty). Commit or roll back the previous task first" >&2; exit 1
+fi
+if [ "$cmd" = done ]; then
+  [ -n "$start" ] || { echo "[task] $id was not started with task.sh start; cannot tell which commits are its own" >&2; exit 1; }
+  [ -z "$dirty" ] || { echo "[task] refused: uncommitted changes outside .autopilot/ ($dirty). Commit $id first" >&2; exit 1; }
+  [ "$head" != "$start" ] || { echo "[task] refused: no commit since $id started. Commit the task's change first" >&2; exit 1; }
+  range="$start..HEAD"; [ "$start" = none ] && range=HEAD
+  code="$(git log --format= --name-only "$range" | grep -v '^$' | grep -v '^\.autopilot/' | grep -vx '.gitignore' | head -1 || true)"
+  [ -n "$code" ] || { echo "[task] refused: the commits since $id started change only .autopilot/" >&2; exit 1; }
+  others="$(git log --format=%s "$range" | grep -oE 'T-[0-9]+' | grep -vx "$id" | sort -u | tr '\n' ' ' || true)"
+  [ -z "$others" ] || { echo "[task] refused: commits since $id started also name $others— one task per commit. Roll back and redo them one at a time" >&2; exit 1; }
+fi
+
+python3 - "$cmd" "$id" <<'PY'
+import datetime, re, sys
+cmd, tid = sys.argv[1], sys.argv[2]
+p = ".autopilot/BACKLOG.md"
+lines = open(p, encoding="utf-8").read().split("\n")
+row = re.compile(r"^\|\s*(T-\d+)\s*\|")
+def cells(l): return l.strip().strip("|").split("|")
+target = None
+for i, l in enumerate(lines):
+    m = row.match(l)
+    if not m: continue
+    c = [x.strip() for x in cells(l)]
+    if m.group(1) == tid: target = i
+    elif cmd == "start" and len(c) > 2 and c[2] == "in_progress":
+        sys.exit(f"[task] refused: {m.group(1)} is still in progress. Finish it (task.sh done) or roll it back (task.sh fail) first")
+if target is None:
+    sys.exit(f"[task] no BACKLOG row {tid}")
+c = cells(lines[target])
+if len(c) < 8:
+    sys.exit(f"[task] BACKLOG row {tid} has {len(c)} columns, expected 8")
+status = c[2].strip()
+try: attempts = int(c[3].strip() or 0)
+except ValueError: attempts = 0
+if cmd == "start":
+    if status not in ("open", "in_progress"):
+        sys.exit(f"[task] refused: {tid} is {status}, not open")
+    if status == "open":
+        attempts += 1
+    status = "in_progress"
+elif cmd == "done":
+    if status != "in_progress":
+        sys.exit(f"[task] refused: {tid} is {status}, not in_progress")
+    status = "done"
+    c[-1] = " " + datetime.date.today().isoformat() + " "
+else:
+    status = "blocked" if attempts >= 3 else "open"
+c[2] = f" {status} "; c[3] = f" {attempts} "
+lines[target] = "|" + "|".join(c) + "|"
+open(p, "w", encoding="utf-8").write("\n".join(lines))
+print(f"[task] {tid}: {status} (attempts {attempts})")
+PY
+
+case "$cmd" in
+  start) echo "$id $head" > .autopilot/.task;;
+  done|fail) rm -f .autopilot/.task;;
+esac

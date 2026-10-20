@@ -60,7 +60,7 @@ trap 'rm -f "$LOCK"' EXIT
 
 # Keep .autopilot run artifacts out of commits (the state files themselves are committed by the skill)
 if [ -s .gitignore ] && [ -n "$(tail -c1 .gitignore)" ]; then echo >> .gitignore; fi
-for ig in .autopilot/driver-logs/ .autopilot/STOP .autopilot/RUN .autopilot/.hook-state .autopilot/driver.lock; do
+for ig in .autopilot/driver-logs/ .autopilot/STOP .autopilot/RUN .autopilot/.hook-state .autopilot/driver.lock .autopilot/.task; do
   grep -qsxF "$ig" .gitignore || printf '%s\n' "$ig" >> .gitignore
 done
 

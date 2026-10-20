@@ -299,3 +299,10 @@
 - 범위: T-037~T-046 (10건). done 10 / failed 0 / blocked 0. 유형: fix 3, test 3, enhance 2, feature 1, docs 1. 출처: eval 실제 실행 관찰 5, 정독 2, 탐색·시나리오 3
 - 실패 원인 없음. 반복된 사실: 모델 실행 결과(세션 eval)가 규칙 위반의 가장 큰 발견 원천. 채점 정규식 누락 2회(T-038, T-042)
 - "배운 것"에 2줄 추가(규칙 검사 우선, LOG는 log.sh로만)
+
+## 2026-10-20T12:21 | - | release | skill 1.21.0
+- 1.21.0 릴리즈: release/1.21.0 → main, main → develop 역병합. 태그 대기: v1.21.0 (403)
+
+## 2026-10-20T12:21 | T-047 | done | skill 1.21.0
+- 변경: scripts/task.sh(신규), SKILL.md(Phase 2 start, Phase 4 fail, Phase 5 done, .gitignore에 .autopilot/.task), scripts/autopilot.sh(.gitignore 항목), tests/test_task.sh(23)·test_driver.sh, README 2종 트리, docs/skill-design.md, CHANGELOG
+- 검증: validate PASS. 실제 eval --mode session --iterations 3 두 번: 둘 다 10/10, 규칙 검사 전부 ok, 두 실행 모두 task.sh 사용(.gitignore에 .autopilot/.task), 작업마다 커밋 하나
