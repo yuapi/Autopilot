@@ -32,4 +32,4 @@ next_id: 27
 | T-023 | enhance | done | 1 | 드라이버가 `.autopilot/CONFIG.md` 통합 모드가 pr일 때 필요한 도구(gh 또는 MCP)를 시작 전에 확인하고, 없으면 안내 후 local로 동작함을 출력 | test_driver에 경우 추가 | 품질 속성: 첫 실행 안내 | 2026-10-20 |
 | T-024 | fix | done | 1 | status.sh 출력을 `| head`로 자르면 BrokenPipeError 트레이스가 노출됨 | 끊겨도 오류 출력 없음 테스트 | 관찰 2026-10-19 | 2026-10-19 |
 | T-025 | fix | done | 1 | local 모드가 기본 브랜치(main 등)에 바로 커밋함 → workbranch.sh로 autopilot/<날짜> 브랜치로 옮김 | tests/test_workbranch.sh 통과 | 사람 요청 | 2026-10-20 |
-| T-026 | fix | open | 0 | 발굴 단계 생략: eval에서 탐색적 실행·시나리오·기능 지도를 건너뛰고 코드 마커 검사를 안 해 TODO 마커를 놓침(4/5). 결정적인 `scripts/scan.sh`(마커·보안 패턴 grep)를 Phase 1에서 실행하게 하고, 발굴 후 ROADMAP 관찰·기능 지도가 비어 있으면 발굴 미완료로 보는 규칙 | scripts/eval.sh 5/5, scan.sh 테스트 | eval 2026-10-20 | |
+| T-026 | fix | done | 1 | 발굴 단계 생략: eval에서 탐색적 실행·시나리오·기능 지도를 건너뛰고 코드 마커 검사를 안 해 TODO 마커를 놓침(4/5). 결정적인 `scripts/scan.sh`(마커·보안 패턴 grep)를 Phase 1에서 실행하게 하고, 발굴 후 ROADMAP 관찰·기능 지도가 비어 있으면 발굴 미완료로 보는 규칙 | scripts/eval.sh 5/5, scan.sh 테스트 | eval 2026-10-20 | 2026-10-20 |
