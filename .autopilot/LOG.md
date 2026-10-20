@@ -512,3 +512,9 @@
 ## 2026-10-20T16:12Z | T-078 | done | skill 1.30.0
 - 변경: scripts/task.sh(CONFIG.md가 있을 때만 scope 읽기), tests/test_task.sh(+1: stderr 비어 있음), CHANGELOG
 - 검증: validate PASS. 이 레포에서 done 실행 시 오류 출력 사라짐
+
+## 2026-10-20T16:13Z | - | retro | skill 1.30.0
+- 범위: T-067~T-078 (12건). done 12 / failed 0 / blocked 0. 유형: fix 7, feature 2, test 2, docs 1, perf 1(T-071). 출처: 시나리오·이식성 5, 실제 실행(eval·드라이버) 4, 정독 2, 품질 점검 1
+- 가장 큰 결함은 실제 드라이버 실행에서 나옴(T-076: 1.27부터 드라이버가 1회 후 멈춤). 단위 테스트·세션 eval로는 안 보였음
+- 정정: T-078 항목의 "이 레포에서 done 실행 시 오류 출력 사라짐"은 틀림. 이 레포엔 CONFIG가 있어 원래 오류가 없었음; 오류는 CONFIG 없는 테스트 레포와 실제 드라이버 실행에서 보였음
+- "배운 것"에 2줄 추가(새 기능은 드라이버로도 실행, 배포본으로 파서 확인)
