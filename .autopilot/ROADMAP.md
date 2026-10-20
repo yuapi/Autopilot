@@ -27,7 +27,8 @@ last_retro: 2026-10-20
 | 레포 도구 (validate/bump/release/tests) | 완성 | scripts/, tests/ (테스트 203개) |
 
 ### 빠진 것
-- 다른 종류의 평가 예제: 테스트가 없는 레포에서 "검증 수단 없음 → 최소 하네스 먼저" 규칙이 지켜지는지 측정할 수 없음
+- 사람이 스킬 폴더 경로를 몰라도 상태를 보고 멈출 수 있는 명령 (/autopilot:status, /autopilot:stop)
+- 여러 작업에 걸친 동작 평가 (eval은 드라이버 1회만)
 
 ### 약한 것
 - 레포에 복사된 Stop 훅(.claude/hooks/autopilot-stop.sh)이 스킬 업데이트 후에도 옛 버전으로 남음. 1.6~1.10 사본은 RUN 검사가 있어 "구버전 교체" 규칙에 걸리지 않고, 다른 세션을 계속 막음 (재현함)

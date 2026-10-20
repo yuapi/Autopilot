@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 29
+next_id: 31
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -35,3 +35,5 @@ next_id: 29
 | T-026 | fix | done | 1 | 발굴 단계 생략: eval에서 탐색적 실행·시나리오·기능 지도를 건너뛰고 코드 마커 검사를 안 해 TODO 마커를 놓침(4/5). 결정적인 `scripts/scan.sh`(마커·보안 패턴 grep)를 Phase 1에서 실행하게 하고, 발굴 후 ROADMAP 관찰·기능 지도가 비어 있으면 발굴 미완료로 보는 규칙 | scripts/eval.sh 5/5, scan.sh 테스트 | eval 2026-10-20 | 2026-10-20 |
 | T-027 | fix | done | 1 | 레포에 복사된 Stop 훅이 스킬과 다르면 Phase 0에서 교체(바이트 비교), status.sh는 사본이 스킬 assets와 다르면 경고 | 1.6 훅 사본이 교체되고 다른 세션이 막히지 않는 테스트 | 관찰·시나리오 1 | 2026-10-20 |
 | T-028 | feature | done | 1 | 두 번째 eval 예제: 테스트가 없는 작은 JS/셸 프로젝트. 첫 작업이 최소 테스트 하네스인지 채점 | eval.sh가 예제를 골라 돌림(--fixture), 첫 작업 유형 채점, test_eval 갱신 | 빠진 것·시나리오 2 | 2026-10-20 |
+| T-029 | enhance | done | 1 | eval.sh --iterations N: 드라이버를 N회 돌려 둘째 작업부터의 동작(상태 이어받기, 같은 작업 반복 없음, 실패 없음)을 함께 보고·채점 | test_eval에 반복 경우, 실제 todo 3회 실행 | 시나리오: 밤새 드라이버 | 2026-10-20 |
+| T-030 | feature | open | 0 | 플러그인 명령 /autopilot:status, /autopilot:stop (스킬 폴더 경로를 몰라도 상태 보기·멈추기) | claude plugin validate 통과, 명령이 status.sh·STOP을 호출하는 테스트, README | 사용성: 첫 실행 안내 | |

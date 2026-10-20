@@ -167,3 +167,13 @@
 ## 2026-10-20T10:20 | T-028 | done | skill 1.13.0
 - 변경: tests/eval/fixture-wordcount(테스트 없는 Node CLI)·.expected, expected.txt → fixture-todo.expected, scripts/eval.sh(--fixture, type= 채점), tests/test_eval.sh(+5), SKILL.md(검증 수단 없으면 하네스를 fix보다 먼저), README 2종, CLAUDE.md, docs/skill-design.md
 - 검증: validate PASS. eval wordcount 2/3(규칙대로 fix 먼저 → 검증 없는 커밋) → 규칙 수정 후 3/3(node:test 하네스 먼저). todo 4/5(채점 정규식이 'DB file missing' 어순을 못 받음) → 정규식 보강 후 5/5
+
+## 2026-10-20T10:23 | - | discover | skill 1.14.0
+- 큐 비어 재발굴. scan.sh 0건, 이슈·PR 0건. 시나리오: 밤새 드라이버(2회째 이후 동작 미측정), 플러그인 사용자가 status.sh 경로를 모름, SKILL.md 길이와 단계 생략
+- 추가: T-029(enhance, eval 반복 실행) T-030(feature, 플러그인 명령). 제안 P-001(SKILL.md 분리, 구조 개편이라 사람 결정 대기)
+- 태그 대기: v1.11.0 v1.11.1 v1.12.0 v1.13.0 v1.14.0
+
+## 2026-10-20T10:26 | T-029 | done | skill 1.14.0
+- 변경: scripts/eval.sh(--iterations, 반복 검사 3개), tests/test_eval.sh(+8), README 2종
+- 검증: validate PASS. 실제 todo 3회: 8/8, 111초, 우선순위 순서(fix→fix→security)로 서로 다른 작업 3개, 테스트 통과, 작업 트리 깨끗
+- 이 사이클 발굴 기록(T-029, T-030, 제안 P-001)도 이 PR에 포함
