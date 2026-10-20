@@ -455,3 +455,7 @@
 ## 2026-10-20T15:02Z | T-068 | done | skill 1.28.4
 - 변경: scripts/eval.sh(--output-format json, 비용·턴 합계 출력), tests/test_eval.sh(+3), CHANGELOG
 - 검증: validate PASS. 실제 todo 드라이버 1회: 46초, "Cost: $0.20 over 1 run(s), 9 turns", 5/5
+
+## 2026-10-20T15:08Z | T-069 | done | skill 1.28.4
+- 변경: plugins/autopilot/commands/run.md(신규), SKILL.md 상태 확인 절, README 2종, docs/plugin-structure.md, tests/test_skill_rules.sh(+1), CHANGELOG
+- 검증: validate PASS(claude plugin validate 포함). 실제 claude -p "/autopilot:run 1" --plugin-dir(todo): T-001 한 개 후 "Stopped after 1 task(s) as asked"로 끝남
