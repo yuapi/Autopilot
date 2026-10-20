@@ -417,3 +417,10 @@
 - 발굴: eval --fixture all --mode session --iterations 2 — 5개 예제 모두 100%, 규칙 위반 0. 새 시나리오(Windows CRLF 체크아웃)에서 task.sh가 BACKLOG 전체를 LF로 바꾸는 것을 재현
 - 변경: scripts/task.sh·archive.sh(newline="" 읽기·쓰기, 고친 행의 \r 유지), scripts/log.sh(CRLF 파일엔 CRLF 줄), tests(archive +3, task +2, log +2), CHANGELOG
 - 검증: validate PASS. 수정 전 새 검사 5개 실패 → 수정 후 통과
+
+## 2026-10-20T14:27 | - | release | skill 1.28.1
+- 1.28.1 릴리즈: release/1.28.1 → main, main → develop 역병합. 태그 대기: v1.28.1 (403, 누적 v1.11.0~v1.28.1)
+
+## 2026-10-20T14:31 | T-065 | done | skill 1.28.1
+- 변경: .gitattributes(신규: *.sh·*.json eol=lf), tests/test_scripts.sh(+2: autocrlf=true 체크아웃에서 .sh가 LF이고 bash -n 통과), CHANGELOG
+- 검증: validate PASS. .gitattributes 없이 새 검사 2개 실패(.sh 32개가 CRLF) → 있으면 통과
