@@ -412,3 +412,8 @@
 ## 2026-10-20T14:13 | T-063 | done | skill 1.28.0
 - 변경: tests/eval/fixture-mono(CONFIG scope: pkg/a, 두 패키지 모두 결함)·.expected, scripts/eval.sh(nofile= 기대값), tests/test_eval.sh(+4), README 2종, CHANGELOG
 - 검증: validate PASS. 실제 eval --fixture mono --mode session --iterations 2: 8/8, 커밋 3개 모두 pkg/a·.autopilot만, ROADMAP에 "pkg/b off limits" 기록
+
+## 2026-10-20T14:22 | T-064 | done | skill 1.28.0
+- 발굴: eval --fixture all --mode session --iterations 2 — 5개 예제 모두 100%, 규칙 위반 0. 새 시나리오(Windows CRLF 체크아웃)에서 task.sh가 BACKLOG 전체를 LF로 바꾸는 것을 재현
+- 변경: scripts/task.sh·archive.sh(newline="" 읽기·쓰기, 고친 행의 \r 유지), scripts/log.sh(CRLF 파일엔 CRLF 줄), tests(archive +3, task +2, log +2), CHANGELOG
+- 검증: validate PASS. 수정 전 새 검사 5개 실패 → 수정 후 통과
