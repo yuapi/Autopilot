@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.27.1 — 2026-10-20
 - `eval.sh --fixture all` runs every fixture with the same options and prints one summary of the scores (exit 1 if any fails); CLAUDE.md points to it for discovery rule changes
 - `eval.sh --mode session` asks for `--iterations` tasks and checks that the run stopped itself on that task budget; the eval writes STOP only one task later, as a safety net
 
