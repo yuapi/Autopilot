@@ -71,4 +71,18 @@ check_not "fails without .autopilot" bash "$ST" "$e"
 before="$(cat "$d"/.autopilot/* | cksum)"; bash "$ST" "$d" >/dev/null 2>&1
 check "does not modify state files" test "$(cat "$d"/.autopilot/* | cksum)" = "$before"
 
+# installed skill version, and a warning when the LOG was written by a newer one
+mine="$(sed -n 's/^  version: //p' "$REPO/$SKILL_REL/SKILL.md")"
+d="$(mktemp -d "$TMPROOT/v.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
+printf '# LOG\n## 2026-01-01T00:00 | T-001 | done | skill %s\n' "$mine" > "$d/.autopilot/LOG.md"
+out="$(bash "$ST" "$d")"
+check "shows the installed skill version" grep -q "^Skill: $mine\$" <<<"$out"
+check_not "same version → no warning" grep -q "newer than the installed" <<<"$out"
+printf '## 2026-01-02T00:00 | T-002 | done | skill 99.0.0\n' >> "$d/.autopilot/LOG.md"
+out="$(bash "$ST" "$d")"
+check "LOG from a newer skill → warning" grep -q "already run with skill 99.0.0, newer than the installed $mine" <<<"$out"
+printf '# LOG\n## 2026-01-01T00:00 | T-001 | done | skill 1.0.0\n' > "$d/.autopilot/LOG.md"
+out="$(bash "$ST" "$d")"
+check "LOG from an older skill → noted, no warning" bash -c "grep -q 'LOG written up to 1.0.0' <<<\"\$1\" && ! grep -q 'newer than' <<<\"\$1\"" _ "$out"
+
 finish
