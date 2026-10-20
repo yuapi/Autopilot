@@ -71,4 +71,9 @@ d="$(newrepo)"; t "$d" start T-001 >/dev/null; (cd "$d" && echo half >> code.txt
 check "drop with uncommitted code → refused" grep -q "A dropped task changes no code" <<<"$(t "$d" drop T-001)"
 check "drop of a done task → refused" grep -q "T-003 is done" <<<"$(t "$(newrepo)" drop T-003)"
 
+# a state-only commit naming other tasks (queueing follow-ups) does not block done
+d="$(newrepo)"; t "$d" start T-001 >/dev/null
+(cd "$d" && echo fix >> code.txt && git commit -qam "autopilot(T-001): fix" && echo "| T-004 | fix | open | 0 | follow-up | t | s | |" >> .autopilot/BACKLOG.md && git add -A && git commit -qm "chore: record T-001 and queue T-004")
+check "state-only commit naming T-004 → done still accepted" bash -c "cd '$d' && bash '$TS' done T-001 >/dev/null"
+
 finish
