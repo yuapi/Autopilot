@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 81
+next_id: 82
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -87,3 +87,4 @@ next_id: 81
 | T-078 | fix | done | 1 | CONFIG.md가 없으면 task.sh done이 셸 리디렉션 오류를 출력(tr < 없는 파일) | CONFIG 없이 done 출력에 오류 없음 테스트 | T-075 실제 드라이버 실행 | 2026-10-20 |
 | T-079 | test | done | 1 | eval 드라이버 모드가 자체 프롬프트("Read SKILL.md…")를 써서 실제 드라이버 프롬프트 결함(T-076)을 못 잡음 → autopilot.sh의 PROMPT와 허용 도구를 그대로 쓰고 작업 사본을 --plugin-dir로 | 가짜 claude로 프롬프트 일치 테스트, 실제 드라이버 eval 2회 | 회고: T-076은 eval로 안 보였음 | 2026-10-20 |
 | T-080 | enhance | done | 1 | 드라이버 권한 모드 표시: skip이면 크게 경고, 오타(skp 등)는 알 수 없는 값 경고 후 허용 목록, 기본은 한 줄 안내 | 세 경우 출력 테스트 | 심화 발굴 3단계(안전한 기본값·관찰성) | 2026-10-20 |
+| T-081 | enhance | done | 1 | 스크립트 --help: status는 말없이 exit 2, archive는 bash cd 도움말, scan·finalstop·workbranch·autopilot은 엉뚱한 오류 → 모든 스킬·레포 스크립트가 -h/--help에 머리 주석의 사용법을 보여 주고 exit 0 | 모든 스크립트 --help 테스트 | 심화 발굴 3단계(사용성: 도움말) | 2026-10-20 |

@@ -530,3 +530,10 @@
 - 발굴: eval --fixture all(드라이버, 실제 프롬프트) 5개 예제 100%. docs/versioning.md 정확. 안전한 기본값 점검에서 skip 모드 무음·오타 무음 발견
 - 변경: scripts/autopilot.sh(권한 모드 안내, skip 경고, 알 수 없는 값 경고), tests/test_driver.sh(+5), CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-20T16:35Z | - | release | skill 1.31.1
+- 1.31.1 릴리즈: release/1.31.1 → main, main → develop 역병합. 태그 대기: v1.31.1 (403, 누적 v1.11.0~v1.31.1)
+
+## 2026-10-20T16:37Z | T-081 | done | skill 1.31.1
+- 변경: 스킬 스크립트 10개·레포 스크립트 4개에 -h/--help(머리 주석 출력, exit 0), tests/test_scripts.sh(+43: 모든 스크립트 exit 0·사용법 줄·-h, 아무것도 만들지 않음), CHANGELOG
+- 검증: validate PASS
