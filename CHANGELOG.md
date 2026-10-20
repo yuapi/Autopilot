@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.34.0 — 2026-10-20
 - Without a git `user.name`/`user.email` every commit fails and the loop only burned attempts. The driver now stops before the first run and Phase 0 writes STOP, both with the fix; neither sets an identity itself
 
 ## 1.33.0 — 2026-10-20
