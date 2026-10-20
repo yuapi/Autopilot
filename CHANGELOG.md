@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.32.0 — 2026-10-20
 - Every script answers `-h`/`--help` with its usage and exits 0. Before, status.sh exited 2 silently, archive.sh printed bash's own `cd` help, and others reported `--help` as a missing directory
 
 ## 1.31.1 — 2026-10-20
