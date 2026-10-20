@@ -81,6 +81,7 @@ A real session-mode eval scored 10/10 on discovery and still broke three rules i
 - **3 failures per task → blocked.** One task must not hold the whole loop.
 - **Same file 5 times in a row → excluded.** Breaks oscillation around one spot.
 - **Otherwise it never stops.** In particular, voluntary exits like "that's one done, good enough" are forbidden. In unattended runs an early exit means a person has to wake the loop again, which defeats the purpose of this skill. That is why the STOP file is the only exit signal.
+- **A task budget is a person's STOP written in advance.** "Do 3 tasks" is a person deciding when to stop, just ahead of time, so it does not weaken the rule above: `runlock.sh start --tasks N` records it and `task.sh done` writes the STOP after the Nth task, through the same signal. Only a person sets a budget. If the loop could set one, "that's enough" would come back as "I chose a budget of one".
 
 ## Conservative defaults
 
@@ -91,6 +92,14 @@ A real session-mode eval scored 10/10 on discovery and still broke three rules i
 - Publishing results (`branch`, `pr`, automatic merge, automatic release) happens only when people explicitly choose it in `.autopilot/CONFIG.md`. Claude never creates or edits that file so the loop cannot widen its own permissions. It is a committed file, so who changed it and when stays on record.
 - The repository's conventions (CONTRIBUTING etc.) win over CONFIG defaults because what the people in that repository already decided is the least surprising result. Releases are automatic only when a documented procedure exists; invented procedures would produce versions and tags people do not expect.
 - reset --hard, force push, deleting remote branches and rewriting tags are forbidden in every mode — they cause losses that cannot be undone.
+
+## Why scope is a CONFIG key and checked at done
+
+In a monorepo the people who own one package should be able to hand only that package to the loop. Like the integration policy, the limit belongs in the file people set (CONFIG), not in the loop's own judgment, so the loop can neither widen nor forget it. A rule alone is easy to break while fixing an obvious bug next door, so `task.sh done` refuses a commit that changes files outside the scope. Problems found outside are written down for a person instead of queued, because a queued task there could never be completed.
+
+## Why LOG times are UTC
+
+The same repository is often worked on from a laptop in one time zone and a cloud session in another. With local time, entries from the two ran backwards by hours, and every rule that reads the LOG in order ("the last 3 runs", the retrospective span, the eval's time-order check) saw a scrambled history. UTC with an explicit `Z` keeps one order for everyone; people convert when they read.
 
 ## Session mode vs driver mode
 
