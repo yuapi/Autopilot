@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.18.0 — 2026-10-20
 - status.sh shows the installed skill version and warns when the LOG was written by a newer skill version (an outdated plugin or skill install running a repository that a newer one already worked on)
 - Stop hook: the no-progress STOP note said "1 times"
 
