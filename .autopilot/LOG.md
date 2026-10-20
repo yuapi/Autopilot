@@ -240,3 +240,27 @@
 - 발굴(품질 속성: 관찰성·안전한 기본값): 드라이버는 비정상 종료만 세고, 권한 거부로 아무것도 못 하고 정상 종료하는 실행은 끝없이 반복(비용만 듦). 실행 결과도 출력하지 않음
 - 변경: scripts/autopilot.sh(정체 한도, 실행별 LOG 항목 출력), tests/test_driver.sh(가짜 claude ok는 LOG 기록, idle 모드, +7), README 2종, docs/skill-design.md, CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-20T12:15 | - | release | skill 1.19.1
+- 1.19.1 릴리즈: release/1.19.1 → main, main → develop 역병합. 태그 대기: v1.19.1 (403)
+
+## 2026-10-20T12:40 | T-038 | done | skill 1.19.1
+- 변경: scripts/eval.sh(--mode session, 실행 공용 함수, LOG 없을 때 0), tests/test_eval.sh(+11), fixture-todo.expected(missing-db 정규식에 "DB missing", "without a DB"), README 2종, CHANGELOG
+- 검증: validate PASS. 실제 eval --mode session --iterations 2: 163초, 9/10(missing-db는 정규식이 "DB missing"을 못 받음 → 보강), 세션이 STOP 후 스스로 끝남, RUN 삭제. 모델이 8작업 후 스스로 최종 정지
+- 관찰: LOG 항목 역순·지어낸 시각(163초 동안 11:20~12:00) → T-039. 복합 셸 명령이 allowlist에서도 승인을 요구해 단계가 늘어남
+
+## 2026-10-20T11:26 | T-039 | done | skill 1.19.1
+- 변경: scripts/log.sh(신규: 파일 끝에 현재 시각·스킬 버전으로 추가, 본문은 stdin), SKILL.md(LOG 형식 절·Phase 5), docs/skill-design.md(근거), tests/test_log.sh(15), CHANGELOG
+- 검증: validate PASS. 실제 eval --mode session --iterations 2: 64초, 10/10, LOG 6개 항목이 순서대로 실제 시각(11:25)
+- 관찰: 이 레포 LOG도 시각을 지어냈음(실제 11:21인데 12:40까지 적음). 지난 항목은 고치지 않고 이후부터 log.sh 사용
+- 관찰(같은 실행): 5작업을 커밋 하나로, 심화 발굴 없이 최종 정지, 마지막 커밋이 LOG 5줄 삭제 → T-040
+
+## 2026-10-20T11:32 | T-040 | done | skill 1.19.1
+- 변경: scripts/eval.sh(규칙 검사 4개: 작업당 커밋, LOG 추가만, LOG 시간 순서, 심화 발굴 후 최종 정지 / --grade로 남긴 실행 재채점), tests/test_eval.sh(+10, 가짜 claude는 작업마다 커밋), README 2종, CHANGELOG
+- 검증: validate PASS. 남겨 둔 실제 실행 2개 재채점: 1회차 시간 순서 위반(6건), 2회차 작업당 커밋·LOG 삭제·심화 발굴 생략 위반 — 둘 다 점수는 10/10인데 이제 실패
+- 다음: T-041(위반을 막는 규칙 수정)
+
+## 2026-10-20T11:39 | T-041 | done | skill 1.19.1
+- 변경: scripts/finalstop.sh(신규: 심화 발굴 4단계·빈 큐·커밋 안 된 코드 없음을 확인해야 STOP), SKILL.md(최종 정지는 finalstop.sh, Phase 2 시작에 이전 작업 커밋 확인, "사람에게 남기지 않기" 원칙), scripts/log.sh(done인데 마지막 커밋이 여러 작업이면 경고), tests/test_finalstop.sh(15)·test_log.sh(+4), docs/skill-design.md, CHANGELOG
+- 검증: validate PASS. 실제 eval --mode session 2회: 3회차(iterations 3) 규칙 검사 전부 ok·10/10, 2회차 1건 위반(T-003,T-004 한 커밋)·나머지 ok. 수정 전 2회차는 위반 3건
+- 판단: 커밋 묶음은 규칙과 log.sh 경고까지만. 이미 만든 커밋을 쪼개는 것은 히스토리 재작성이라 하지 않음

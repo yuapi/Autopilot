@@ -111,9 +111,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/](docs/) for branching, version
 bash scripts/eval.sh                        # the todo fixture; add --keep to inspect the run afterwards
 bash scripts/eval.sh --fixture wordcount    # a repository with no tests: is the first task a test harness?
 bash scripts/eval.sh --iterations 3         # three driver runs: one new task each, nothing repeated, nothing failed
+bash scripts/eval.sh --mode session --iterations 2   # one session-mode run as a plugin: keeps going, ends on STOP
+bash scripts/eval.sh --grade <kept dir> [same options]   # grade a run kept with --keep again
 ```
 
-Copies `tests/eval/fixture-todo/` (a tiny todo CLI with five seeded defects: an off-by-one with a failing test, a crash on first run, a shell injection, a command the README documents but the code lacks, and a TODO marker) into a temp repository, runs the working-copy skill once in driver mode, and scores how many of the defects `tests/eval/fixture-todo.expected` lists landed in its BACKLOG. The `wordcount` fixture has no tests at all and checks that the first task sets up a test runner. It needs the `claude` CLI and spends one real driver run, so it is not part of `validate.sh`; run it after changing discovery rules to see whether they find more or less.
+Copies `tests/eval/fixture-todo/` (a tiny todo CLI with five seeded defects: an off-by-one with a failing test, a crash on first run, a shell injection, a command the README documents but the code lacks, and a TODO marker) into a temp repository, runs the working-copy skill once in driver mode, and scores how many of the defects `tests/eval/fixture-todo.expected` lists landed in its BACKLOG. The `wordcount` fixture has no tests at all and checks that the first task sets up a test runner. Every run is also checked against the hard rules: one commit per completed task, LOG entries only appended and in time order, and a final stop only after all four deep discovery stages are recorded; a broken rule fails the eval whatever the score. It needs the `claude` CLI and spends one real driver run, so it is not part of `validate.sh`; run it after changing discovery rules to see whether they find more or less.
 
 ## License
 

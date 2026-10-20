@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.19.1
+  version: 1.20.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.19.1** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.20.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -29,6 +29,7 @@ A cloud session without terminal access is always in session mode. In this mode 
 - **State lives only in files.** Do not rely on memory. The files under `.autopilot/` are the only source of truth. In session mode especially, **re-read** the state files at the start of every task. Never assume you remember what you read earlier.
 - **Never break things.** If verification fails, always roll back. There is no "close enough, commit it."
 - **There is no human.** Do not ask questions. When a judgment call is needed, pick the conservative option and write the reason in the LOG.
+- **Nothing is left "for a person".** A defect or gap you notice while working becomes a BACKLOG task right away (or a proposal, if 1-F says so). Mentioning it only in a summary or report loses it.
 
 ## Language
 
@@ -231,8 +232,8 @@ Quality attribute checklist: error handling (does it give the cause and the fix)
 
 You may conclude zero only after writing each stage's result (what was checked, how many found) under ROADMAP "Deep discovery". Never skip stages and call it zero. On the final stop:
 1. Do not queue auxiliary tasks either.
-2. Create `.autopilot/STOP` and delete `.autopilot/RUN`. STOP content follows the format below (in the output language).
-3. Record it in the LOG and exit.
+2. Run `bash <skill folder>/scripts/finalstop.sh <<'EOF'` with the STOP content below (in the output language) and `EOF`. It refuses (exit 1) while ROADMAP "Deep discovery" lacks any of the four stages, while a task is `open` or `in_progress`, or while changes outside `.autopilot/` are uncommitted, and lists what is missing: then this is not the final stop — do what it lists and continue the loop. When it accepts, it writes STOP, deletes RUN and adds the `stop` LOG entry. Never write a final-stop STOP by hand.
+3. Commit the state if the integration mode commits state, then exit.
 
 ```
 Final stop: no substantive work left
@@ -248,6 +249,8 @@ Final stop: no substantive work left
 As long as substantive work exists, rediscover as many times as the queue empties. The loop stops only under the conditions above or when a person creates the `STOP` file.
 
 ### Phase 2 — select
+
+**First, the previous task must be finished**: `git status --porcelain -- . ':!.autopilot'` prints nothing (it was committed in Phase 5 or rolled back in Phase 4) and no BACKLOG row is `in_progress`. If not, finish or roll back that task before anything else. One task = one commit: never implement several tasks and commit them together, even small ones in a small repository; a combined commit cannot be reverted or reviewed task by task.
 
 Pick one `open` task from the BACKLOG. Priority:
 
@@ -291,7 +294,7 @@ On success:
    - If the integration mode is not `local`, make this commit on the task branch and publish it as described in "Integration policy".
 2. Set the BACKLOG status to `done` with the completion date.
 3. Add follow-up tasks found during implementation to the BACKLOG.
-4. Append to the LOG.
+4. Append to the LOG with `scripts/log.sh` (see "LOG format").
    Never commit generated files (`__pycache__`, build output, coverage, logs). If the task created them, add them to `.gitignore` instead; if they were already tracked, queue a `cleanup` task rather than deleting them in this one.
 5. If the integration mode is `pr` and `release: auto`, check the "Release" conditions below.
 6. **Driver mode**: exit. **Session mode**: drop what you remember about the task and go back to Phase 0. No summary, no report, no "next I will …". Go straight to the next task.
@@ -336,11 +339,22 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30 | T-042 | done | skill 1.19.1
+## 2026-10-01T14:30 | T-042 | done | skill 1.20.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
 ```
+
+**Always add entries with the script**, never by editing the file:
+
+```bash
+bash <skill folder>/scripts/log.sh T-042 done <<'EOF'
+- Changed: src/auth/token.py, tests/test_token.py
+- Verified: test 128→131 pass, lint 0 err
+EOF
+```
+
+It appends at the end of the file with the current time and this skill's version (use `-` as the ID for entries without a task). Writing entries by hand produced entries inserted above earlier ones and times that were made up, which breaks "the last N runs" and every rule that reads the LOG in order. If the script cannot run, append at the very end and take the time from `date +%Y-%m-%dT%H:%M`.
 
 The third column (status) is one of `done` / `failed` / `blocked` / `retro` / `discover` / `stop`. "The last N runs" in the repeat-failure and same-file rules count only `done`, `failed` and `blocked`. The bullet text is in the output language.
 
