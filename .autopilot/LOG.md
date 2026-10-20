@@ -451,3 +451,7 @@
 ## 2026-10-20T14:56Z | - | discover | skill 1.28.4
 - 심화 발굴 3단계(문서 예제 정확성): 격리된 CLAUDE_CONFIG_DIR에서 README대로 claude plugin marketplace add ./ → install → list/details 동작. 스킬 3개(autopilot, status, stop), 상시 ~403 토큰, 호출 시 ~14.5k 토큰
 - 제안 P-001 근거 갱신(423줄·14.5k 토큰, 스크립트화 후 eval 100%). 상태는 그대로 proposed(사람 결정)
+
+## 2026-10-20T15:02Z | T-068 | done | skill 1.28.4
+- 변경: scripts/eval.sh(--output-format json, 비용·턴 합계 출력), tests/test_eval.sh(+3), CHANGELOG
+- 검증: validate PASS. 실제 todo 드라이버 1회: 46초, "Cost: $0.20 over 1 run(s), 9 turns", 5/5
