@@ -52,7 +52,7 @@ bash <skill folder>/scripts/autopilot.sh 20     # at most 20 iterations
 AUTOPILOT_PERMISSION=skip bash <skill folder>/scripts/autopilot.sh   # opt-in, sandbox only
 ```
 
-`<skill folder>` is where the skill is installed, for example `plugins/autopilot/skills/autopilot` in a clone of this repository. The driver stops when `.autopilot/STOP` appears or at the iteration limit (exit code 0), after 3 consecutive Claude crashes, after 3 runs in a row that change neither the LOG nor the commits (it writes `STOP` with the reason; `AUTOPILOT_STALL_LIMIT` changes the count), on a bad argument or when the `claude` CLI is missing (exit code 1). After each run it prints that run's LOG entry. It can be started from any folder inside the repository. `AUTOPILOT_SLEEP` sets the pause between runs (default 10 seconds). With `integration: pr` the driver opens PRs with the `gh` CLI and warns at start if `gh` is missing or cannot push to the repository.
+`<skill folder>` is where the skill is installed, for example `plugins/autopilot/skills/autopilot` in a clone of this repository. The driver stops when `.autopilot/STOP` appears or at the iteration limit (exit code 0), after 3 consecutive Claude crashes, after 3 runs in a row that change neither the LOG nor the commits (it writes `STOP` with the reason; `AUTOPILOT_STALL_LIMIT` changes the count), on a bad argument or when the `claude` CLI is missing (exit code 1). After each run it prints that run's LOG entry. It can be started from any folder inside the repository. `AUTOPILOT_SLEEP` sets the pause between runs (default 10 seconds) and `AUTOPILOT_MODEL` the model every run uses (passed to `claude --model`). With `integration: pr` the driver opens PRs with the `gh` CLI and warns at start if `gh` is missing or cannot push to the repository.
 
 ### Checking on a run
 
@@ -115,6 +115,7 @@ bash scripts/eval.sh --fixture stats        # CONTRIBUTING sets the commit forma
 bash scripts/eval.sh --iterations 3         # three driver runs: one new task each, nothing repeated, nothing failed
 bash scripts/eval.sh --mode session --iterations 2   # one session-mode run as a plugin: keeps going, ends on STOP
 bash scripts/eval.sh --grade <kept dir> [same options]   # grade a run kept with --keep again
+bash scripts/eval.sh --model <name>         # the same eval with another model, to compare
 ```
 
 Copies `tests/eval/fixture-todo/` (a tiny todo CLI with five seeded defects: an off-by-one with a failing test, a crash on first run, a shell injection, a command the README documents but the code lacks, and a TODO marker) into a temp repository, runs the working-copy skill once in driver mode, and scores how many of the defects `tests/eval/fixture-todo.expected` lists landed in its BACKLOG. The `wordcount` fixture has no tests at all and checks that the first task sets up a test runner. Every run is also checked against the hard rules: one commit per completed task, LOG entries only appended and in time order, and a final stop only after all four deep discovery stages are recorded; a broken rule fails the eval whatever the score. It needs the `claude` CLI and spends one real driver run, so it is not part of `validate.sh`; run it after changing discovery rules to see whether they find more or less.
