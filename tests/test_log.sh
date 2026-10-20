@@ -35,4 +35,10 @@ check "one task ID → no warning" test -z "$(echo "- x" | bash "$LG" T-005 done
 (cd "$d" && echo c > a && git commit -qam "autopilot(T-001..T-005): range")
 check "a task ID range → warning" bash -c "echo '- x' | bash '$LG' T-005 done '$d' 2>&1 >/dev/null | grep -q 'covers several'"
 
+# every status SKILL.md lists is accepted
+for st in $(sed -n 's/^The third column (status) is one of \(.*\)\. "The last.*/\1/p' "$REPO/$SKILL_REL/SKILL.md" | tr -d '`/'); do
+  check "status '$st' from SKILL.md is accepted" bash -c "echo '- x' | bash '$LG' - '$st' '$d' >/dev/null"
+done
+check "SKILL.md status list was found" test -n "$(sed -n 's/^The third column (status) is one of \(.*\)\. "The last.*/\1/p' "$REPO/$SKILL_REL/SKILL.md")"
+
 finish

@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- `release` is a LOG status (log.sh rejected the release entries the Release rule produces); SKILL.md says what a release entry records
 - Eval grader: the todo fixture's off-by-one pattern accepts "mark item N (1-based)" wording a real run used
 
 ## 1.20.0 — 2026-10-20
