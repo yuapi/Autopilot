@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.19.1 — 2026-10-20
 - Driver stops after 3 runs in a row that change neither LOG.md nor the commits, writing the reason to STOP (`AUTOPILOT_STALL_LIMIT`, same as the Stop hook). Runs that exit normally but get nowhere, e.g. on permission denials, used to repeat forever. After each run it prints that run's LOG entry
 
 ## 1.19.0 — 2026-10-20
