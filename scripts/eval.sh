@@ -17,7 +17,8 @@
 # Rule checks (one commit per task, LOG only appended, deep discovery before a final stop) are reported
 # separately; any broken rule fails the eval whatever the score.
 # Exit codes: 0 score >= AUTOPILOT_EVAL_THRESHOLD (default 0.6) and no broken rule · 1 otherwise · 3 skipped (no claude CLI)
-# --model <name> runs the eval with that model (claude --model) to compare models.
+# --model <name> runs the eval with that model (claude --model) to compare models; every run prints the
+# cost and turns claude reported (--output-format json).
 # --grade <dir> grades a run kept with --keep again without running anything (pass the same --fixture,
 # --iterations and --mode).
 # CLAUDE_BIN overrides the claude command (the tests use a fake).
@@ -116,7 +117,7 @@ else
     echo "[eval] fixture $fixture: one session-mode run asked for $iterations task(s), in $work (timeout $((timeout_s * iterations))s)…"
     # the run should stop itself on its task budget; the watcher only steps in one task later
     run_claude $((timeout_s * iterations)) "$((iterations + 1))" env -u AUTOPILOT_DRIVER "$CLAUDE_BIN" -p "$prompt" ${model_args[@]+"${model_args[@]}"} \
-      --plugin-dir "$REPO/plugins/autopilot" --allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,TodoWrite,Skill"
+      --plugin-dir "$REPO/plugins/autopilot" --allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,TodoWrite,Skill" --output-format json
   else
     prompt="Read $SKILL/SKILL.md and follow its procedure exactly, in driver mode (AUTOPILOT_DRIVER=1 is set): do exactly one task in this repository, then exit. <skill folder> in the rules means $SKILL. Do not ask questions."
     echo "[eval] fixture $fixture: running $iterations driver iteration(s) in $work (timeout ${timeout_s}s each)…"
@@ -124,17 +125,18 @@ else
       [ -f "$work/.autopilot/STOP" ] && { echo "[eval] STOP appeared, no more iterations"; break; }
       echo "[eval] iteration $it"
       run_claude "$timeout_s" 0 env AUTOPILOT_DRIVER=1 "$CLAUDE_BIN" -p "$prompt" ${model_args[@]+"${model_args[@]}"} \
-        --allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,TodoWrite" --add-dir "$SKILL"
+        --allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,TodoWrite" --add-dir "$SKILL" --output-format json
     done
   fi
   echo "[eval] all runs finished in $(( $(date +%s) - start_all ))s"
 
 fi
 
-python3 - "$work" "$REPO/$EXPECTED" "${AUTOPILOT_EVAL_THRESHOLD:-0.6}" "$iterations" "$mode" "$timed_out" <<'PY'
+python3 - "$work" "$REPO/$EXPECTED" "${AUTOPILOT_EVAL_THRESHOLD:-0.6}" "$iterations" "$mode" "$timed_out" "${log:-}" <<'PY'
 import os, re, subprocess, sys
 work, expected, threshold, iterations = sys.argv[1], sys.argv[2], float(sys.argv[3]), int(sys.argv[4])
 mode, timed_out = sys.argv[5], sys.argv[6] == "1"
+runlog_path = sys.argv[7] if len(sys.argv) > 7 else ""
 def read_stop():
     try: return open(os.path.join(work, ".autopilot", "STOP"), encoding="utf-8").read()
     except FileNotFoundError: return ""
@@ -196,6 +198,21 @@ if iterations > 1 or mode == "session":
         found += ok; total += 1
         print(f"  {'ok     ' if ok else 'FAILED '} {what}")
 print(f"Commits after the fixture: {len(commits)}")
+# cost and turns from claude -p --output-format json (one result object per run)
+import json
+results = []
+if runlog_path and os.path.exists(runlog_path):
+    for line in open(runlog_path, encoding="utf-8", errors="replace"):
+        line = line.strip()
+        if line.startswith("{") and '"total_cost_usd"' in line:
+            try: results.append(json.loads(line))
+            except ValueError: pass
+if results:
+    cost = sum(float(r.get("total_cost_usd") or 0) for r in results)
+    turns = sum(int(r.get("num_turns") or 0) for r in results)
+    print(f"Cost: ${cost:.2f} over {len(results)} run(s), {turns} turns")
+elif runlog_path:
+    print("Cost: unknown (no JSON result in the claude output)")
 
 # Rule checks: the procedure's hard rules, graded on what the run left behind (not part of the score)
 def read(p):

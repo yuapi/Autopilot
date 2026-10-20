@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 68
+next_id: 70
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -74,3 +74,5 @@ next_id: 68
 | T-065 | fix | done | 1 | core.autocrlf=true인 Windows에서 클론하면 .sh가 CRLF로 체크아웃되어 bash가 모든 스크립트에서 실패 → .gitattributes로 *.sh·hook·fixture 스크립트 LF 고정 | autocrlf=true 클론에서 스크립트가 LF이고 실행되는 테스트 | 심화 발굴 2단계 시나리오: Windows 사용자 플러그인 설치 | 2026-10-20 |
 | T-066 | fix | done | 1 | log.sh가 현지 시각을 씀 → 로컬(KST)과 클라우드(UTC)를 오가면 LOG가 9시간 거꾸로 감(시간 순서 검사도 깨짐) → UTC + Z | TZ를 바꿔도 같은 시각, Z 표기 테스트, eval 시간 순서 검사가 Z를 읽음 | 심화 발굴 2단계 시나리오: 같은 레포를 로컬·클라우드에서 번갈아 | 2026-10-20 |
 | T-067 | fix | done | 1 | 스킬 스크립트 7개가 python3만 찾음 → Windows Git Bash처럼 python만 있으면 전부 실패. python3 → python 순으로 찾고 없으면 분명한 오류 | python만 있는 PATH에서 status·task·archive·runlock·finalstop·hook 동작 테스트 | 심화 발굴 2단계 시나리오: Windows Git Bash | 2026-10-20 |
+| T-068 | enhance | done | 1 | eval이 실행마다 비용·턴 수를 보여 줌(claude -p --output-format json의 total_cost_usd, num_turns 합계) | 가짜 claude JSON으로 합계 테스트, JSON 없으면 unknown | 관찰성: --model 비교에 비용이 없음 | 2026-10-20 |
+| T-069 | feature | done | 1 | 플러그인 명령 /autopilot:run [N]: 스킬을 세션 모드로 시작, N이 있으면 작업 수 예산(--tasks N) | 명령 파일 검사, 실제 claude -p "/autopilot:run 1"로 1작업 후 멈춤 | 사용성: 예산 기능이 / 메뉴에서 안 보임 | 2026-10-20 |

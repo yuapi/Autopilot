@@ -247,4 +247,13 @@ out="$(FAKE_TOUCH_B=1 CLAUDE_BIN="$FAKE5" bash "$EV" --fixture mono 2>&1)"
 check "mono: a commit touching pkg/b → missed, file named" grep -q "MISSED  scope .*changed: pkg/b/clamp.py" <<<"$out"
 check "mono fixture ships its CONFIG scope" grep -q "^scope: pkg/a" "$REPO/tests/eval/fixture-mono/.autopilot/CONFIG.md"
 
+# cost and turns from the JSON result claude prints
+FAKE6="$TMPROOT/fake-claude-6"
+printf '#!/usr/bin/env bash\n"%s" "$@" >/dev/null\necho %s\n' "$FAKE3" "'{\"type\":\"result\",\"total_cost_usd\":0.25,\"num_turns\":7}'" > "$FAKE6"; chmod +x "$FAKE6"
+out="$(CLAUDE_BIN="$FAKE6" bash "$EV" --iterations 2 2>&1)"
+check "cost summed over runs" grep -q 'Cost: \$0.50 over 2 run(s), 14 turns' <<<"$out"
+check "runs ask claude for JSON output" bash -c "CLAUDE_BIN='$FAKES' bash '$EV' --mode session --iterations 1 --keep 2>&1 | sed -n 's/^\[eval\] kept the run in \([^ ]*\).*/\1/p' | head -1 | xargs -I{} grep -q -- '--output-format json' {}/.autopilot/args"
+out="$(CLAUDE_BIN="$FAKE3" bash "$EV" 2>&1)"
+check "no JSON result → cost unknown" grep -q "Cost: unknown" <<<"$out"
+
 finish
