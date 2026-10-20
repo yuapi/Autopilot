@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- log.sh and status.sh read the skill version when it is single-quoted, as the claude.ai account plugin sync writes it (`version: '1.27.0'`); LOG entries said `skill unknown` and status showed no version
 - Driver mode no longer stops after one run: the model read the driver's "do exactly one task" as a person's task budget, claimed RUN with `--tasks 1`, and `task.sh done` wrote STOP. In driver mode `runlock.sh start` now writes no run marker (which would also let the Stop hook keep the call going), `task.sh` ignores budgets, and the driver prompt and SKILL.md say that one task per call is not a budget
 - Driver cost cap: runs use `claude --output-format json`, the driver prints each run's cost and the total, and `AUTOPILOT_MAX_COST` (USD) writes STOP and exits once the total reaches it. Run logs keep the readable result text plus turns and cost
 - tests/test_eval.sh 90 s → 24 s: the eval's polling interval is `AUTOPILOT_EVAL_POLL` (default 2 s) and the tests use a short one with shorter fake waits

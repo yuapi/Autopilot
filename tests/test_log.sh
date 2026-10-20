@@ -52,4 +52,12 @@ d="$(mktemp -d "$TMPROOT/z.XXXX")"; git -C "$d" init -q
 a="$(echo '- x' | TZ=Asia/Seoul bash "$LG" - discover "$d" | cut -c4-20)"; b="$(echo '- y' | TZ=America/Los_Angeles bash "$LG" - discover "$d" | cut -c4-20)"
 check "Seoul and Los Angeles write the same UTC time" test "$a" = "$b"
 
+# the skill version is read whether it is quoted or not (the account plugin sync writes '1.2.3')
+for q in "" '"' "'"; do
+  k="$(mktemp -d "$TMPROOT/k.XXXX")"; mkdir -p "$k/scripts" "$k/assets"; cp "$LG" "$k/scripts/"; cp "$REPO/$SKILL_REL/assets/LOG.md" "$k/assets/"
+  printf -- "---\nname: autopilot\nmetadata:\n  version: %s9.8.7%s\n---\n" "$q" "$q" > "$k/SKILL.md"
+  r="$(mktemp -d "$TMPROOT/r.XXXX")"; git -C "$r" init -q
+  check "version read with quote [${q:-none}]" bash -c "echo '- x' | bash '$k/scripts/log.sh' - discover '$r' | grep -q 'skill 9.8.7\$'"
+done
+
 finish
