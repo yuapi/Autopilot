@@ -285,3 +285,7 @@
 - 발굴: driver eval 3회 8/8·규칙 검사 전부 ok. 문서 정확성 확인에서 README 파일 트리가 스크립트 4개와 commands/를 빠뜨림
 - 변경: README 2종 트리, tests/test_skill_rules.sh(+16: 트리가 모든 스킬 스크립트를 언급)
 - 검증: validate PASS
+
+## 2026-10-20T12:01 | T-045 | done | skill 1.20.1
+- 변경: assets/autopilot-stop.sh(block 이유에 finalstop.sh 안내), .claude/hooks 사본 갱신, tests/test_hook.sh(+2: 유효한 JSON, finalstop 언급), CHANGELOG
+- 검증: validate PASS

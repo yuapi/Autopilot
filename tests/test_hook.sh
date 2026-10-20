@@ -77,4 +77,9 @@ done
 d="$(newrepo)"
 check_not "frontmatter hook without RUN → does not block" bash -c "cd '$TMPROOT' && CLAUDE_PLUGIN_ROOT='$REPO/plugins/autopilot' CLAUDE_PROJECT_DIR='$d' bash -c '$cmd' </dev/null | grep -q block"
 
+# the block reason is valid JSON and points to finalstop.sh
+d="$(newrepo)"; touch "$d/.autopilot/RUN"
+check "block output is valid JSON" bash -c "cd '$TMPROOT' && CLAUDE_PROJECT_DIR='$d' bash '$HOOK' </dev/null | python3 -c 'import json,sys; json.load(sys.stdin)'"
+check "block reason points to finalstop.sh" bash -c "cd '$TMPROOT' && CLAUDE_PROJECT_DIR='$d' bash '$HOOK' </dev/null | grep -q finalstop.sh"
+
 finish
