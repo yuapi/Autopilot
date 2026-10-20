@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.16.0 — 2026-10-20
 - The Stop hook is declared in SKILL.md's frontmatter, so it runs from the installed skill and only in sessions that invoked it. Phase 0 no longer copies the hook into the repository or edits `.claude/settings.json`; `hook.sh install` remains as a fallback and still refreshes a copy left by an older version. When the skill hook and such a copy both run for the same stop, the no-progress counter advances once (identified by the transcript size)
 
 ## 1.15.0 — 2026-10-20
