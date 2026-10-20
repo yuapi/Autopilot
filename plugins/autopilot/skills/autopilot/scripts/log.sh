@@ -6,7 +6,8 @@
 #   EOF
 # status: done failed blocked retro discover stop. Body lines come from stdin; a line that does not
 # start with "- " gets one. Earlier entries are never touched, so the LOG stays in time order.
-# Prints the header it wrote. Exit 1 on a bad argument or an empty body.
+# Prints the header it wrote; for `done` it warns when the last commit names several task IDs.
+# Exit 1 on a bad argument or an empty body.
 set -eu
 id="${1:-}"; status="${2:-}"
 usage() { echo "usage: log.sh <task ID or -> <done|failed|blocked|retro|discover|stop> [repository path] < body" >&2; exit 1; }
@@ -35,3 +36,11 @@ f=.autopilot/LOG.md
 header="## $(date +%Y-%m-%dT%H:%M) | $id | $status | skill $version"
 printf '\n%s\n%s' "$header" "$body" >> "$f"
 echo "$header"
+# One task = one commit: say so when the last commit names several task IDs (the entry is still written)
+if [ "$status" = done ]; then
+  subject="$(git log -1 --format=%s 2>/dev/null || true)"
+  n="$(printf '%s' "$subject" | grep -oE 'T-[0-9]+' | sort -u | wc -l | tr -d ' ')"
+  if [ "${n:-0}" -gt 1 ] || printf '%s' "$subject" | grep -qE 'T-[0-9]+ *(\.\.|~) *T?-?[0-9]+'; then
+    echo "[log] warning: the last commit covers several tasks (\"$subject\"). One task = one commit: commit each task before starting the next." >&2
+  fi
+fi

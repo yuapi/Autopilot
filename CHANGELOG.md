@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- New `scripts/finalstop.sh` takes the STOP summary and refuses the final stop while ROADMAP "Deep discovery" lacks a stage, a task is open or in progress, or changes outside `.autopilot/` are uncommitted; otherwise writes STOP, removes RUN and logs it. Phase 2 starts by checking that the previous task was committed or rolled back (one task = one commit), and noticed defects are queued instead of being "left for a person". A session-mode eval run had broken all three
 - eval.sh rule checks on every run: one commit per completed task, LOG entries only appended and in time order, a final stop only after all four deep discovery stages are recorded. A broken rule fails the eval whatever the score. `--grade <dir>` grades a kept run again without running anything
 - New `scripts/log.sh <task ID|-> <status>` appends a LOG entry at the end of the file with the current time and the skill version (body on stdin), and SKILL.md requires it for every entry. The session-mode eval showed entries inserted above earlier ones with made-up times
 - `scripts/eval.sh --mode session`: loads the working copy as a plugin and runs one session in session mode (Stop hook included). Once the LOG has `--iterations` task entries it writes STOP and checks that the session then ended on its own and removed RUN. Until now only driver mode was measured, though session mode is the default
