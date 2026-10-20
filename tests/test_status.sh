@@ -92,4 +92,13 @@ check_not "not a cloud session → no warning" bash -c "CLAUDE_CODE_REMOTE= bash
 printf 'integration: pr\n' > "$d/.autopilot/CONFIG.md"
 check_not "cloud session with integration: pr → no warning" bash -c "CLAUDE_CODE_REMOTE=true bash '$ST' '$d' | grep -q 'lost when it is reclaimed'"
 
+# the task in progress is shown with its start time
+d="$(mktemp -d "$TMPROOT/n.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
+printf '| T-007 | fix | in_progress | 2 | fix the parser | t | s | |\n| T-008 | fix | open | 0 | other | t | s | |\n' > "$d/.autopilot/BACKLOG.md"
+check "in-progress task shown" bash -c "bash '$ST' '$d' | grep -q '^Now: T-007 \[fix\] fix the parser (attempt 2)'"
+echo "T-007 abc" > "$d/.autopilot/.task"
+check "start time shown from .autopilot/.task" bash -c "bash '$ST' '$d' | grep -q '^Now: T-007 .*(attempt 2, started 0 min ago)'"
+printf '| T-008 | fix | open | 0 | other | t | s | |\n' > "$d/.autopilot/BACKLOG.md"
+check_not "nothing in progress → no Now line" bash -c "bash '$ST' '$d' | grep -q '^Now:'"
+
 finish
