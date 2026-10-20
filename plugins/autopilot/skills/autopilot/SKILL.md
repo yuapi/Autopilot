@@ -1,13 +1,13 @@
 ---
 name: autopilot
 metadata:
-  version: 1.11.0
+  version: 1.11.1
 description: Autonomous development loop that finds, selects, implements, verifies and records the next task in a repository with no human in the loop. Finds bug fixes, improvements and new features from code analysis, running the software, user scenarios and the issue tracker, and leaves large changes it must not make alone as proposals. Keeps going in the same session until .autopilot/STOP exists (driver mode when a terminal is available) and, if .autopilot/CONFIG.md allows, pushes branches, opens and merges PRs and releases. Writes its notes in the repository's or user's language. Use whenever someone says "autopilot", "autonomous development", "work on the next task", "keep developing on your own", "unattended loop", "work through the backlog", "handle the issues", or "자율 개발", "알아서 개발해", "다음 작업 알아서", "무인 루프", "백로그 처리", or when the driver invokes it, and follow this procedure exactly.
 ---
 
 # Autopilot — autonomous development loop
 
-**Version 1.11.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.11.1** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -312,7 +312,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30 | T-042 | done | skill 1.11.0
+## 2026-10-01T14:30 | T-042 | done | skill 1.11.1
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
