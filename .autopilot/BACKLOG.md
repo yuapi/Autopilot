@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 35
+next_id: 36
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -41,3 +41,4 @@ next_id: 35
 | T-032 | feature | done | 1 | hook.sh uninstall: 1.16부터 필요 없는 레포 훅 사본과 settings.json 항목 제거(다른 훅 보존) | 제거·재실행·빈 키 정리·잘못된 JSON 거부 테스트, status.sh 안내 | 시나리오: 1.15 이하 사용자가 1.16으로 업그레이드 | 2026-10-20 |
 | T-033 | fix | done | 1 | scan.sh: 일치하는 파일이 하나면 파일 이름 없이 줄 번호만 출력, 비ASCII 이름 파일은 git이 경로를 따옴표로 감싸 건너뜀 | 파일 하나·한글+공백 이름 회귀 테스트, validate 통과 | 탐색 실행(공백 경로 레포에서 scan.sh) | 2026-10-20 |
 | T-034 | fix | done | 1 | Stop 훅 STOP 메모 문법("1 times") | validate 통과 | 탐색 실행(claude -p 실제 세션에서 훅 확인) | 2026-10-20 |
+| T-035 | enhance | done | 1 | status.sh: 설치된 스킬 버전 표시, LOG가 더 새 버전으로 쓰였으면 경고 | 같은/새/옛 버전 테스트, validate 통과 | 관찰: 이 세션에 동기화된 플러그인이 1.10.2(레포는 1.15) | 2026-10-20 |
