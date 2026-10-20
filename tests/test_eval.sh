@@ -2,6 +2,7 @@
 # Tests for scripts/eval.sh (the grader and the plumbing; a fake claude stands in for the model)
 . "$(dirname "$0")/lib.sh"
 EV="$REPO/scripts/eval.sh"
+export AUTOPILOT_EVAL_POLL=0.1   # check the fake runs often so the tests stay fast
 FAKE="$TMPROOT/fake-claude"
 cat > "$FAKE" <<'SH'
 #!/usr/bin/env bash
@@ -102,7 +103,7 @@ cat > "$FAKES" <<'SH'
 #!/usr/bin/env bash
 # Session-mode stand-in: logs a task every half second until STOP appears (like the Stop hook keeps it going)
 mkdir -p .autopilot; echo "args=$*" > .autopilot/args; echo "driver=${AUTOPILOT_DRIVER:-unset}" > .autopilot/env
-touch .autopilot/RUN; sleep 2.5   # no LOG yet: the watcher must cope
+touch .autopilot/RUN; sleep "${FAKE_FIRST_WAIT:-0.5}"   # no LOG yet: the watcher must cope
 { echo "| ID | Type | Status | Attempts | Task | Done when | Source | Completed |"; echo "|---|---|---|---|---|---|---|---|"
   echo "| T-001 | fix | done | 1 | done <n> is off by one and marks the wrong item | t | baseline | |"; } > .autopilot/BACKLOG.md
 budget="$(printf '%s' "$*" | sed -n 's/.* for \([0-9][0-9]*\) tasks.*/\1/p')"
@@ -116,7 +117,7 @@ for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
     echo "$i" >> work.txt; git add -A >/dev/null 2>&1; git commit -qm "autopilot(T-$i): task" >/dev/null 2>&1
     logged=$(( ${logged:-0} + 1 ))
   fi
-  sleep 0.5
+  sleep "${FAKE_STEP:-0.2}"
 done
 SH
 chmod +x "$FAKES"

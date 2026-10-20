@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- tests/test_eval.sh 90 s → 24 s: the eval's polling interval is `AUTOPILOT_EVAL_POLL` (default 2 s) and the tests use a short one with shorter fake waits
 
 ## 1.30.0 — 2026-10-20
 - In `branch` and `pr` modes the task is published (push, PR, merge) only after `task.sh done` accepts it; the rules published first, so a commit the check then refused could already be pushed or merged. Also aligned the "nothing left for a person" principle with `scope`, and refreshed stale lists in SKILL.md

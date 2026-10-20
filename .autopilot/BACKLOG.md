@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 74
+next_id: 75
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -80,3 +80,4 @@ next_id: 74
 | T-071 | perf | done | 1 | scan.sh가 파일 5000개 레포에서 2분 18초: 검색 6번마다 파일 목록을 파일당 프로세스 여러 개로 다시 만듦 → 목록을 한 번, 일괄로 | 5000개 레포에서 10초 미만, 기존 scan 테스트 전부 통과, 같은 결과 | 심화 발굴 3단계(성능: 입력 10배) | 2026-10-20 |
 | T-072 | fix | done | 1 | CRLF로 저장된 CONFIG의 scope 값 끝에 \r가 붙어 task.sh done이 범위 안 변경도 전부 거부 | CRLF CONFIG에서 범위 안 허용·밖 거부 테스트 | 심화 발굴 2단계 시나리오: Windows에서 CONFIG 편집 | 2026-10-20 |
 | T-073 | fix | done | 1 | SKILL.md 정독 결과: branch/pr 모드에서 task.sh done 검사보다 push·PR·병합이 먼저(거부될 커밋이 이미 병합됨), "사람에게 남기지 않기"와 scope 규칙 충돌, CONFIG 설명·gitignore 목록·예산 문장 위치 낡음 | 순서 규칙 검사 테스트, validate | 심화 발굴 1단계(SKILL.md 전체 정독) | 2026-10-20 |
+| T-074 | test | done | 1 | validate.sh 2분 16초 중 test_eval.sh가 90초: eval 감시 주기 2초 고정, 가짜 세션 sleep 2.5초 → 주기를 AUTOPILOT_EVAL_POLL로, 테스트는 짧게 | test_eval 30초 미만, 모든 검사 그대로 통과 | 품질(성능): 매 작업 도는 검증이 느림 | 2026-10-20 |
