@@ -38,7 +38,20 @@ elif os.path.exists(os.path.join(A, "RUN")):
         note += f", {(re.findall(r'^done:\s*(\d+)', run, re.M) or ['0'])[0]}/{bud[0]} tasks of its budget done"
     print(f"Run: running (session mode, session {sess}, last active {idle} min ago{note})")
 else:
-    print("Run: idle (no RUN or STOP)")
+    lock = os.path.join(A, "driver.lock")
+    pid = read("driver.lock").strip()
+    alive = False
+    if pid.isdigit():
+        try: os.kill(int(pid), 0); alive = True
+        except PermissionError: alive = True
+        except OSError: alive = False
+    if alive:
+        mins = int((time.time() - os.path.getmtime(lock)) // 60)
+        print(f"Run: running (driver, pid {pid}, started {mins} min ago)")
+    elif os.path.exists(lock):
+        print(f"Run: idle (a stale driver.lock for pid {pid or '?'} is left; the next driver run ignores it)")
+    else:
+        print("Run: idle (no RUN or STOP)")
 
 def ver(v): return tuple(int(x) for x in v.split("."))
 skill_md = os.path.join(os.path.dirname(os.path.abspath(sys.argv[2])), "..", "SKILL.md")
