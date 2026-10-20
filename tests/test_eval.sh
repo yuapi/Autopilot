@@ -257,4 +257,13 @@ check "runs ask claude for JSON output" bash -c "CLAUDE_BIN='$FAKES' bash '$EV' 
 out="$(CLAUDE_BIN="$FAKE3" bash "$EV" 2>&1)"
 check "no JSON result → cost unknown" grep -q "Cost: unknown" <<<"$out"
 
+# driver mode uses the real driver's prompt and allowlist, with the working copy as a plugin
+out="$(CLAUDE_BIN="$FAKES" bash "$EV" --iterations 1 --keep 2>&1)"
+kept="$(sed -n 's/^\[eval\] kept the run in \([^ ]*\).*/\1/p' <<<"$out" | head -1)"
+real_prompt="$(sed -n "s/^PROMPT='\(.*\)'\$/\1/p" "$REPO/$SKILL_REL/scripts/autopilot.sh")"
+check "driver eval sends autopilot.sh's PROMPT" grep -qF -- "$real_prompt" "$kept/.autopilot/args"
+check "driver eval loads the working copy as a plugin" grep -q -- "--plugin-dir $REPO/plugins/autopilot" "$kept/.autopilot/args"
+check "driver eval uses the driver's allowlist (with Skill)" grep -q -- "--allowedTools Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,Skill,TodoWrite" "$kept/.autopilot/args"
+rm -rf "$kept"
+
 finish
