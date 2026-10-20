@@ -39,7 +39,7 @@ if [ "$cmd" = done ]; then
   range="$start..HEAD"; [ "$start" = none ] && range=HEAD
   code="$(git log --format= --name-only "$range" | grep -v '^$' | grep -v '^\.autopilot/' | grep -vx '.gitignore' | head -1 || true)"
   [ -n "$code" ] || { echo "[task] refused: the commits since $id started change only .autopilot/" >&2; exit 1; }
-  scope="$(tr -d '\r' < .autopilot/CONFIG.md 2>/dev/null | sed -n 's/^scope:[[:space:]]*\([^#]*\).*/\1/p' | head -1 | xargs || true)"   # tr: a CONFIG saved with CRLF
+  scope=""; [ -f .autopilot/CONFIG.md ] && scope="$(tr -d '\r' < .autopilot/CONFIG.md | sed -n 's/^scope:[[:space:]]*\([^#]*\).*/\1/p' | head -1 | xargs || true)"   # tr: a CONFIG saved with CRLF
   if [ -n "$scope" ] && [ "$scope" != . ] && [ "$scope" != auto ]; then
     outside="$(git log --format= --name-only "$range" -- . ':!.autopilot' ':!.gitignore' | grep -v '^$' | sort -u | while IFS= read -r f; do
       inside=0; for p in $scope; do p="${p#./}"; p="${p%/}"; case "$f" in "$p"|"$p"/*) inside=1;; esac; done
