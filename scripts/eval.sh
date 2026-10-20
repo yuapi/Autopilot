@@ -105,7 +105,7 @@ else
         echo "Eval: $stop_after task(s) logged" > "$work/.autopilot/STOP"
         echo "[eval] $stop_after task(s) in the LOG → wrote STOP, waiting for the session to end"
       fi
-      sleep 2
+      sleep "${AUTOPILOT_EVAL_POLL:-2}"   # how often the run is checked (the tests use a short one)
     done
     wait "$pid" 2>/dev/null
     echo "[eval] finished in $(( $(date +%s) - start ))s"
