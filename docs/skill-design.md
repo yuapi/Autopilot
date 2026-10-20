@@ -13,7 +13,7 @@ Read this before changing SKILL.md. SKILL.md says *what* the rules are; this fil
 
 - Verification is a comparison: "is anything worse than the baseline?" If the commands are rediscovered differently every time, the comparison means nothing, so the commands found once are written in the ROADMAP and reused. Repository docs come before ecosystem guesses because what the people in that repository decided is the most accurate.
 - Flaky tests in the comparison roll back good work at random, and the 3-failure rule then blocks good tasks. A test whose result changes between two runs is recorded separately, left out of the comparison, and fixing it becomes a task of its own.
-- In a repository without tests there is no way to check "nothing got worse", so every task would be committed unverified. That is why a minimal harness comes first. This is different from the "piling up easy tests" the per-cycle `test` limit guards against, so it is exempt from that limit.
+- In a repository without tests there is no way to check "nothing got worse", so every task would be committed unverified. That is why a minimal harness comes first — before `fix` too. The rule used to place it right after `fix`, and the `wordcount` eval showed the result: the bug was fixed and committed with nothing to verify it. This is different from the "piling up easy tests" the per-cycle `test` limit guards against, so it is exempt from that limit.
 
 ## Why proposals (PROPOSALS) exist
 

@@ -7,6 +7,10 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.14.0 — 2026-10-20
+- In a repository with no way to verify, the test harness task now comes before every other task, `fix` included (it used to come right after `fix`, which produced an unverified fix commit in the eval)
+- `scripts/eval.sh --fixture <name>`: second fixture `wordcount`, a Node CLI with no tests, checks that the first task sets up a test runner (expectations can grade the completed task's type with `type=`). Expectations moved to `tests/eval/fixture-<name>.expected`
+
 ## 1.13.0 — 2026-10-20
 - The Stop hook copy in a repository is refreshed: new `scripts/hook.sh install` (run on first entry) replaces `.claude/hooks/autopilot-stop.sh` whenever it differs from the skill's asset and merges the settings.json entry without touching other hooks. Copies from 1.6–1.10 had the RUN check, so the old rule never replaced them and they kept blocking other sessions. status.sh notes an outdated copy
 
