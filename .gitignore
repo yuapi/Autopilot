@@ -7,3 +7,4 @@ dist/
 .autopilot/driver-logs/
 .autopilot/.hook-state
 __pycache__/
+.autopilot/.task
