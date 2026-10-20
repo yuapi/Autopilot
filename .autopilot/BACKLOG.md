@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 75
+next_id: 79
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -81,3 +81,7 @@ next_id: 75
 | T-072 | fix | done | 1 | CRLF로 저장된 CONFIG의 scope 값 끝에 \r가 붙어 task.sh done이 범위 안 변경도 전부 거부 | CRLF CONFIG에서 범위 안 허용·밖 거부 테스트 | 심화 발굴 2단계 시나리오: Windows에서 CONFIG 편집 | 2026-10-20 |
 | T-073 | fix | done | 1 | SKILL.md 정독 결과: branch/pr 모드에서 task.sh done 검사보다 push·PR·병합이 먼저(거부될 커밋이 이미 병합됨), "사람에게 남기지 않기"와 scope 규칙 충돌, CONFIG 설명·gitignore 목록·예산 문장 위치 낡음 | 순서 규칙 검사 테스트, validate | 심화 발굴 1단계(SKILL.md 전체 정독) | 2026-10-20 |
 | T-074 | test | done | 1 | validate.sh 2분 16초 중 test_eval.sh가 90초: eval 감시 주기 2초 고정, 가짜 세션 sleep 2.5초 → 주기를 AUTOPILOT_EVAL_POLL로, 테스트는 짧게 | test_eval 30초 미만, 모든 검사 그대로 통과 | 품질(성능): 매 작업 도는 검증이 느림 | 2026-10-20 |
+| T-075 | feature | done | 1 | 드라이버 비용 한도 AUTOPILOT_MAX_COST(USD): 실행마다 claude JSON 결과의 비용을 더해 넘으면 STOP 후 종료, 실행마다 비용 출력, 로그는 읽을 수 있는 텍스트 유지 | 가짜 claude JSON으로 한도·합계·출력 테스트 | 빠진 것: 무인 장시간 실행을 비용으로 제한할 수 없음 | 2026-10-20 |
+| T-076 | fix | open | 0 | 드라이버 프롬프트 "exactly one task"를 모델이 사람의 작업 수 예산으로 해석 → runlock --tasks 1 → task.sh가 STOP → 드라이버가 1회 후 멈춤. 드라이버 모드에서는 예산 무시(runlock·task.sh), 프롬프트 명확히 | AUTOPILOT_DRIVER=1에서 --tasks 무시·STOP 안 씀 테스트, 실제 드라이버 2회 | T-075 실제 드라이버 실행 | |
+| T-077 | fix | open | 0 | 계정 동기화 플러그인의 SKILL.md는 version: '1.10.2'(작은따옴표) → log.sh "skill unknown", status.sh 버전 줄 없음 | 작은·큰따옴표·따옴표 없음 모두 파싱 테스트 | T-075 실제 드라이버 실행(LOG "skill unknown") | |
+| T-078 | fix | open | 0 | CONFIG.md가 없으면 task.sh done이 셸 리디렉션 오류를 출력(tr < 없는 파일) | CONFIG 없이 done 출력에 오류 없음 테스트 | T-075 실제 드라이버 실행 | |

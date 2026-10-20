@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- Driver cost cap: runs use `claude --output-format json`, the driver prints each run's cost and the total, and `AUTOPILOT_MAX_COST` (USD) writes STOP and exits once the total reaches it. Run logs keep the readable result text plus turns and cost
 - tests/test_eval.sh 90 s → 24 s: the eval's polling interval is `AUTOPILOT_EVAL_POLL` (default 2 s) and the tests use a short one with shorter fake waits
 
 ## 1.30.0 — 2026-10-20
