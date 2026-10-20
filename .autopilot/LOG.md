@@ -459,3 +459,15 @@
 ## 2026-10-20T15:08Z | T-069 | done | skill 1.28.4
 - 변경: plugins/autopilot/commands/run.md(신규), SKILL.md 상태 확인 절, README 2종, docs/plugin-structure.md, tests/test_skill_rules.sh(+1), CHANGELOG
 - 검증: validate PASS(claude plugin validate 포함). 실제 claude -p "/autopilot:run 1" --plugin-dir(todo): T-001 한 개 후 "Stopped after 1 task(s) as asked"로 끝남
+
+## 2026-10-20T15:14Z | - | release | skill 1.29.0
+- 1.29.0 릴리즈: release/1.29.0 → main, main → develop 역병합. 태그 대기: v1.29.0 (403, 누적 v1.11.0~v1.29.0)
+
+## 2026-10-20T15:17Z | T-070 | done | skill 1.29.0
+- 변경: docs/skill-design.md(작업 수 예산은 사람이 미리 쓴 STOP, scope가 CONFIG이고 done에서 검사되는 이유, LOG가 UTC인 이유)
+- 검증: validate PASS
+
+## 2026-10-20T15:30Z | T-071 | done | skill 1.29.0
+- 발굴: eval --fixture all --mode session --iterations 3 — 5개 예제 100%, 실행당 약 $0.21·10턴(실제 측정, 세션 전체 비용). 심화 3단계(성능 10배 입력)에서 scan.sh 5000파일 2분 18초
+- 변경: scripts/scan.sh(파일 목록을 Python 한 번으로, NUL 구분, 검색 6번이 공유; git 모드와 walk 모드 구분), tests/test_scan.sh(+3: 3000파일 10초 미만, 마지막 파일 찾음, 빈 git 레포에서 무시 파일 안 읽음), CHANGELOG
+- 검증: validate PASS. 5000파일 2분 18초 → 0.25초, 출력 동일(diff)

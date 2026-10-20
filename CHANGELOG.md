@@ -7,6 +7,9 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.29.1 — 2026-10-20
+- scan.sh builds its file list once, in one process: 5000 files took 2 min 18 s (several processes per file for each of the six searches), now 0.25 s with the same output
+
 ## 1.29.0 — 2026-10-20
 - Plugin command `/autopilot:run [N]` starts the loop, with N as the task budget (`/autopilot:run 3` stops after three tasks)
 - eval.sh prints the cost and turns claude reported for the runs (`--output-format json`), so `--model` comparisons include cost
