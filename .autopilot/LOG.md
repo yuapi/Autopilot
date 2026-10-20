@@ -248,3 +248,9 @@
 - 변경: scripts/eval.sh(--mode session, 실행 공용 함수, LOG 없을 때 0), tests/test_eval.sh(+11), fixture-todo.expected(missing-db 정규식에 "DB missing", "without a DB"), README 2종, CHANGELOG
 - 검증: validate PASS. 실제 eval --mode session --iterations 2: 163초, 9/10(missing-db는 정규식이 "DB missing"을 못 받음 → 보강), 세션이 STOP 후 스스로 끝남, RUN 삭제. 모델이 8작업 후 스스로 최종 정지
 - 관찰: LOG 항목 역순·지어낸 시각(163초 동안 11:20~12:00) → T-039. 복합 셸 명령이 allowlist에서도 승인을 요구해 단계가 늘어남
+
+## 2026-10-20T11:26 | T-039 | done | skill 1.19.1
+- 변경: scripts/log.sh(신규: 파일 끝에 현재 시각·스킬 버전으로 추가, 본문은 stdin), SKILL.md(LOG 형식 절·Phase 5), docs/skill-design.md(근거), tests/test_log.sh(15), CHANGELOG
+- 검증: validate PASS. 실제 eval --mode session --iterations 2: 64초, 10/10, LOG 6개 항목이 순서대로 실제 시각(11:25)
+- 관찰: 이 레포 LOG도 시각을 지어냈음(실제 11:21인데 12:40까지 적음). 지난 항목은 고치지 않고 이후부터 log.sh 사용
+- 관찰(같은 실행): 5작업을 커밋 하나로, 심화 발굴 없이 최종 정지, 마지막 커밋이 LOG 5줄 삭제 → T-040
