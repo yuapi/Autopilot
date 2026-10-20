@@ -2,18 +2,13 @@
 # Repository scripts must work on a PATH without GNU-only tools (tac, timeout), like a default macOS
 . "$(dirname "$0")/lib.sh"
 
-# Link every executable on PATH except tac, timeout and gtimeout
+# A PATH that holds only the tools the scripts under test use, without tac, timeout and gtimeout.
+# (Linking every executable on PATH was slow where PATH is large, e.g. WSL with Windows paths.)
 NOGNU="$TMPROOT/nognu"; mkdir -p "$NOGNU"
-IFS=: read -r -a dirs <<<"$PATH"
-for dir in "${dirs[@]}"; do
-  [ -d "$dir" ] || continue
-  # skip Windows drives mounted in WSL: thousands of files on a slow filesystem, none needed here
-  case "$dir" in /mnt/[a-z]/*) continue;; esac
-  for f in "$dir"/*; do
-    b="${f##*/}"
-    case "$b" in tac|timeout|gtimeout) continue;; esac
-    [ -x "$f" ] && [ ! -e "$NOGNU/$b" ] && ln -s "$f" "$NOGNU/$b"
-  done
+for tool in bash sh env git python3 perl awk sed grep cat head tail sort uniq cut tr wc \
+            mkdir rm mv cp ln ls find date sleep basename dirname mktemp tar chmod touch \
+            xargs uname cksum printf expr id readlink; do
+  p="$(command -v "$tool" 2>/dev/null)" && [ -x "$p" ] && ln -s "$p" "$NOGNU/$tool"
 done
 nognu() { PATH="$NOGNU" "$@"; }
 check "setup: no tac" bash -c "! PATH='$NOGNU' command -v tac"
@@ -38,7 +33,7 @@ d="$(sandbox)"
 rm -f "$d"/tests/test_*.sh
 printf '#!/usr/bin/env bash\necho "  ok   x"\n' > "$d/tests/test_zz.sh"
 out="$(cd "$d" && env -u AUTOPILOT_IN_TESTS PATH="$NOGNU" AUTOPILOT_TEST_TIMEOUT=20 bash scripts/validate.sh 2>&1)"
-check "validate runs tests without timeout" grep -q "tests/test_zz.sh (1 passed)" <<<"$out"
+check "validate runs tests without timeout" grep -q "tests/test_zz.sh (1 passed" <<<"$out"
 check "nested validate runs only the trivial test (no recursion)" test "$(grep -cE '^  (OK|FAIL)  +tests/test_.*\(' <<<"$out")" -eq 1
 check_not "no timeout error" grep -q "timeout: command not found" <<<"$out"
 
