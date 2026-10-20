@@ -58,4 +58,4 @@ next_id: 53
 | T-049 | fix | done | 1 | task.sh가 거부할 때도 .gitignore에 .autopilot/.task를 먼저 추가함(거부는 아무것도 바꾸지 않아야 함) | 거부 시 .gitignore 변경 없음 테스트 | 직접 사용(T-048 start 거부 후 stash 충돌) | 2026-10-20 |
 | T-050 | enhance | done | 1 | task.sh drop: 할 필요가 없어진 작업(재현 안 됨, 이미 고쳐짐)을 커밋 없이 blocked로 닫기 + 이유는 ROADMAP 하지 않기로 한 것 | drop 테스트, SKILL.md Phase 3 규칙 | 시나리오: 재현 안 되는 버그 작업 → done은 커밋을 요구, fail은 3번 재시도 | 2026-10-20 |
 | T-051 | test | done | 1 | eval 예제 conventions: CONTRIBUTING이 커밋 형식·검증 명령을 정한 레포에서 규칙("레포 관례 우선")을 따르는지 채점(commit= 기대값) | 가짜 claude 채점 테스트, 실제 실행 1회 | 품질: "레포 관례 우선" 규칙을 재는 수단 없음 | 2026-10-20 |
-| T-052 | fix | open | 0 | task.sh done이 상태만 고친 커밋(후속 작업 등록 "queue T-4")에 적힌 다른 작업 ID 때문에 거부함 | 상태 전용 커밋이 있어도 done 허용 테스트 | eval stats 실제 실행(같은 원인으로 채점 오탐) | |
+| T-052 | fix | done | 1 | task.sh done이 상태만 고친 커밋(후속 작업 등록 "queue T-4")에 적힌 다른 작업 ID 때문에 거부함 | 상태 전용 커밋이 있어도 done 허용 테스트 | eval stats 실제 실행(같은 원인으로 채점 오탐) | 2026-10-20 |
