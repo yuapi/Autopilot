@@ -45,6 +45,10 @@ check_not "hides rejected proposals" grep -q "P-002" <<<"$out"
 
 touch "$d/.autopilot/RUN"
 check "RUN → running" bash -c "bash '$ST' '$d' | grep -q 'Run: running'"
+printf 'session: abc-123\nstarted: 2026-01-01T00:00:00Z\n' > "$d/.autopilot/RUN"
+check "shows the owning session and last activity" bash -c "bash '$ST' '$d' | grep -q 'session abc-123, last active 0 min ago'"
+python3 -c 'import os,time; t=time.time()-3*3600; os.utime("'"$d"'/.autopilot/RUN",(t,t))'
+check "flags an abandoned RUN" bash -c "bash '$ST' '$d' | grep -q 'a new run will take it over'"
 printf '최종 중단: 실질 작업 없음\n- 사이클: 3회\n' > "$d/.autopilot/STOP"
 out="$(bash "$ST" "$d/sub" 2>&1)"
 check "STOP → stopped with the first line of the reason" grep -q "Run: stopped — 최종 중단: 실질 작업 없음" <<<"$out"

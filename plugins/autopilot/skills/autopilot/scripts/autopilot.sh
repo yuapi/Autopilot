@@ -42,9 +42,23 @@ MAX_CONSECUTIVE_CRASH=3
 LOG_DIR=".autopilot/driver-logs"
 mkdir -p "$LOG_DIR"
 
+# One loop per repository: refuse while another driver or a session-mode loop is active
+LOCK=.autopilot/driver.lock
+if [ -f "$LOCK" ] && kill -0 "$(cat "$LOCK" 2>/dev/null)" 2>/dev/null; then
+  echo "[driver] another driver is already running in this repository (pid $(cat "$LOCK"))." >&2
+  exit 1
+fi
+if [ -f .autopilot/RUN ] && [ ! -f .autopilot/STOP ] && \
+   python3 -c 'import os,sys,time; sys.exit(0 if time.time()-os.path.getmtime(".autopilot/RUN") < int(sys.argv[1])*60 else 1)' "${AUTOPILOT_RUN_STALE_MIN:-120}" 2>/dev/null; then
+  echo "[driver] a session-mode autopilot loop is running in this repository (.autopilot/RUN). Let it finish or create .autopilot/STOP." >&2
+  exit 1
+fi
+echo $$ > "$LOCK"
+trap 'rm -f "$LOCK"' EXIT
+
 # Keep .autopilot run artifacts out of commits (the state files themselves are committed by the skill)
 if [ -s .gitignore ] && [ -n "$(tail -c1 .gitignore)" ]; then echo >> .gitignore; fi
-for ig in .autopilot/driver-logs/ .autopilot/STOP .autopilot/RUN .autopilot/.hook-state; do
+for ig in .autopilot/driver-logs/ .autopilot/STOP .autopilot/RUN .autopilot/.hook-state .autopilot/driver.lock; do
   grep -qsxF "$ig" .gitignore || printf '%s\n' "$ig" >> .gitignore
 done
 
