@@ -294,3 +294,8 @@
 - 발굴: ROADMAP 제품 절이 1.12 기준이라 갱신(기능 지도·빠진 것·약한 것·관찰·시나리오). 새 시나리오(클라우드 첫 실행)에서 local 모드 결과가 컨테이너와 함께 사라지는 문제 발견
 - 변경: SKILL.md Phase 0(클라우드+local이면 첫 진입에 한 줄 안내·LOG), scripts/status.sh(경고), tests/test_status.sh(+3), CHANGELOG. 제안 P-002(클라우드 기본값을 branch로)
 - 검증: validate PASS
+
+## 2026-10-20T12:08 | - | retro | skill 1.20.2
+- 범위: T-037~T-046 (10건). done 10 / failed 0 / blocked 0. 유형: fix 3, test 3, enhance 2, feature 1, docs 1. 출처: eval 실제 실행 관찰 5, 정독 2, 탐색·시나리오 3
+- 실패 원인 없음. 반복된 사실: 모델 실행 결과(세션 eval)가 규칙 위반의 가장 큰 발견 원천. 채점 정규식 누락 2회(T-038, T-042)
+- "배운 것"에 2줄 추가(규칙 검사 우선, LOG는 log.sh로만)
