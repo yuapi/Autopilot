@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 38
+next_id: 40
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -44,3 +44,5 @@ next_id: 38
 | T-035 | enhance | done | 1 | status.sh: 설치된 스킬 버전 표시, LOG가 더 새 버전으로 쓰였으면 경고 | 같은/새/옛 버전 테스트, validate 통과 | 관찰: 이 세션에 동기화된 플러그인이 1.10.2(레포는 1.15) | 2026-10-20 |
 | T-036 | enhance | done | 1 | pr 통합: 자기 open PR을 매 작업 시작에 다시 확인(CI 통과 → 병합, 실패·충돌 → 같은 브랜치 fix 작업) | SKILL.md 규칙·skill-design 근거·규칙 테스트, validate 통과 | 정독: "CI 대기 중이면 PR을 열어 두고 다음 작업" 뒤에 다시 보는 규칙이 없음 | 2026-10-20 |
 | T-037 | fix | done | 1 | 드라이버: 정상 종료지만 LOG·커밋이 안 바뀌는 실행을 무한 반복 → 3회 연속이면 STOP, 실행마다 LOG 항목 출력 | 가짜 claude idle/ok 테스트, validate 통과 | 정독: 훅에는 정체 한도가 있는데 드라이버엔 충돌 한도만 있음 | 2026-10-20 |
+| T-038 | test | done | 1 | eval.sh --mode session: 플러그인으로 로드해 세션 모드 1회 실행, n개 작업 후 STOP, 스스로 끝나고 RUN을 지웠는지 채점 | 가짜 claude 테스트, 실제 todo 1회 실행 | 품질: 기본 모드(세션)가 eval로 측정되지 않음 | 2026-10-20 |
+| T-039 | fix | open | 0 | 세션 모드에서 LOG 항목이 역순(위에 끼워 넣음)이고 시각이 지어낸 값 → LOG 항목을 실제 시각으로 파일 끝에 붙이는 스크립트와 규칙 | 스크립트 테스트(순서·시각 형식), eval session에서 LOG 순서·시각 확인 | eval session 실제 실행 관찰 | |
