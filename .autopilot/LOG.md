@@ -139,3 +139,9 @@
 - 변경: scripts/autopilot.sh(통합 사전 점검), SKILL.md 드라이버 절, README, tests/test_driver.sh(+7)
 - 검증: validate PASS
 - 릴리스: 1.11.0 main 반영(PR #48, #49). 태그·Release는 세션 정책으로 막힘 → 태그 대기 v1.11.0. 사람이 로컬 catch-up으로 v1.5.1~v1.10.2 태그·Release 10개 생성 완료 확인
+
+## 2026-10-20T10:02 | T-021 | done | skill 1.11.1
+- 변경: scripts/eval.sh(신규), tests/eval/(결함 5개 예제 레포·expected.txt), tests/test_eval.sh(가짜 claude로 12개), README 2종, CLAUDE.md(발굴 규칙 변경 시 eval 점수 기록), .gitignore
+- 검증: validate PASS. 실제 eval 1회: 4/5(0.80), 42초, 커밋 1개(T-001 off-by-one 수정)
+- 발견: 스킬이 탐색적 실행·시나리오·기능 지도·코드 마커 검사를 건너뜀 → T-026. claude plugin eval은 있으나 case.yaml 스키마 문서가 없어 자체 하네스로 구현
+- 발견: 예제 레포에 __pycache__가 섞여 커밋됨 → 예제 .gitignore 추가, eval이 복사 후 제거
