@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 72
+next_id: 73
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -78,3 +78,4 @@ next_id: 72
 | T-069 | feature | done | 1 | 플러그인 명령 /autopilot:run [N]: 스킬을 세션 모드로 시작, N이 있으면 작업 수 예산(--tasks N) | 명령 파일 검사, 실제 claude -p "/autopilot:run 1"로 1작업 후 멈춤 | 사용성: 예산 기능이 / 메뉴에서 안 보임 | 2026-10-20 |
 | T-070 | docs | done | 1 | docs/skill-design.md에 작업 수 예산(STOP이 유일한 종료 신호와의 관계)·scope·UTC LOG 시각의 근거 추가 | 문서 | CLAUDE.md 규칙: 설계 의도에 닿는 변경은 skill-design.md에 이유 기록 — 1.27·1.28 변경이 빠져 있음 | 2026-10-20 |
 | T-071 | perf | done | 1 | scan.sh가 파일 5000개 레포에서 2분 18초: 검색 6번마다 파일 목록을 파일당 프로세스 여러 개로 다시 만듦 → 목록을 한 번, 일괄로 | 5000개 레포에서 10초 미만, 기존 scan 테스트 전부 통과, 같은 결과 | 심화 발굴 3단계(성능: 입력 10배) | 2026-10-20 |
+| T-072 | fix | done | 1 | CRLF로 저장된 CONFIG의 scope 값 끝에 \r가 붙어 task.sh done이 범위 안 변경도 전부 거부 | CRLF CONFIG에서 범위 안 허용·밖 거부 테스트 | 심화 발굴 2단계 시나리오: Windows에서 CONFIG 편집 | 2026-10-20 |
