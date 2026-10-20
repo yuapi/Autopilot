@@ -24,7 +24,7 @@ chmod +x "$FAKEBIN/claude"
 
 newrepo() {
   local d; d="$(mktemp -d "$TMPROOT/r.XXXX")"
-  (cd "$d" && git init -q && mkdir .autopilot && printf 'node_modules/' > .gitignore)
+  (cd "$d" && git init -q && git config user.email t@t && git config user.name t && mkdir .autopilot && printf 'node_modules/' > .gitignore)
   echo "$d"
 }
 drive() { local dir="$1"; shift; (cd "$dir" && PATH="$FAKEBIN:$PATH" with_timeout 30 bash "$DRIVER" "$@"); }
@@ -181,5 +181,14 @@ check "skip → claude gets --dangerously-skip-permissions" grep -q -- "--danger
 out="$(AUTOPILOT_PERMISSION=skp FAKE_MODE=ok drive "$d" 1 2>&1)"
 check "typo → unknown value warning" grep -q "unknown AUTOPILOT_PERMISSION value: skp" <<<"$out"
 check "typo → still the allowlist" grep -q -- "--allowedTools" "$d/.autopilot/args"
+
+# no git identity: every commit would fail, so the driver stops before the first run
+d="$(mktemp -d "$TMPROOT/noid.XXXX")"; (cd "$d" && git init -q && mkdir .autopilot)
+out="$(cd "$d" && GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null PATH="$FAKEBIN:$PATH" bash "$DRIVER" 1 2>&1)"; rc=$?
+check "no git identity → exit 1" test "$rc" -eq 1
+check "no git identity → says why and how to fix" bash -c "grep -q 'no user.name or user.email' <<<\"\$1\" && grep -q 'git config user.email' <<<\"\$1\"" _ "$out"
+check "no git identity → claude not called" test ! -e "$d/.autopilot/calls"
+check "the driver does not set an identity itself" test -z "$(git -C "$d" config --local user.email)"
+check "SKILL.md: Phase 0 stops without a git identity and never sets one" grep -q "Never set an identity yourself" "$REPO/$SKILL_REL/SKILL.md"
 
 finish
