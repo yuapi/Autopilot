@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.15.0 — 2026-10-20
 - Plugin commands `/autopilot:status` (the status summary, without knowing the skill folder) and `/autopilot:stop` (new `runlock.sh stop` writes `.autopilot/STOP` and says which loop it stops). Plugin installs only; the `.skill` package has no commands
 - `scripts/eval.sh --iterations <n>` runs the driver n times and also checks the later runs: each completes one task, no task is completed twice, nothing fails
 
