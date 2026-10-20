@@ -424,3 +424,11 @@
 ## 2026-10-20T14:31 | T-065 | done | skill 1.28.1
 - 변경: .gitattributes(신규: *.sh·*.json eol=lf), tests/test_scripts.sh(+2: autocrlf=true 체크아웃에서 .sh가 LF이고 bash -n 통과), CHANGELOG
 - 검증: validate PASS. .gitattributes 없이 새 검사 2개 실패(.sh 32개가 CRLF) → 있으면 통과
+
+## 2026-10-20T14:36 | - | release | skill 1.28.2
+- 1.28.2 릴리즈: release/1.28.2 → main, main → develop 역병합. 태그 대기: v1.28.2 (403, 누적 v1.11.0~v1.28.2)
+
+## 2026-10-20T14:39Z | T-066 | done | skill 1.28.2
+- 변경: scripts/log.sh(date -u, Z), SKILL.md LOG 형식 예시·대체 명령, tests/test_log.sh(+1: 서울·LA 같은 시각), CHANGELOG
+- 검증: validate PASS. 이 항목부터 UTC+Z (이 컨테이너는 원래 UTC라 이전 항목과 순서 그대로)
+- 판단: 대체 수단인 레포 훅 사본은 사용자 레포에 .gitattributes가 없으면 Windows에서 CRLF가 될 수 있으나, 기본은 스킬 frontmatter 훅이라 사용자 레포의 .gitattributes는 건드리지 않음

@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- LOG times are UTC with a `Z` (`2026-10-01T14:30Z`). Local time made entries from machines in different time zones (a laptop and a cloud session) run backwards
 
 ## 1.28.2 — 2026-10-20
 - `.gitattributes` keeps shell scripts LF: a clone or plugin install with `core.autocrlf=true` (common on Windows) checked them out with CRLF, and bash failed on every script
