@@ -182,3 +182,8 @@
 - 변경: plugins/autopilot/commands/status.md·stop.md(신규), scripts/runlock.sh stop, SKILL.md 상태 확인 절, README 2종, docs/plugin-structure.md, tests(runlock +5, skill_rules 명령 검사)
 - 검증: validate PASS(claude plugin validate 포함). claude -p "/autopilot:status"·"/autopilot:stop" --plugin-dir로 실제 실행해 동작 확인(${CLAUDE_PLUGIN_ROOT}가 명령 파일에서도 치환됨)
 - 발견: 스킬 frontmatter에 훅을 선언할 수 있다는 흔적(skill hooks). 레포에 훅을 복사하지 않아도 될 가능성 → 다음 발굴에서 조사
+
+## 2026-10-20T10:40 | T-031 | done | skill 1.15.0
+- 변경: SKILL.md(frontmatter hooks.Stop, Phase 0는 기존 사본만 갱신, "The Stop hook" 절), assets/autopilot-stop.sh(transcript 크기로 같은 종료를 1회만 집계), tests/test_hook.sh(+7), README 2종, docs/skill-design.md·plugin-structure.md
+- 검증: validate PASS(claude plugin validate 포함). CLAUDE_PLUGIN_ROOT=플러그인 루트·스킬 폴더 둘 다에서 frontmatter 명령이 block
+- 판단: 이 레포의 .claude 훅 사본은 대체 수단으로 남김(두 훅이 같이 돌아도 카운터는 1회)

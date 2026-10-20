@@ -18,6 +18,8 @@ plugins/autopilot/skills/autopilot/SKILL.md     ← skill (skills/<name>/SKILL.m
 plugins/autopilot/commands/status.md, stop.md   ← /autopilot:status, /autopilot:stop
 ```
 
+The skill's frontmatter declares its Stop hook (`hooks:` — runs only in sessions that invoked the skill). The command uses `$CLAUDE_PLUGIN_ROOT` as an environment variable, which is the plugin root for a plugin install and the skill folder for a plain skill install, so it checks both `assets/` locations.
+
 Commands run the skill's scripts through `${CLAUDE_PLUGIN_ROOT}`, which Claude Code substitutes in command files too (checked with `claude -p "/autopilot:status" --plugin-dir plugins/autopilot`). The `.skill` package contains only the skill folder, so the commands exist only for plugin installs.
 
 ## marketplace.json
