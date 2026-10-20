@@ -11,7 +11,8 @@
 # Fixtures live in tests/eval/fixture-<name>/ with expectations in tests/eval/fixture-<name>.expected
 # (default: todo). `--fixture list` prints the available ones; `--fixture all` runs every fixture with the
 # same options and prints one summary (exit 1 if any fails). An expectation regex starting with type=
-# grades the first completed task's type; one starting with commit= must match every commit subject.
+# grades the first completed task's type; one starting with commit= must match every commit subject;
+# one starting with nofile= must match no file any commit changed (for CONFIG scope).
 # Needs the claude CLI and spends real model usage (one driver run). Not part of validate.sh.
 # Rule checks (one commit per task, LOG only appended, deep discovery before a final stop) are reported
 # separately; any broken rule fails the eval whatever the score.
@@ -153,7 +154,13 @@ commits = git("rev-list", "--reverse", "HEAD").split()[1:]   # everything after 
 subjects = [git("show", "-s", "--format=%s", c).strip() for c in commits]
 for ident, what, rx in items:
     rx = rx.strip()
-    if rx.startswith("commit="):
+    if rx.startswith("nofile="):
+        touched = sorted({f for c in commits for f in git("show", "--name-only", "--format=", c).split()})
+        bad = [f for f in touched if re.search(rx[7:], f)]
+        hit = not bad
+        if bad:
+            what = what.strip() + f" (changed: {', '.join(bad[:3])})"
+    elif rx.startswith("commit="):
         bad = [x for x in subjects if not re.search(rx[7:], x)]
         hit = bool(subjects) and not bad
         if bad:

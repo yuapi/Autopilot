@@ -405,3 +405,10 @@
 - 발굴(심화 3단계 이식성): bash 4 전용 문법·GNU 전용 옵션 없음. 새 시나리오(모노레포 패키지 하나만)에서 범위 지정 수단 없음 발견
 - 변경: assets/CONFIG.md(scope), scripts/task.sh(done이 범위 밖 변경 거부), scripts/status.sh(scope 표시), SKILL.md Phase 1·3, README 2종, tests(task +6, skill_rules CONFIG 키 목록), CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-20T14:08 | - | release | skill 1.28.0
+- 1.28.0 릴리즈: release/1.28.0 → main, main → develop 역병합. 태그 대기: v1.28.0 (403, 누적 v1.11.0~v1.28.0)
+
+## 2026-10-20T14:13 | T-063 | done | skill 1.28.0
+- 변경: tests/eval/fixture-mono(CONFIG scope: pkg/a, 두 패키지 모두 결함)·.expected, scripts/eval.sh(nofile= 기대값), tests/test_eval.sh(+4), README 2종, CHANGELOG
+- 검증: validate PASS. 실제 eval --fixture mono --mode session --iterations 2: 8/8, 커밋 3개 모두 pkg/a·.autopilot만, ROADMAP에 "pkg/b off limits" 기록

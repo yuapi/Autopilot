@@ -230,4 +230,21 @@ check "--fixture all fails when one fixture fails" test "$rc" -eq 1
 check "no claude → --fixture all is skipped (exit 3)" bash -c "CLAUDE_BIN=no-such-claude bash '$EV' --fixture all >/dev/null 2>&1; test \$? -eq 3"
 check_not "--fixture all with --grade is refused" bash "$EV" --fixture all --grade /tmp
 
+# mono fixture: nofile= fails when a commit touches a path outside CONFIG scope
+FAKE5="$TMPROOT/fake-claude-5"
+cat > "$FAKE5" <<'SH'
+#!/usr/bin/env bash
+{ echo "| ID | Type | Status | Attempts | Task | Done when | Source | Completed |"; echo "|---|---|---|---|---|---|---|---|"
+  echo "| T-001 | fix | done | 1 | slug keeps punctuation | test_punctuation passes | baseline | |"; } > .autopilot/BACKLOG.md
+echo "# fixed" >> pkg/a/slug.py; [ -z "${FAKE_TOUCH_B:-}" ] || echo "# also" >> pkg/b/clamp.py
+git add -A >/dev/null 2>&1; git commit -qm "autopilot(T-001): fix slug" >/dev/null 2>&1
+SH
+chmod +x "$FAKE5"
+out="$(CLAUDE_BIN="$FAKE5" bash "$EV" --fixture mono 2>&1)"
+check "mono: staying inside the scope → found" grep -q "found   scope" <<<"$out"
+check "mono: 2/2" grep -q "Score: 2/2" <<<"$out"
+out="$(FAKE_TOUCH_B=1 CLAUDE_BIN="$FAKE5" bash "$EV" --fixture mono 2>&1)"
+check "mono: a commit touching pkg/b → missed, file named" grep -q "MISSED  scope .*changed: pkg/b/clamp.py" <<<"$out"
+check "mono fixture ships its CONFIG scope" grep -q "^scope: pkg/a" "$REPO/tests/eval/fixture-mono/.autopilot/CONFIG.md"
+
 finish

@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- Fifth eval fixture `mono`: a monorepo whose CONFIG sets `scope: pkg/a`, with defects in both packages. New `nofile=` expectations fail when any commit changes a matching path
 
 ## 1.28.0 — 2026-10-20
 - New CONFIG key `scope` (set by people) limits autopilot to some paths, e.g. one package of a monorepo: discovery reads and runs only there, tasks change only files there, `task.sh done` refuses a commit that changes anything outside, and status.sh shows it
