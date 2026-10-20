@@ -6,6 +6,7 @@
 # Exit conditions:
 #   - .autopilot/STOP exists (created by Claude)            → exit code 0
 #   - max runs reached (when given)                         → 0
+#   - AUTOPILOT_MAX_COST reached (when set)                 → writes STOP, 0
 #   - claude exits abnormally 3 times in a row              → 1
 #   - 3 runs in a row change neither LOG.md nor the commits → writes STOP, 1
 #   - bad argument, not in a git repository, no claude CLI  → 1
@@ -14,6 +15,7 @@
 #   AUTOPILOT_SLEEP        seconds to wait between runs (default 10)
 #   AUTOPILOT_STALL_LIMIT  runs in a row without progress before stopping (default 3, same as the Stop hook)
 #   AUTOPILOT_MODEL        model for every run, passed to claude --model (default: the CLI's default)
+#   AUTOPILOT_MAX_COST     stop once the runs together cost this many USD (as claude reports it); writes STOP, exit 0
 #
 # Permission mode (AUTOPILOT_PERMISSION):
 #   allowlist (default) : --allowedTools allows only the needed tools. Works as root.
@@ -100,7 +102,7 @@ case "$integration" in
 esac
 
 # Call the skill by name so the one installed for the account/project is used, not a repository path.
-PROMPT='Use the autopilot skill and follow its procedure to do exactly one task, then exit. Do not ask questions and do not start a second task.'
+PROMPT='Use the autopilot skill and follow its procedure in driver mode (AUTOPILOT_DRIVER=1 is set): do exactly one task, then exit. This is driver mode, not a task budget: do not run runlock.sh and do not write STOP unless the skill says so. Do not ask questions and do not start a second task.'
 
 case "${AUTOPILOT_PERMISSION:-allowlist}" in
   skip)
@@ -119,6 +121,33 @@ fi
 progress_sig() { { cat .autopilot/LOG.md 2>/dev/null; git rev-parse HEAD 2>/dev/null; } | cksum | cut -d' ' -f1; }
 STALL_LIMIT="${AUTOPILOT_STALL_LIMIT:-3}"
 case "$STALL_LIMIT" in ''|*[!0-9]*|0) STALL_LIMIT=3;; esac
+
+# One result per run from claude --output-format json: the log gets the readable result text, and the
+# cost (USD) is printed for the caller. Not JSON (old CLI, crash): the raw output is the log, cost empty.
+read_result() {  # <raw output> <log file>
+  "$PY" - "$1" "$2" <<'PY'
+import json, sys
+raw = open(sys.argv[1], encoding="utf-8", errors="replace").read()
+res = None
+for line in raw.splitlines():
+    line = line.strip()
+    if line.startswith("{") and '"total_cost_usd"' in line:
+        try: res = json.loads(line)
+        except ValueError: pass
+with open(sys.argv[2], "w", encoding="utf-8") as f:
+    if res is None:
+        f.write(raw)
+    else:
+        f.write(str(res.get("result") or "") + "\n")
+        f.write(f"\n[driver] turns {res.get('num_turns')}, cost ${float(res.get('total_cost_usd') or 0):.4f}\n")
+print("" if res is None else f"{float(res.get('total_cost_usd') or 0):.4f}")
+PY
+}
+MAX_COST="${AUTOPILOT_MAX_COST:-}"
+if [ -n "$MAX_COST" ] && ! "$PY" -c 'import sys; assert float(sys.argv[1]) > 0' "$MAX_COST" 2>/dev/null; then
+  echo "[driver] AUTOPILOT_MAX_COST must be a positive number of USD: $MAX_COST" >&2; exit 1
+fi
+total_cost=0
 
 iter=0
 crash=0
@@ -140,7 +169,14 @@ while :; do
   echo "[driver] #$iter start $ts"
 
   before="$(progress_sig)"
-  if AUTOPILOT_DRIVER=1 claude -p "$PROMPT" "${PERM_ARGS[@]}" > "$log" 2>&1; then
+  raw="$(mktemp)"
+  AUTOPILOT_DRIVER=1 claude -p "$PROMPT" "${PERM_ARGS[@]}" --output-format json > "$raw" 2>&1; rc=$?
+  cost="$(read_result "$raw" "$log" || true)"; rm -f "$raw"
+  if [ -n "$cost" ]; then
+    total_cost="$("$PY" -c 'import sys; print(f"{float(sys.argv[1]) + float(sys.argv[2]):.4f}")' "$total_cost" "$cost")"
+    echo "[driver] #$iter cost \$$cost (total \$$total_cost${MAX_COST:+ of \$$MAX_COST})"
+  fi
+  if [ "$rc" -eq 0 ]; then
     crash=0
     if [ "$(progress_sig)" = "$before" ]; then
       stall=$((stall + 1))
@@ -166,6 +202,11 @@ while :; do
       echo "[driver] too many consecutive crashes. Exiting." >&2
       exit 1
     fi
+  fi
+  if [ -n "$MAX_COST" ] && "$PY" -c 'import sys; sys.exit(0 if float(sys.argv[1]) >= float(sys.argv[2]) else 1)' "$total_cost" "$MAX_COST" && [ ! -f .autopilot/STOP ]; then
+    printf 'Stopped: cost budget reached\n- The runs cost $%s together; AUTOPILOT_MAX_COST is $%s\n- Run the driver again (with a higher budget) to continue\n' "$total_cost" "$MAX_COST" > .autopilot/STOP
+    echo "[driver] cost budget reached (\$$total_cost of \$$MAX_COST). Wrote .autopilot/STOP and exiting."
+    exit 0
   fi
   [ -f .autopilot/STOP ] || sleep "$SLEEP_BETWEEN"
 done

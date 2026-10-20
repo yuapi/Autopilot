@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.30.0
+  version: 1.31.0
 hooks:
   Stop:
     - hooks:
@@ -12,13 +12,13 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.30.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.31.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
 | Mode | Condition | Behavior |
 |---|---|---|
-| **Driver** | environment variable `AUTOPILOT_DRIVER=1` | One task, then exit. An outer shell loop calls again |
+| **Driver** | environment variable `AUTOPILOT_DRIVER=1` | One task, then exit. An outer shell loop calls again. "One task" is how the driver works, not a person's task budget: no `runlock.sh`, no STOP for it |
 | **Session** | everything else (default) | Keep working task after task in the same session until `.autopilot/STOP` exists |
 
 A cloud session without terminal access is always in session mode. In this mode you **never decide "that's one done, I'll stop here."** Only the STOP file stops the loop.
@@ -344,7 +344,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30Z | T-042 | done | skill 1.30.0
+## 2026-10-01T14:30Z | T-042 | done | skill 1.31.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
@@ -407,7 +407,7 @@ bash <skill folder>/scripts/autopilot.sh          # unlimited
 bash <skill folder>/scripts/autopilot.sh 20       # 20 runs at most
 ```
 
-The default is an `--allowedTools` allowlist. In a dedicated container, `AUTOPILOT_PERMISSION=skip`. `AUTOPILOT_MODEL` picks the model for every run.
+The default is an `--allowedTools` allowlist. In a dedicated container, `AUTOPILOT_PERMISSION=skip`. `AUTOPILOT_MODEL` picks the model for every run, and `AUTOPILOT_MAX_COST` stops the driver once the runs together cost that many USD.
 
 The driver only gives Claude Bash and file tools, not MCP servers, so in `pr` mode PRs are opened with the `gh` CLI (merge requests with `glab` when `origin` is on GitLab). Before the loop starts, the driver checks the integration mode and warns if `origin` is missing (`branch`/`pr`) or if `gh` (`glab`) is missing or cannot push to the repository (`pr`).
 

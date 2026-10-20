@@ -7,6 +7,13 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.31.0 — 2026-10-20
+- task.sh done printed a shell error (`.autopilot/CONFIG.md: No such file or directory`) in repositories without a CONFIG
+- log.sh and status.sh read the skill version when it is single-quoted, as the claude.ai account plugin sync writes it (`version: '1.27.0'`); LOG entries said `skill unknown` and status showed no version
+- Driver mode no longer stops after one run: the model read the driver's "do exactly one task" as a person's task budget, claimed RUN with `--tasks 1`, and `task.sh done` wrote STOP. In driver mode `runlock.sh start` now writes no run marker (which would also let the Stop hook keep the call going), `task.sh` ignores budgets, and the driver prompt and SKILL.md say that one task per call is not a budget
+- Driver cost cap: runs use `claude --output-format json`, the driver prints each run's cost and the total, and `AUTOPILOT_MAX_COST` (USD) writes STOP and exits once the total reaches it. Run logs keep the readable result text plus turns and cost
+- tests/test_eval.sh 90 s → 24 s: the eval's polling interval is `AUTOPILOT_EVAL_POLL` (default 2 s) and the tests use a short one with shorter fake waits
+
 ## 1.30.0 — 2026-10-20
 - In `branch` and `pr` modes the task is published (push, PR, merge) only after `task.sh done` accepts it; the rules published first, so a commit the check then refused could already be pushed or merged. Also aligned the "nothing left for a person" principle with `scope`, and refreshed stale lists in SKILL.md
 

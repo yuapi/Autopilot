@@ -139,4 +139,19 @@ check "CRLF CONFIG: change inside the scope → accepted" bash -c "cd '$d' && ba
 t "$d" start T-002 >/dev/null; (cd "$d" && echo y >> code.txt && git commit -qam "autopilot(T-002): outside")
 check "CRLF CONFIG: change outside → still refused" grep -q "changes outside scope (pkg/a)" <<<"$(t "$d" done T-002)"
 
+# driver mode: no run marker, no task budget (the driver limits runs itself)
+d="$(newrepo)"
+out="$(cd "$d" && AUTOPILOT_DRIVER=1 CLAUDE_CODE_SESSION_ID=s bash "$RL" start --tasks 1)"
+check "driver mode: runlock start writes no RUN" test ! -e "$d/.autopilot/RUN"
+check "driver mode: runlock says why" grep -q "driver mode (AUTOPILOT_DRIVER=1): no run marker" <<<"$out"
+printf 'session: s\ntasks: 1\ndone: 0\n' > "$d/.autopilot/RUN"
+t "$d" start T-001 >/dev/null; (cd "$d" && echo a >> code.txt && git commit -qam "autopilot(T-001): x")
+(cd "$d" && AUTOPILOT_DRIVER=1 bash "$TS" done T-001 >/dev/null)
+check "driver mode: task.sh done never writes a budget STOP" test ! -e "$d/.autopilot/STOP"
+
+# no CONFIG.md: done prints no shell error
+d="$(newrepo)"; t "$d" start T-001 >/dev/null; (cd "$d" && echo a >> code.txt && git commit -qam "autopilot(T-001): x")
+err="$(cd "$d" && bash "$TS" done T-001 2>&1 >/dev/null)"
+check "no CONFIG.md → done prints nothing on stderr" test -z "$err"
+
 finish
