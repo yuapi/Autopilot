@@ -150,3 +150,16 @@
 - 변경: scripts/scan.sh(신규, 주석 속 마커·보안 패턴, fixture/testdata·ignore 표시 제외), SKILL.md(Phase 1 scan.sh·발굴 완료 조건·1-C 예외·생성 파일 커밋 금지), tests/test_scan.sh(22), scripts/eval.sh(로그를 레포 밖에), docs/skill-design.md
 - 검증: validate PASS. eval 전 4/5(관찰·기능 지도 비어 있음) → 규칙 1차 4/5(관찰·시나리오 채움, 마커는 Missing에만) → 1-C 보강 후 5/5
 - 이 레포: scan.sh 결과 0건(예제 레포는 fixture로 제외, 설명용 두 곳은 ignore 표시)
+
+## 2026-10-20T10:11 | - | retro | skill 1.12.0
+- 구간: T-014~T-026 중 12개 항목 done 12 / 실패 0 / blocked 0
+- 원인 분류할 실패 없음. 배운 것 3개 추가(단계 생략은 스크립트·완료 조건으로, stdin 시간 제한, LOG 정확한 줄 편집)
+
+## 2026-10-20T10:11 | - | discover | skill 1.12.0
+- 큐 비어 재발굴. scan.sh 0건, 이슈·PR 0건, 직접 실행(훅 사본 재현·status·scan), 시나리오 3개
+- 추가: T-027(fix, 훅 사본 갱신) T-028(feature, 테스트 없는 레포 eval 예제)
+- 태그 대기: v1.11.0 v1.11.1 v1.12.0
+
+## 2026-10-20T10:12 | T-027 | done | skill 1.12.0
+- 변경: scripts/hook.sh(신규, 설치·갱신·settings 병합), SKILL.md(Phase 0·훅 설치 절), scripts/status.sh(사본이 다르면 안내, 상대 경로 실행 버그도 수정), tests/test_hook_install.sh(22), README 2종, docs/skill-design.md
+- 검증: validate PASS. 1.6.0 훅 사본이 다른 세션을 막는 것을 재현 → 교체 후 막지 않음
