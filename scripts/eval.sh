@@ -24,8 +24,8 @@ if ! command -v "$CLAUDE_BIN" >/dev/null 2>&1; then
 fi
 
 SKILL="$REPO/plugins/autopilot/skills/autopilot"
-work="$(mktemp -d)"
-[ "$keep" -eq 1 ] || trap 'rm -rf "$work"' EXIT
+work="$(mktemp -d)"; log="$(mktemp)"   # the log stays outside the repository under test
+[ "$keep" -eq 1 ] || trap 'rm -rf "$work" "$log"' EXIT
 cp -R tests/eval/fixture-todo/. "$work/"
 rm -rf "$work/__pycache__"   # left behind when someone ran the fixture tests in place
 (cd "$work" && git init -q -b main && git config user.email eval@example.invalid && git config user.name eval \
@@ -36,7 +36,7 @@ echo "[eval] running one driver iteration in $work (timeout ${timeout_s}s)…"
 start=$(date +%s)
 ( cd "$work" && AUTOPILOT_DRIVER=1 "$CLAUDE_BIN" -p "$prompt" \
     --allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,TodoWrite" --add-dir "$SKILL" ) \
-  > "$work/.eval-claude.log" 2>&1 &
+  > "$log" 2>&1 &
 pid=$!
 while kill -0 "$pid" 2>/dev/null; do
   if [ $(( $(date +%s) - start )) -ge "$timeout_s" ]; then kill "$pid" 2>/dev/null; echo "[eval] timed out" >&2; break; fi
@@ -68,5 +68,5 @@ print(f"Score: {found}/{len(items)} = {score:.2f} (threshold {threshold:.2f})")
 sys.exit(0 if score >= threshold else 1)
 PY
 rc=$?
-[ "$keep" -eq 1 ] && echo "[eval] kept the run in $work (claude output: $work/.eval-claude.log)"
+[ "$keep" -eq 1 ] && echo "[eval] kept the run in $work (claude output: $log)"
 exit $rc
