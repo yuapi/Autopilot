@@ -9,6 +9,7 @@
 # The session ID comes from CLAUDE_CODE_SESSION_ID (set by Claude Code). RUN whose last activity is
 # older than AUTOPILOT_RUN_STALE_MIN minutes (default 120) counts as abandoned and is taken over.
 set -eu
+case "${1:-}" in -h|--help) awk 'NR > 1 && /^set -/ { exit } NR > 1 { sub(/^# ?/, ""); print }' "$0"; exit 0;; esac
 PY="$(command -v python3 || command -v python || true)"   # Windows Git Bash often has only python
 [ -n "$PY" ] || { echo "[autopilot] needs Python 3 on PATH (python3 or python)" >&2; exit 1; }
 cmd="${1:-}"; [ $# -gt 0 ] && shift

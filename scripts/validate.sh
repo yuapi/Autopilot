@@ -2,6 +2,7 @@
 # Local validation (instead of CI). Run before every commit: bash scripts/validate.sh
 # Exits 1 if any check fails.
 set -u
+case "${1:-}" in -h|--help) awk 'NR > 1 && /^set -/ { exit } NR > 1 { sub(/^# ?/, ""); print }' "$0"; exit 0;; esac
 cd "$(dirname "$0")/.."
 
 SKILL_DIR="plugins/autopilot/skills/autopilot"

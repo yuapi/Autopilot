@@ -3,6 +3,7 @@
 # Updates: SKILL.md (metadata.version, body **Version x.y.z**, LOG example skill x.y.z),
 #          plugin.json version, CHANGELOG.md (## Unreleased → ## x.y.z — date). Does not commit.
 set -eu
+case "${1:-}" in -h|--help) awk 'NR > 1 && /^set -/ { exit } NR > 1 { sub(/^# ?/, ""); print }' "$0"; exit 0;; esac
 cd "$(dirname "$0")/.."
 kind="${1:-}"
 note="${2:-}"

@@ -93,4 +93,15 @@ if git -C "$REPO" rev-parse HEAD >/dev/null 2>&1; then
   check "a script from that checkout runs" bash -c "cd '$c' && bash -n '$SKILL_REL/scripts/task.sh'"
 fi
 
+# every script answers -h/--help with its usage and exit 0, without touching anything
+h="$(mktemp -d "$TMPROOT/help.XXXX")"
+for f in "$REPO/$SKILL_REL"/scripts/*.sh "$REPO"/scripts/*.sh; do
+  n="${f#$REPO/}"
+  out="$(cd "$h" && bash "$f" --help 2>&1)"; rc=$?
+  check "$n --help → exit 0" test "$rc" -eq 0
+  check "$n --help shows a usage line" grep -q "bash .*$(basename "$f")" <<<"$out"
+  check "$n -h works too" bash -c "cd '$h' && bash '$f' -h >/dev/null 2>&1"
+done
+check "--help created nothing" test -z "$(ls -A "$h")"
+
 finish
