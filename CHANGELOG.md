@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- eval.sh prints the cost and turns claude reported for the runs (`--output-format json`), so `--model` comparisons include cost
 
 ## 1.28.4 — 2026-10-20
 - Skill scripts find Python as `python3` or `python` (Windows Git Bash often has only `python`) and say clearly when there is none; seven scripts called `python3` only
