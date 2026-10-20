@@ -6,6 +6,7 @@
 - PATCH: 드라이버 수정, 문구 정리, 버그 수정
 
 ## Unreleased
+- Skill rules, templates and skill scripts are now in English. New `language` setting in `.autopilot/CONFIG.md` (`auto` = existing state files → README → the user's language → English) sets the language of notes people read; machine-readable values stay English. Korean PROPOSALS statuses from earlier versions (`제안`, `채택`, …) are still understood
 
 ## 1.8.2 — 2026-10-19
 - release.sh: git 태그 push가 막히면 쓰기 권한이 있는 `gh`(GH_TOKEN)로 GitHub API에서 태그와 Release를 함께 생성. 권한 확인은 `gh auth status` 대신 레포 API로(레포 한정 토큰 지원)
