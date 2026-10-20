@@ -34,4 +34,4 @@ next_id: 29
 | T-025 | fix | done | 1 | local 모드가 기본 브랜치(main 등)에 바로 커밋함 → workbranch.sh로 autopilot/<날짜> 브랜치로 옮김 | tests/test_workbranch.sh 통과 | 사람 요청 | 2026-10-20 |
 | T-026 | fix | done | 1 | 발굴 단계 생략: eval에서 탐색적 실행·시나리오·기능 지도를 건너뛰고 코드 마커 검사를 안 해 TODO 마커를 놓침(4/5). 결정적인 `scripts/scan.sh`(마커·보안 패턴 grep)를 Phase 1에서 실행하게 하고, 발굴 후 ROADMAP 관찰·기능 지도가 비어 있으면 발굴 미완료로 보는 규칙 | scripts/eval.sh 5/5, scan.sh 테스트 | eval 2026-10-20 | 2026-10-20 |
 | T-027 | fix | done | 1 | 레포에 복사된 Stop 훅이 스킬과 다르면 Phase 0에서 교체(바이트 비교), status.sh는 사본이 스킬 assets와 다르면 경고 | 1.6 훅 사본이 교체되고 다른 세션이 막히지 않는 테스트 | 관찰·시나리오 1 | 2026-10-20 |
-| T-028 | feature | open | 0 | 두 번째 eval 예제: 테스트가 없는 작은 JS/셸 프로젝트. 첫 작업이 최소 테스트 하네스인지 채점 | eval.sh가 예제를 골라 돌림(--fixture), 첫 작업 유형 채점, test_eval 갱신 | 빠진 것·시나리오 2 | |
+| T-028 | feature | done | 1 | 두 번째 eval 예제: 테스트가 없는 작은 JS/셸 프로젝트. 첫 작업이 최소 테스트 하네스인지 채점 | eval.sh가 예제를 골라 돌림(--fixture), 첫 작업 유형 채점, test_eval 갱신 | 빠진 것·시나리오 2 | 2026-10-20 |

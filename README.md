@@ -106,10 +106,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/](docs/) for branching, version
 ## Measuring discovery quality
 
 ```bash
-bash scripts/eval.sh            # add --keep to inspect the run afterwards
+bash scripts/eval.sh                        # the todo fixture; add --keep to inspect the run afterwards
+bash scripts/eval.sh --fixture wordcount    # a repository with no tests: is the first task a test harness?
 ```
 
-Copies `tests/eval/fixture-todo/` (a tiny todo CLI with five seeded defects: an off-by-one with a failing test, a crash on first run, a shell injection, a command the README documents but the code lacks, and a TODO marker) into a temp repository, runs the working-copy skill once in driver mode, and scores how many of the defects `tests/eval/expected.txt` lists landed in its BACKLOG. It needs the `claude` CLI and spends one real driver run, so it is not part of `validate.sh`; run it after changing discovery rules to see whether they find more or less.
+Copies `tests/eval/fixture-todo/` (a tiny todo CLI with five seeded defects: an off-by-one with a failing test, a crash on first run, a shell injection, a command the README documents but the code lacks, and a TODO marker) into a temp repository, runs the working-copy skill once in driver mode, and scores how many of the defects `tests/eval/fixture-todo.expected` lists landed in its BACKLOG. The `wordcount` fixture has no tests at all and checks that the first task sets up a test runner. It needs the `claude` CLI and spends one real driver run, so it is not part of `validate.sh`; run it after changing discovery rules to see whether they find more or less.
 
 ## License
 

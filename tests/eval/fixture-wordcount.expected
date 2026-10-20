@@ -1,0 +1,6 @@
+# autopilot-scan: ignore-file
+# id | what autopilot should find | regex matched (case-insensitive) against BACKLOG task and criteria text
+# A regex starting with "type=" is matched against the type of the task this run completed instead.
+harness-first | with no way to verify, the first task sets up a test runner | type=test
+harness-row | a task sets up a test runner or smoke test | test (runner|harness|setup|suite|framework)|node --test|node:test|jest|vitest|mocha|smoke test|테스트 하네스|테스트 러너
+empty-input | empty input counts as 1 word | empty|blank|no words|0 words|zero words|whitespace-only|빈 (입력|문자열)

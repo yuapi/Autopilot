@@ -163,3 +163,7 @@
 ## 2026-10-20T10:12 | T-027 | done | skill 1.12.0
 - 변경: scripts/hook.sh(신규, 설치·갱신·settings 병합), SKILL.md(Phase 0·훅 설치 절), scripts/status.sh(사본이 다르면 안내, 상대 경로 실행 버그도 수정), tests/test_hook_install.sh(22), README 2종, docs/skill-design.md
 - 검증: validate PASS. 1.6.0 훅 사본이 다른 세션을 막는 것을 재현 → 교체 후 막지 않음
+
+## 2026-10-20T10:20 | T-028 | done | skill 1.13.0
+- 변경: tests/eval/fixture-wordcount(테스트 없는 Node CLI)·.expected, expected.txt → fixture-todo.expected, scripts/eval.sh(--fixture, type= 채점), tests/test_eval.sh(+5), SKILL.md(검증 수단 없으면 하네스를 fix보다 먼저), README 2종, CLAUDE.md, docs/skill-design.md
+- 검증: validate PASS. eval wordcount 2/3(규칙대로 fix 먼저 → 검증 없는 커밋) → 규칙 수정 후 3/3(node:test 하네스 먼저). todo 4/5(채점 정규식이 'DB file missing' 어순을 못 받음) → 정규식 보강 후 5/5
