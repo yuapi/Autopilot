@@ -10,12 +10,16 @@
 # Fixtures live in tests/eval/fixture-<name>/ with expectations in tests/eval/fixture-<name>.expected
 # (default: todo). `--fixture list` prints the available ones.
 # Needs the claude CLI and spends real model usage (one driver run). Not part of validate.sh.
-# Exit codes: 0 score >= AUTOPILOT_EVAL_THRESHOLD (default 0.6) · 1 below it · 3 skipped (no claude CLI)
+# Rule checks (one commit per task, LOG only appended, deep discovery before a final stop) are reported
+# separately; any broken rule fails the eval whatever the score.
+# Exit codes: 0 score >= AUTOPILOT_EVAL_THRESHOLD (default 0.6) and no broken rule · 1 otherwise · 3 skipped (no claude CLI)
+# --grade <dir> grades a run kept with --keep again without running anything (pass the same --fixture,
+# --iterations and --mode).
 # CLAUDE_BIN overrides the claude command (the tests use a fake).
 set -u
 cd "$(dirname "$0")/.."
 REPO="$(pwd)"
-keep=0; timeout_s=1200; fixture=todo; iterations=1; mode=driver
+keep=0; timeout_s=1200; fixture=todo; iterations=1; mode=driver; grade=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --keep) keep=1;;
@@ -23,6 +27,7 @@ while [ $# -gt 0 ]; do
     --fixture) shift; fixture="${1:?--fixture needs a name}";;
     --iterations) shift; iterations="${1:?--iterations needs a number}";;
     --mode) shift; mode="${1:?--mode needs driver or session}";;
+    --grade) shift; grade="${1:?--grade needs a directory kept with --keep}";;
     *) echo "usage: eval.sh [--fixture <name>] [--iterations <n>] [--mode driver|session] [--keep] [--timeout <seconds>]" >&2; exit 1;;
   esac
   shift
@@ -35,59 +40,66 @@ fi
 FIXTURE_DIR="tests/eval/fixture-$fixture"; EXPECTED="tests/eval/fixture-$fixture.expected"
 [ -d "$FIXTURE_DIR" ] && [ -f "$EXPECTED" ] || { echo "[eval] unknown fixture: $fixture (see --fixture list)" >&2; exit 1; }
 CLAUDE_BIN="${CLAUDE_BIN:-claude}"
-if ! command -v "$CLAUDE_BIN" >/dev/null 2>&1; then
+if [ -n "$grade" ]; then
+  [ -d "$grade/.git" ] || { echo "[eval] --grade: not a kept run: $grade" >&2; exit 1; }
+elif ! command -v "$CLAUDE_BIN" >/dev/null 2>&1; then
   echo "[eval] skipped: no claude CLI on PATH" >&2
   exit 3
 fi
 
 SKILL="$REPO/plugins/autopilot/skills/autopilot"
-work="$(mktemp -d)"; log="$(mktemp)"   # the log stays outside the repository under test
-[ "$keep" -eq 1 ] || trap 'rm -rf "$work" "$log"' EXIT
-cp -R "$FIXTURE_DIR/." "$work/"
-rm -rf "$work/__pycache__" "$work/node_modules"   # left behind when someone ran the fixture in place
-(cd "$work" && git init -q -b main && git config user.email eval@example.invalid && git config user.name eval \
-  && git add -A && git commit -qm "fixture")
-
 timed_out=0
-tasks_logged() {  # prints a number even before the LOG exists
-  [ -f "$work/.autopilot/LOG.md" ] || { echo 0; return; }
-  grep -cE '^## [^|]+\| T-[0-9]+ \| (done|failed|blocked) \|' "$work/.autopilot/LOG.md" || true
-}
-# run_claude <timeout> <stop after n task entries, 0 = never> <command…>
-run_claude() {
-  local limit="$1" stop_after="$2" start pid; shift 2
-  start=$(date +%s)
-  ( cd "$work" && "$@" ) >> "$log" 2>&1 &
-  pid=$!
-  while kill -0 "$pid" 2>/dev/null; do
-    if [ $(( $(date +%s) - start )) -ge "$limit" ]; then kill "$pid" 2>/dev/null; timed_out=1; echo "[eval] timed out after ${limit}s" >&2; break; fi
-    if [ "$stop_after" -gt 0 ] && [ ! -f "$work/.autopilot/STOP" ] && [ "$(tasks_logged)" -ge "$stop_after" ]; then
-      echo "Eval: $stop_after task(s) logged" > "$work/.autopilot/STOP"
-      echo "[eval] $stop_after task(s) in the LOG → wrote STOP, waiting for the session to end"
-    fi
-    sleep 2
-  done
-  wait "$pid" 2>/dev/null
-  echo "[eval] finished in $(( $(date +%s) - start ))s"
-}
-
-start_all=$(date +%s)
-if [ "$mode" = session ]; then
-  prompt="Run the autopilot skill (autopilot:autopilot) in this repository with the Skill tool and follow it in session mode. Do not ask questions."
-  echo "[eval] fixture $fixture: one session-mode run until $iterations task(s) are logged, in $work (timeout $((timeout_s * iterations))s)…"
-  run_claude $((timeout_s * iterations)) "$iterations" env -u AUTOPILOT_DRIVER "$CLAUDE_BIN" -p "$prompt" \
-    --plugin-dir "$REPO/plugins/autopilot" --allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,TodoWrite,Skill"
+if [ -n "$grade" ]; then
+  work="$(cd "$grade" && pwd)"; keep=0
 else
-  prompt="Read $SKILL/SKILL.md and follow its procedure exactly, in driver mode (AUTOPILOT_DRIVER=1 is set): do exactly one task in this repository, then exit. <skill folder> in the rules means $SKILL. Do not ask questions."
-  echo "[eval] fixture $fixture: running $iterations driver iteration(s) in $work (timeout ${timeout_s}s each)…"
-  for it in $(seq 1 "$iterations"); do
-    [ -f "$work/.autopilot/STOP" ] && { echo "[eval] STOP appeared, no more iterations"; break; }
-    echo "[eval] iteration $it"
-    run_claude "$timeout_s" 0 env AUTOPILOT_DRIVER=1 "$CLAUDE_BIN" -p "$prompt" \
-      --allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,TodoWrite" --add-dir "$SKILL"
-  done
+  work="$(mktemp -d)"; log="$(mktemp)"   # the log stays outside the repository under test
+  [ "$keep" -eq 1 ] || trap 'rm -rf "$work" "$log"' EXIT
+  cp -R "$FIXTURE_DIR/." "$work/"
+  rm -rf "$work/__pycache__" "$work/node_modules"   # left behind when someone ran the fixture in place
+  (cd "$work" && git init -q -b main && git config user.email eval@example.invalid && git config user.name eval \
+    && git add -A && git commit -qm "fixture")
+
+  tasks_logged() {  # prints a number even before the LOG exists
+    [ -f "$work/.autopilot/LOG.md" ] || { echo 0; return; }
+    grep -cE '^## [^|]+\| T-[0-9]+ \| (done|failed|blocked) \|' "$work/.autopilot/LOG.md" || true
+  }
+  # run_claude <timeout> <stop after n task entries, 0 = never> <command…>
+  run_claude() {
+    local limit="$1" stop_after="$2" start pid; shift 2
+    start=$(date +%s)
+    ( cd "$work" && "$@" ) >> "$log" 2>&1 &
+    pid=$!
+    while kill -0 "$pid" 2>/dev/null; do
+      if [ $(( $(date +%s) - start )) -ge "$limit" ]; then kill "$pid" 2>/dev/null; timed_out=1; echo "[eval] timed out after ${limit}s" >&2; break; fi
+      if [ "$stop_after" -gt 0 ] && [ ! -f "$work/.autopilot/STOP" ] && [ "$(tasks_logged)" -ge "$stop_after" ]; then
+        echo "Eval: $stop_after task(s) logged" > "$work/.autopilot/STOP"
+        echo "[eval] $stop_after task(s) in the LOG → wrote STOP, waiting for the session to end"
+      fi
+      sleep 2
+    done
+    wait "$pid" 2>/dev/null
+    echo "[eval] finished in $(( $(date +%s) - start ))s"
+  }
+
+  start_all=$(date +%s)
+  if [ "$mode" = session ]; then
+    prompt="Run the autopilot skill (autopilot:autopilot) in this repository with the Skill tool and follow it in session mode. Do not ask questions."
+    echo "[eval] fixture $fixture: one session-mode run until $iterations task(s) are logged, in $work (timeout $((timeout_s * iterations))s)…"
+    run_claude $((timeout_s * iterations)) "$iterations" env -u AUTOPILOT_DRIVER "$CLAUDE_BIN" -p "$prompt" \
+      --plugin-dir "$REPO/plugins/autopilot" --allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,TodoWrite,Skill"
+  else
+    prompt="Read $SKILL/SKILL.md and follow its procedure exactly, in driver mode (AUTOPILOT_DRIVER=1 is set): do exactly one task in this repository, then exit. <skill folder> in the rules means $SKILL. Do not ask questions."
+    echo "[eval] fixture $fixture: running $iterations driver iteration(s) in $work (timeout ${timeout_s}s each)…"
+    for it in $(seq 1 "$iterations"); do
+      [ -f "$work/.autopilot/STOP" ] && { echo "[eval] STOP appeared, no more iterations"; break; }
+      echo "[eval] iteration $it"
+      run_claude "$timeout_s" 0 env AUTOPILOT_DRIVER=1 "$CLAUDE_BIN" -p "$prompt" \
+        --allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,TodoWrite" --add-dir "$SKILL"
+    done
+  fi
+  echo "[eval] all runs finished in $(( $(date +%s) - start_all ))s"
+
 fi
-echo "[eval] all runs finished in $(( $(date +%s) - start_all ))s"
 
 python3 - "$work" "$REPO/$EXPECTED" "${AUTOPILOT_EVAL_THRESHOLD:-0.6}" "$iterations" "$mode" "$timed_out" <<'PY'
 import os, re, subprocess, sys
@@ -135,12 +147,56 @@ if iterations > 1 or mode == "session":
     for what, ok in checks:
         found += ok; total += 1
         print(f"  {'ok     ' if ok else 'FAILED '} {what}")
-log = subprocess.run(["git", "-C", work, "log", "--oneline"], capture_output=True, text=True).stdout.splitlines()
-print(f"Commits after the fixture: {len(log) - 1}")
+git = lambda *a: subprocess.run(["git", "-C", work, *a], capture_output=True, text=True).stdout
+commits = git("rev-list", "--reverse", "HEAD").split()[1:]   # everything after the fixture commit
+print(f"Commits after the fixture: {len(commits)}")
+
+# Rule checks: the procedure's hard rules, graded on what the run left behind (not part of the score)
+def read(p):
+    try: return open(os.path.join(work, ".autopilot", p), encoding="utf-8").read()
+    except FileNotFoundError: return ""
+log_text = read("LOG.md")
+done_tasks = sorted({i for i, st in re.findall(r"^## \S+ \| (T-\d+) \| (\w+) \|", log_text, re.M) if st == "done"})
+code_commits, multi = 0, []
+for c in commits:
+    files = git("show", "--name-only", "--format=", c).split()
+    if any(not f.startswith(".autopilot/") for f in files):
+        code_commits += 1
+    subject = git("show", "-s", "--format=%s", c).strip()
+    if len(set(re.findall(r"T-\d+", subject))) > 1 or re.search(r"T-\d+\s*(\.\.|–|-|~)\s*T?-?\d+", subject):
+        multi.append(subject)
+rewrites = []
+for c in commits + ["WORKTREE"]:
+    args = ["diff", "--numstat", "HEAD", "--"] if c == "WORKTREE" else ["diff", "--numstat", c + "^", c, "--"]
+    stat = git(*args, ".autopilot/LOG.md", ".autopilot/LOG.archive.md")
+    rows = dict((l.split("\t")[2], l.split("\t")[:2]) for l in stat.splitlines() if l.count("\t") == 2)
+    log_del = rows.get(".autopilot/LOG.md", ["0", "0"])[1]
+    if log_del not in ("0", "-") and ".autopilot/LOG.archive.md" not in rows:   # archive.sh moves entries out
+        rewrites.append(f"{c[:7]} (-{log_del})")
+times = re.findall(r"^## (\d{4}-\d\d-\d\dT\d\d:\d\d)", log_text, re.M)
+out_of_order = [b for a, b in zip(times, times[1:]) if b < a]
+stop = read("STOP")
+final = bool(re.search(r"final stop|최종 정지", stop, re.I)) and not re.search(r"no progress|Eval:", stop)
+deep_ok = True
+if final:
+    m = re.search(r"^##[^\n]*(Deep discovery|심화 발굴)[^\n]*\n(.*?)(?=^## |\Z)", read("ROADMAP.md"), re.M | re.S)
+    body = "\n".join(l for l in (m.group(2) if m else "").splitlines() if not l.strip().startswith("("))
+    deep_ok = all(re.search(k, body, re.I) for k in (r"static|정적", r"running|실행", r"quality|품질", r"external|외부"))
+rules = [
+    (f"one commit per completed task (commits with code changes {code_commits} >= done tasks {len(done_tasks)}" + (f"; several tasks in one commit: {multi[0]}" if multi else "") + ")",
+     code_commits >= len(done_tasks) and not multi),
+    ("LOG entries only appended" + (f" (lines removed in {', '.join(rewrites)})" if rewrites else ""), not rewrites),
+    ("LOG entries in time order" + (f" ({len(out_of_order)} entries earlier than the one above)" if out_of_order else ""), not out_of_order),
+    ("final stop only after all four deep discovery stages are recorded" + ("" if final else " (no final stop)"), deep_ok),
+]
+print("Rule checks:")
+for what, ok in rules:
+    print(f"  {'ok     ' if ok else 'BROKEN '} {what}")
+rules_ok = all(ok for _, ok in rules)
 score = found / total if total else 0
-print(f"Score: {found}/{total} = {score:.2f} (threshold {threshold:.2f})")
-sys.exit(0 if score >= threshold else 1)
+print(f"Score: {found}/{total} = {score:.2f} (threshold {threshold:.2f})" + ("" if rules_ok else " — rule checks failed"))
+sys.exit(0 if score >= threshold and rules_ok else 1)
 PY
 rc=$?
-[ "$keep" -eq 1 ] && echo "[eval] kept the run in $work (claude output: $log)"
+[ "$keep" -eq 1 ] && [ -z "$grade" ] && echo "[eval] kept the run in $work (claude output: $log)"
 exit $rc
