@@ -220,4 +220,14 @@ out="$(FAKE_IGNORE_BUDGET=1 CLAUDE_BIN="$FAKES" bash "$EV" --mode session --iter
 check "budget ignored → the eval writes STOP after n+1 tasks" grep -q "3 task(s) in the LOG → wrote STOP" <<<"$out"
 check "budget ignored → FAILED" grep -q "FAILED  it ended on its task budget" <<<"$out"
 
+# --fixture all: every fixture with the same options, one summary
+out="$(CLAUDE_BIN="$FAKE" bash "$EV" --fixture all 2>&1)"; rc=$?
+for f in $(bash "$EV" --fixture list); do
+  check "--fixture all runs $f" grep -q "^=== fixture $f\$" <<<"$out"
+  check "--fixture all summarizes $f" grep -qE "^  $f +Score:" <<<"$out"
+done
+check "--fixture all fails when one fixture fails" test "$rc" -eq 1
+check "no claude → --fixture all is skipped (exit 3)" bash -c "CLAUDE_BIN=no-such-claude bash '$EV' --fixture all >/dev/null 2>&1; test \$? -eq 3"
+check_not "--fixture all with --grade is refused" bash "$EV" --fixture all --grade /tmp
+
 finish
