@@ -578,3 +578,16 @@
 - 발굴: 공백·한글 경로("내 프로젝트 (copy)")에서 runlock·task·log·status·archive·scan·finalstop 전체 흐름 정상. 그 과정에서 finalstop이 .gitignore 변경으로 거부하는 불일치 발견
 - 변경: scripts/finalstop.sh(.gitignore 제외), tests/test_finalstop.sh(+1), CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-20T17:18Z | - | release | skill 1.35.1
+- 1.35.1 릴리즈: release/1.35.1 → main, main → develop 역병합. 태그 대기: v1.35.1 (403, 누적 v1.11.0~v1.35.1)
+
+## 2026-10-20T17:20Z | T-088 | done | skill 1.35.1
+- 발굴: git worktree에서 전체 흐름 정상(.git이 파일). 드라이버 실행 중 status.sh가 "idle"인 관찰성 공백
+- 변경: scripts/status.sh(driver.lock pid 확인), tests/test_status.sh(+3), CHANGELOG
+- 검증: validate PASS
+
+## 2026-10-20T17:21Z | - | retro | skill 1.35.1
+- 범위: T-079~T-088 (10건). done 10 / failed 0 / blocked 0. 유형: fix 4, enhance 3, test 2, feature 1(T-075 이전 포함 시 T-080 등). 출처: 품질 점검(도움말·오류·관찰성) 4, 처음 쓰는 환경 시나리오 3, 실제 실행 2, 회고 후속 1
+- 실패 원인 없음. eval: 6개 예제(세션·드라이버) 모두 100%
+- "배운 것"에 1줄 추가(처음 쓰는 환경은 미리 확인하고 STOP)

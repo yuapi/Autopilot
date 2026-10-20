@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 88
+next_id: 89
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -94,3 +94,4 @@ next_id: 88
 | T-085 | fix | done | 1 | git 사용자 이름·이메일이 없는 환경에서는 모든 커밋이 실패하고 루프가 시도만 소모 → 드라이버 사전 점검과 Phase 0에서 확인, 없으면 고치는 방법을 담아 STOP(스스로 정체 설정 금지) | 드라이버 테스트(정체 없음 → 실행 안 함·이유), SKILL 규칙 | 심화 발굴 2단계 새 시나리오: 새 컨테이너·CI에서 첫 실행 | 2026-10-20 |
 | T-086 | fix | done | 1 | 커밋이 하나도 없는 레포(git init만, 파일은 커밋 안 됨)에서 Phase 0 stash가 실패하고 task.sh start가 영원히 거부 → 드라이버 사전 점검·Phase 0에서 확인, 고치는 법과 함께 STOP(사람 파일을 대신 커밋하지 않음) | 드라이버 테스트, SKILL 규칙 | 심화 발굴 2단계 새 시나리오: 새 프로젝트에서 바로 실행 | 2026-10-20 |
 | T-087 | fix | done | 1 | finalstop.sh가 task.sh start가 남긴 .gitignore 변경(.autopilot/.task 줄)을 미커밋 작업으로 보고 최종 정지를 거부(task.sh는 같은 변경을 상태로 취급) → 같은 기준으로 | .gitignore만 바뀐 상태에서 finalstop 허용 테스트 | 탐색 실행(공백·한글 경로에서 전체 흐름) | 2026-10-20 |
+| T-088 | enhance | done | 1 | 드라이버가 도는 동안 status.sh가 "idle"이라고 함(RUN만 봄) → driver.lock의 살아 있는 pid면 "running (driver, pid, 시작 후 경과)", 죽은 pid면 남은 잠금이라고 표시 | 살아 있음·죽음·없음 테스트 | 심화 발굴 3단계(관찰성: 드라이버 실행 중 상태) | 2026-10-20 |
