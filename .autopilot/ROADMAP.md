@@ -19,19 +19,20 @@ last_retro: 2026-10-20T11:50
 | 출력 언어 설정 | 완성 | SKILL.md Language, CONFIG language |
 | 작업 브랜치(local 모드에서 기본 브랜치 회피) | 완성 | scripts/workbranch.sh |
 | 한 레포 한 루프, 소유 세션만 훅 차단 | 완성 | scripts/runlock.sh, assets/autopilot-stop.sh |
-| 세션 연속 모드 Stop 훅 설치·갱신 | 부분 | 레포에 복사된 훅이 스킬 업데이트를 따라가지 않음 |
+| 세션 연속 모드 Stop 훅 | 완성 | SKILL.md frontmatter hooks(1.16), 옛 사본 갱신·제거 hook.sh install/uninstall |
 | 드라이버 (잠금·통합 사전 점검) | 완성 | scripts/autopilot.sh |
 | 통합 정책 (local/branch/pr, 자동 머지·릴리스) | 완성 | SKILL.md 통합 정책 |
 | 상태 요약 | 완성 | scripts/status.sh |
-| 발굴 품질 평가 | 부분 | scripts/eval.sh, 예제 1개(Python CLI)뿐 |
+| 발굴 품질 평가 | 완성 | scripts/eval.sh: 예제 2개, 드라이버·세션 모드, 반복 실행, 규칙 검사, --grade |
+| LOG 기록·최종 정지 장치 | 완성 | scripts/log.sh, scripts/finalstop.sh |
+| 플러그인 명령 | 완성 | commands/status.md, stop.md |
 | 레포 도구 (validate/bump/release/tests) | 완성 | scripts/, tests/ (테스트 203개) |
 
 ### 빠진 것
-- 사람이 스킬 폴더 경로를 몰라도 상태를 보고 멈출 수 있는 명령 (/autopilot:status, /autopilot:stop)
-- 여러 작업에 걸친 동작 평가 (eval은 드라이버 1회만)
+- 클라우드 세션에서 local 모드 결과 보존(경고만 있음, P-002 제안)
 
 ### 약한 것
-- 레포에 복사된 Stop 훅(.claude/hooks/autopilot-stop.sh)이 스킬 업데이트 후에도 옛 버전으로 남음. 1.6~1.10 사본은 RUN 검사가 있어 "구버전 교체" 규칙에 걸리지 않고, 다른 세션을 계속 막음 (재현함)
+- 세션 모드에서 작업 여러 개를 한 커밋으로 묶는 경우가 남음(T-041 후 eval 4회 중 1회). 규칙·log.sh 경고까지만 있음
 
 ### 관찰
 - 2026-10-20 `scan.sh` (이 레포): 0건. `status.sh`: 소유 세션·활동 시각·통합 설정 표시 정상
@@ -39,10 +40,14 @@ last_retro: 2026-10-20T11:50
 - 2026-10-20 `scan.sh`/`status.sh`를 빈 JS 레포에: 정상 종료, 안내 메시지 정상
 - 2026-10-20 `eval.sh`: 4/5 → 5/5 (T-026)
 
+- 2026-10-20 eval --mode session(todo): 수정 전 LOG 역순·시각 조작, 5작업 1커밋, 심화 발굴 생략 정지. log.sh·finalstop.sh 후 todo 3회·wordcount 1회 중 위반 1건(2작업 1커밋)
+- 2026-10-20 eval 드라이버 3회: 8/8, 규칙 검사 전부 ok
+- 2026-10-20 claude -p --plugin-dir: frontmatter Stop 훅은 스킬을 호출한 세션에서만 동작
+
 ### 시나리오
-1. 1.8 사용자가 플러그인을 1.12로 업데이트하고 같은 레포에서 다시 실행: 레포의 훅 사본은 그대로 → 다른 세션 차단 버그가 남음 (T-027)
-2. 테스트가 없는 JS 레포에서 처음 실행: 규칙상 하네스부터 만들어야 하지만 평가로 확인할 수단 없음 (T-028)
-3. 유지보수자가 발굴 규칙을 고친 뒤 eval로 비교: 동작함. 예제가 하나라 한 종류의 결함만 측정 (T-028)
+1. 클라우드 세션 사용자가 CONFIG 없이 플러그인으로 처음 실행: 작업은 되지만 local이라 push 안 됨 → 컨테이너 회수 시 전부 사라짐 (T-046, P-002)
+2. 1.15 이하 사용자가 1.16+로 업데이트: 레포 훅 사본과 스킬 훅이 같이 돎 → 카운터 1회로 처리(T-031), 사본 제거 방법(T-032)
+3. 오래 도는 세션이 "할 일 없음"이라 판단: 이전엔 근거 없이 멈출 수 있었음 → finalstop.sh가 빠진 조건을 알려 줌(T-041, T-045)
 
 ## 심화 발굴
 2026-10-19 (T-018까지 완료 후 큐 비어 진행)

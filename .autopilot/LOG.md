@@ -289,3 +289,8 @@
 ## 2026-10-20T12:01 | T-045 | done | skill 1.20.1
 - 변경: assets/autopilot-stop.sh(block 이유에 finalstop.sh 안내), .claude/hooks 사본 갱신, tests/test_hook.sh(+2: 유효한 JSON, finalstop 언급), CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-20T12:08 | T-046 | done | skill 1.20.2
+- 발굴: ROADMAP 제품 절이 1.12 기준이라 갱신(기능 지도·빠진 것·약한 것·관찰·시나리오). 새 시나리오(클라우드 첫 실행)에서 local 모드 결과가 컨테이너와 함께 사라지는 문제 발견
+- 변경: SKILL.md Phase 0(클라우드+local이면 첫 진입에 한 줄 안내·LOG), scripts/status.sh(경고), tests/test_status.sh(+3), CHANGELOG. 제안 P-002(클라우드 기본값을 branch로)
+- 검증: validate PASS

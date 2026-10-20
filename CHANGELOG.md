@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- Cloud sessions with `integration: local`: the loop's commits live only in the container and are lost when it is reclaimed. Phase 0 now tells the person once on first entry (and logs it), and status.sh warns; CONFIG is still never changed by Claude
 
 ## 1.20.2 — 2026-10-20
 - The Stop hook's block message points to `finalstop.sh` when Claude believes nothing is left, so an early stop gets the list of missing conditions instead of only "keep going"
