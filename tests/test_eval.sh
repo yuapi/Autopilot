@@ -105,11 +105,16 @@ mkdir -p .autopilot; echo "args=$*" > .autopilot/args; echo "driver=${AUTOPILOT_
 touch .autopilot/RUN; sleep 2.5   # no LOG yet: the watcher must cope
 { echo "| ID | Type | Status | Attempts | Task | Done when | Source | Completed |"; echo "|---|---|---|---|---|---|---|---|"
   echo "| T-001 | fix | done | 1 | done <n> is off by one and marks the wrong item | t | baseline | |"; } > .autopilot/BACKLOG.md
+budget="$(printf '%s' "$*" | sed -n 's/.* for \([0-9][0-9]*\) tasks.*/\1/p')"
 for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
   [ -f .autopilot/STOP ] && { [ -n "${FAKE_KEEP_RUN:-}" ] || rm -f .autopilot/RUN; exit 0; }
+  if [ -z "${FAKE_IGNORE_BUDGET:-}" ] && [ -n "$budget" ] && [ "${logged:-0}" -ge "$budget" ]; then
+    printf 'Stopped after %s task(s) as asked\n' "$budget" > .autopilot/STOP; continue
+  fi
   if [ -z "${FAKE_HANG:-}" ]; then
     printf '\n## 2026-01-01T00:%02d | T-%03d | done | skill 0\n' "$i" "$i" >> .autopilot/LOG.md
     echo "$i" >> work.txt; git add -A >/dev/null 2>&1; git commit -qm "autopilot(T-$i): task" >/dev/null 2>&1
+    logged=$(( ${logged:-0} + 1 ))
   fi
   sleep 0.5
 done
@@ -121,7 +126,9 @@ check "session mode loads the working copy as a plugin" grep -q -- "--plugin-dir
 check "session mode allows the Skill tool (the Stop hook needs it)" grep -q "Skill" "$kept/.autopilot/args"
 check "session mode does not set AUTOPILOT_DRIVER" grep -qx "driver=unset" "$kept/.autopilot/env"
 check "no shell errors while the LOG does not exist yet" bash -c "! grep -q 'integer expression' <<<\"\$1\"" _ "$out"
-check "STOP written once 2 tasks are logged" grep -q "2 task(s) in the LOG → wrote STOP" <<<"$out"
+check "the prompt asks for the task budget" grep -q "for 2 tasks" "$kept/.autopilot/args"
+check "stopped on its own budget → ok" grep -q "ok      it ended on its task budget" <<<"$out"
+check "the eval did not need to write STOP" bash -c "! grep -q 'wrote STOP' <<<\"\$1\"" _ "$out"
 check "session ended on STOP → ok" grep -q "ok      the session ended after STOP, not on the timeout" <<<"$out"
 check "RUN removed → ok" grep -q "ok      RUN removed when it ended" <<<"$out"
 rm -rf "$kept"
@@ -208,5 +215,9 @@ else
   echo "  skip kv fixture checks (no go)"
 fi
 check "kv fixture listed" grep -qx kv <<<"$(bash "$EV" --fixture list)"
+
+out="$(FAKE_IGNORE_BUDGET=1 CLAUDE_BIN="$FAKES" bash "$EV" --mode session --iterations 2 2>&1)"
+check "budget ignored → the eval writes STOP after n+1 tasks" grep -q "3 task(s) in the LOG → wrote STOP" <<<"$out"
+check "budget ignored → FAILED" grep -q "FAILED  it ended on its task budget" <<<"$out"
 
 finish

@@ -376,3 +376,10 @@
 
 ## 2026-10-20T13:30 | - | discover | skill 1.26.0
 - T-057 실제 확인: claude -p "… for 2 tasks" --plugin-dir(todo 예제)에서 모델이 runlock.sh start --tasks 2를 쓰고 2작업(작업마다 커밋) 후 task.sh done이 STOP 작성, 훅이 세션을 놓아 줌, RUN 삭제
+
+## 2026-10-20T13:35 | - | release | skill 1.27.0
+- 1.27.0 릴리즈: release/1.27.0 → main, main → develop 역병합. 태그 대기: v1.27.0 (403, 누적 v1.11.0~v1.27.0)
+
+## 2026-10-20T13:40 | T-058 | done | skill 1.27.0
+- 변경: scripts/eval.sh(세션 모드 프롬프트 "for N tasks", 감시자는 N+1, "예산 또는 최종 정지로 끝남" 검사), tests/test_eval.sh(가짜 claude가 예산을 따르거나 무시, +4), README 2종, CHANGELOG
+- 검증: validate PASS. 실제 eval --mode session --iterations 2(todo): 38초, 11/11, 예산으로 스스로 멈춤, 규칙 검사 전부 ok
