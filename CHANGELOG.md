@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- State files with CRLF line endings (a Windows checkout) keep them: task.sh and archive.sh rewrote the whole file as LF, and log.sh appended LF lines
 - Fifth eval fixture `mono`: a monorepo whose CONFIG sets `scope: pkg/a`, with defects in both packages. New `nofile=` expectations fail when any commit changes a matching path
 
 ## 1.28.0 — 2026-10-20

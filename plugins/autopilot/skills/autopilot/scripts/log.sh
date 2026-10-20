@@ -34,7 +34,11 @@ f=.autopilot/LOG.md
 [ -f "$f" ] || cp "$here/assets/LOG.md" "$f" 2>/dev/null || echo "# LOG" > "$f"
 [ -z "$(tail -c 1 "$f")" ] || echo >> "$f"   # the file must end with a newline before appending
 header="## $(date +%Y-%m-%dT%H:%M) | $id | $status | skill $version"
-printf '\n%s\n%s' "$header" "$body" >> "$f"
+if head -1 "$f" | grep -q $'\r$'; then   # a CRLF file (Windows checkout) gets CRLF lines
+  printf '\r\n%s\r\n%s' "$header" "$(printf '%s' "$body" | sed 's/$/\r/')" >> "$f"; printf '\n' >> "$f"
+else
+  printf '\n%s\n%s' "$header" "$body" >> "$f"
+fi
 echo "$header"
 # One task = one commit: say so when the last commit names several task IDs (the entry is still written)
 if [ "$status" = done ]; then
