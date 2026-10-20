@@ -376,3 +376,20 @@
 
 ## 2026-10-20T13:30 | - | discover | skill 1.26.0
 - T-057 실제 확인: claude -p "… for 2 tasks" --plugin-dir(todo 예제)에서 모델이 runlock.sh start --tasks 2를 쓰고 2작업(작업마다 커밋) 후 task.sh done이 STOP 작성, 훅이 세션을 놓아 줌, RUN 삭제
+
+## 2026-10-20T13:35 | - | release | skill 1.27.0
+- 1.27.0 릴리즈: release/1.27.0 → main, main → develop 역병합. 태그 대기: v1.27.0 (403, 누적 v1.11.0~v1.27.0)
+
+## 2026-10-20T13:40 | T-058 | done | skill 1.27.0
+- 변경: scripts/eval.sh(세션 모드 프롬프트 "for N tasks", 감시자는 N+1, "예산 또는 최종 정지로 끝남" 검사), tests/test_eval.sh(가짜 claude가 예산을 따르거나 무시, +4), README 2종, CHANGELOG
+- 검증: validate PASS. 실제 eval --mode session --iterations 2(todo): 38초, 11/11, 예산으로 스스로 멈춤, 규칙 검사 전부 ok
+
+## 2026-10-20T13:43 | T-059 | done | skill 1.27.0
+- 관찰: 이 세션은 시작 때 동기화본 1.10.2를 로드. 계정 동기화본은 이미 1.27.0(generation 3, manifest.json). 새 세션부터 최신 버전 사용
+- 변경: README 2종 "업데이트" 절(claude plugin marketplace update / plugin update, 계정 동기화와 세션 버전, /autopilot:status)
+- 검증: validate PASS. 명령은 claude plugin --help로 확인
+- 판단: 이 레포의 .claude/hooks 사본은 유지(스킬 훅과 같이 돌아도 카운터 1회, 동기화된 계정 플러그인에서 skill hook 동작은 아직 직접 확인 못 함)
+
+## 2026-10-20T13:47 | T-060 | done | skill 1.27.0
+- 변경: scripts/eval.sh(--fixture all: 예제마다 같은 옵션으로 실행, 요약, 하나라도 실패하면 1, claude 없으면 3, --grade와 함께는 거부), tests/test_eval.sh(+11), CLAUDE.md, README 2종, CHANGELOG
+- 검증: validate PASS

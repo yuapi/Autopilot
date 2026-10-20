@@ -23,7 +23,7 @@ One task:
 
 1. `git checkout -b feature/<slug> origin/develop`
 2. Implement. When the skill, scripts or docs change, add a line under `## Unreleased` in `CHANGELOG.md`.
-3. `bash scripts/validate.sh` → check `Result: PASS` (tests included). If it fails, fix it or drop the change. When the change touches discovery rules in SKILL.md, also run `bash scripts/eval.sh` for every fixture (`--fixture list`) and put the scores before and after in the PR body.
+3. `bash scripts/validate.sh` → check `Result: PASS` (tests included). If it fails, fix it or drop the change. When the change touches discovery rules in SKILL.md, also run `bash scripts/eval.sh --fixture all` (every fixture, one summary) and put the scores before and after in the PR body.
 4. Commit following the commit rules below → `git push -u origin feature/<slug>`
 5. Open the PR (`feature/<slug>` → `develop`) with the change and verification result in the body, then **merge it yourself as a merge commit**.
 

@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 58
+next_id: 61
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -64,3 +64,6 @@ next_id: 58
 | T-055 | fix | done | 1 | Phase 0 작업 트리 정리가 진행 중 작업의 변경까지 stash해 Phase 2 "이전 작업 끝내기" 검사를 무력화 → in_progress 행이 있으면 stash하지 않고 끝내거나 되돌리기 | SKILL.md 규칙 문장과 실행 검사(test_skill_rules) | 심화 발굴 1단계(규칙 정독: Phase 0 단계 2 ↔ Phase 2 첫 검사 충돌) | 2026-10-20 |
 | T-056 | enhance | done | 1 | status.sh: 지금 진행 중인 작업(ID·제목·시작 후 경과 시간, .autopilot/.task 기준) 표시 | 진행 중/없음 테스트 | 심화 발굴 3단계(관찰성: "지금 뭐 하는 중"에 개수만 나옴) | 2026-10-20 |
 | T-057 | feature | done | 1 | 세션 모드 작업 수 한도: runlock.sh start --tasks N이 RUN에 기록, task.sh done이 N개째에 STOP 작성, status.sh 표시 | runlock·task·status 테스트, SKILL.md 규칙 | 시나리오: "3개만 하고 멈춰" — 드라이버엔 최대 실행 수가 있는데 세션 모드엔 없음 | 2026-10-20 |
+| T-058 | test | done | 1 | eval --mode session이 "N개 작업" 예산으로 요청하고, 예산으로 끝났는지(STOP이 task.sh가 쓴 것) 채점. 감시자는 N+1에서만 개입 | 가짜 claude 테스트, 실제 실행 1회 | T-057: 예산 기능이 eval로 계속 측정되지 않음 | 2026-10-20 |
+| T-059 | docs | done | 1 | README 2종 "업데이트" 절: 계정 플러그인은 자동 동기화되지만 실행 중인 세션은 시작 때 버전을 유지 → 새 세션 시작, /autopilot:status로 버전 확인 | README 2종 | 관찰: 이 세션은 1.10.2를 로드했고 계정 동기화본은 1.27.0(generation 3) | 2026-10-20 |
+| T-060 | enhance | done | 1 | eval.sh --fixture all: 모든 예제를 같은 옵션으로 돌리고 예제별 점수·규칙 결과 요약, 하나라도 실패하면 exit 1 | 가짜 claude 테스트, CLAUDE.md 안내 갱신 | CLAUDE.md: 발굴 규칙 변경 시 모든 예제 eval — 지금은 명령 4개 | 2026-10-20 |

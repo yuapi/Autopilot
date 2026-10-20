@@ -7,6 +7,10 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.27.1 — 2026-10-20
+- `eval.sh --fixture all` runs every fixture with the same options and prints one summary of the scores (exit 1 if any fails); CLAUDE.md points to it for discovery rule changes
+- `eval.sh --mode session` asks for `--iterations` tasks and checks that the run stopped itself on that task budget; the eval writes STOP only one task later, as a safety net
+
 ## 1.27.0 — 2026-10-20
 - Task budget for session mode: `runlock.sh start --tasks N` (when the person asks for N tasks) records it in RUN, `task.sh done` writes STOP after the Nth completed task, and status.sh shows the progress. Until now only the driver could be limited
 
