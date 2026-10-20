@@ -1,42 +1,42 @@
-# 버전 규칙
+# Versioning
 
-형식: `MAJOR.MINOR.PATCH` (스킬과 플러그인이 같은 번호를 쓴다)
+Format: `MAJOR.MINOR.PATCH` (the skill and the plugin share the number)
 
-| 구분 | 언제 | 예 |
+| Kind | When | Examples |
 |---|---|---|
-| **MAJOR** | `.autopilot/` 상태 파일(BACKLOG/ROADMAP/LOG/features) 형식이 바뀌어 기존 상태와 호환되지 않음 | BACKLOG 열 구조 변경, 상태 값 이름 변경 |
-| **MINOR** | 루프 규칙·발굴 소스·선택 우선순위·중단 조건 등 SKILL.md의 동작 규칙 변경 | 새 작업 유형, 큐 비율 변경, 실행 모드 추가 |
-| **PATCH** | 스크립트 수정, 문구 정리, 버그 수정, 문서·매니페스트 정리 | 드라이버 버그, 오탈자, README |
+| **MAJOR** | The format of the `.autopilot/` state files (BACKLOG/ROADMAP/LOG/features) changes so existing state no longer works | Changing the BACKLOG columns, renaming status values without accepting the old ones |
+| **MINOR** | SKILL.md behavior rules change: loop rules, discovery sources, selection priority, stop conditions | A new task type, a different queue mix, a new run mode |
+| **PATCH** | Script fixes, wording, bug fixes, docs and manifest cleanups | A driver bug, a typo, the README |
 
-애매하면 큰 쪽을 고른다.
+When unsure, pick the larger one.
 
-## 버전을 바꾸는 유일한 방법
+## The only way to change the version
 
-feature 작업은 버전을 올리지 않고 `CHANGELOG.md`의 `## Unreleased` 아래에 한 줄을 쓴다. 버전은 `release/<ver>` 브랜치에서 올린다.
+Feature work does not bump the version; it adds a line under `## Unreleased` in `CHANGELOG.md`. The version is bumped on a `release/<ver>` branch.
 
 ```bash
-bash scripts/bump.sh <major|minor|patch> ["<추가 요약>"]
+bash scripts/bump.sh <major|minor|patch> ["<extra summary>"]
 ```
 
-- `## Unreleased`에 항목이 있으면 그 제목을 `## x.y.z — YYYY-MM-DD`로 바꾸고, 빈 `## Unreleased`를 새로 위에 둔다. 요약을 주면 항목 끝에 덧붙인다.
-- `## Unreleased`가 없거나 비어 있으면 요약이 필수이고, 그 요약으로 새 항목을 만든다.
+- If `## Unreleased` has items, its heading becomes `## x.y.z — YYYY-MM-DD` and a new empty `## Unreleased` goes above it. A summary, if given, is appended to the items.
+- If `## Unreleased` is missing or empty, the summary is required and becomes the new entry.
 
-`bump.sh`가 건드리는 곳:
+What `bump.sh` touches:
 
-| 파일 | 위치 |
+| File | Where |
 |---|---|
 | `plugins/autopilot/skills/autopilot/SKILL.md` | frontmatter `metadata.version` |
-| 〃 | 본문 `**버전 x.y.z**` |
-| 〃 | LOG 형식 예시의 `skill x.y.z` |
+| 〃 | body `**Version x.y.z**` |
+| 〃 | `skill x.y.z` in the LOG format example |
 | `plugins/autopilot/.claude-plugin/plugin.json` | `version` |
 | `CHANGELOG.md` | `## Unreleased` → `## x.y.z — YYYY-MM-DD` |
 
-커밋은 하지 않는다.
+It does not commit.
 
-## 세 곳이 항상 같아야 하는 이유
+## Why these must always match
 
-- **SKILL.md `metadata.version`** — 스킬이 매 LOG 항목에 이 번호를 남긴다. 사용자의 `.autopilot/LOG.md` 를 보고 어느 규칙으로 돌았는지 추적하는 유일한 근거다.
-- **plugin.json `version`** — Claude Code가 플러그인 업데이트 여부를 이 값으로 판단한다. 바뀌지 않으면 사용자는 새 스킬을 받지 못하고, 잘못 바뀌면 같은 내용이 다른 버전으로 배포된다.
-- **CHANGELOG 최상단** — 릴리스 노트(`release.sh` 가 이 섹션을 GitHub Release 본문으로 쓴다)와 `.skill` 파일 이름이 이 번호를 따른다.
+- **SKILL.md `metadata.version`** — the skill writes this number on every LOG entry. It is the only way to tell from a user's `.autopilot/LOG.md` which rules a run followed.
+- **plugin.json `version`** — Claude Code decides whether to update the plugin from this value. If it does not change, users never receive the new skill; if it changes wrongly, the same content ships under different versions.
+- **The top of the CHANGELOG** — the release notes (`release.sh` uses this section as the GitHub Release body) and the `.skill` file name follow this number.
 
-하나라도 어긋나면 "LOG에 찍힌 버전 ≠ 설치된 버전 ≠ 릴리스 노트" 가 되어 버그 재현이 불가능해진다. `validate.sh` 가 다섯 값(본문 표기·LOG 예시 포함)을 비교해 다르면 FAIL 한다.
+If any of them differ, "the version in the LOG ≠ the installed version ≠ the release notes" and bugs can no longer be reproduced. `validate.sh` compares all five values (including the body marker and the LOG example) and fails if they differ.

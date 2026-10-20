@@ -1,94 +1,94 @@
-# SKILL.md 설계 의도
+# Why SKILL.md is the way it is
 
-SKILL.md를 고치기 전에 읽는다. 규칙의 "무엇"은 SKILL.md에 있고, 여기에는 "왜"만 있다. 변경이 아래 의도 중 하나라도 깨면 다시 생각한다.
+Read this before changing SKILL.md. SKILL.md says *what* the rules are; this file only says *why*. If a change breaks any of the intentions below, think again.
 
-## 왜 작업 1개 단위인가
+## Why one task at a time
 
-- **실패 범위를 작게.** 검증 실패 시 전부 롤백하는데, 단위가 크면 잘 된 부분까지 버린다. 작게 쪼개야 롤백이 싸다.
-- **상태를 파일로 넘기기 위해.** 한 작업이 끝날 때마다 BACKLOG·LOG에 기록되므로 세션이 끊기거나 컨텍스트가 바뀌어도 다음 작업이 같은 지점에서 이어진다. 여러 작업을 머릿속에 들고 가면 그 상태가 컨텍스트와 함께 사라진다.
-- **사람이 사후 검토할 수 있게.** 작업 하나 = 커밋 하나라서 사람이 나중에 커밋 단위로 되돌리거나 고를 수 있다.
-- **1~2시간 분량 + 검증 가능한 완료 기준**을 요구하는 것도 같은 이유다. 완료 기준이 모호하면 검증 단계가 판단을 못 하고, "거의 됐다" 커밋이 생긴다.
+- **Keep failures small.** A failed verification rolls back everything, so a large unit throws away the parts that worked. Small units make rollback cheap.
+- **Hand state over through files.** Every finished task is written to BACKLOG and LOG, so the next task continues from the same point even if the session breaks or the context changes. Carrying several tasks in your head loses that state together with the context.
+- **Let people review afterwards.** One task = one commit, so people can later revert or pick commit by commit.
+- **1–2 hours of work with verifiable completion criteria** is required for the same reason. With vague criteria the verification step cannot decide, and "almost done" commits appear.
 
-## 왜 베이스라인 명령을 기록하고 불안정 테스트를 빼는가
+## Why baseline commands are recorded and flaky tests excluded
 
-- 검증은 "베이스라인보다 나빠지지 않았나"의 비교다. 비교 대상이 매번 다르게 발견되면 비교가 무의미하므로, 한 번 찾은 명령을 ROADMAP에 적고 재사용한다. 레포 문서의 명령을 생태계 추측보다 먼저 보는 것은 사람이 정한 방법이 가장 정확하기 때문이다.
-- 불안정 테스트를 비교에 넣으면 멀쩡한 작업이 무작위로 롤백되고, 3회 실패 규칙에 걸려 좋은 작업이 blocked된다. 두 번 돌려 결과가 바뀌는 테스트는 따로 기록해 비교에서 빼고, 그것을 고치는 일을 별도 작업으로 만든다.
-- 테스트가 없는 레포에서는 "나빠지지 않았다"를 확인할 수단이 없어 모든 작업이 검증 없이 커밋된다. 그래서 최소 하네스를 먼저 만든다. 이것은 테스트 개수 제한(사이클당 2개)의 취지인 "쉬운 테스트 쌓기"와 다르므로 제한에서 뺀다.
+- Verification is a comparison: "is anything worse than the baseline?" If the commands are rediscovered differently every time, the comparison means nothing, so the commands found once are written in the ROADMAP and reused. Repository docs come before ecosystem guesses because what the people in that repository decided is the most accurate.
+- Flaky tests in the comparison roll back good work at random, and the 3-failure rule then blocks good tasks. A test whose result changes between two runs is recorded separately, left out of the comparison, and fixing it becomes a task of its own.
+- In a repository without tests there is no way to check "nothing got worse", so every task would be committed unverified. That is why a minimal harness comes first. This is different from the "piling up easy tests" the per-cycle `test` limit guards against, so it is exempt from that limit.
 
-## 왜 제안(PROPOSALS)을 따로 두는가
+## Why proposals (PROPOSALS) exist
 
-"사람에게 질문하지 않는다"와 "공개 인터페이스를 바꾸지 않는다"는 루프를 안전하게 하지만, 그대로 두면 가치가 큰 아이디어가 조용히 버려진다. 제안은 질문이 아니라 비동기 메모다. 루프는 답을 기다리지 않고 계속 돌고, 사람은 원할 때 상태 칸 하나만 바꿔 결정한다. 채택된 제안의 범위 안에서만 인터페이스 변경을 허용하는 것은 사람의 명시적 승인이 있는 변경만 하겠다는 원래 원칙을 지키면서 막힌 길을 여는 방법이다.
+"Never ask a person" and "never change a public interface" keep the loop safe, but on their own they silently drop valuable ideas. A proposal is not a question but an asynchronous note. The loop keeps running without waiting, and people decide whenever they like by changing one status cell. Allowing interface changes only within an adopted proposal's scope keeps the original principle — change only what a person explicitly approved — while opening the road that was blocked.
 
-제안 쓰기를 실질 작업으로 세지 않는 이유: 제안은 언제나 더 만들 수 있으므로 루프 연료가 되면 "멈추지 못함"이 다시 생긴다. 사이클당 3개 제한도 같은 이유다.
+Writing proposals does not count as substantive work because more proposals can always be written; if they fueled the loop, "cannot stop" would come back. The limit of 3 per cycle exists for the same reason.
 
-## 왜 회고를 하는가
+## Why the retrospective
 
-상태 파일 덕분에 루프는 무엇을 했는지는 기억하지만, 왜 실패했는지에서 배우지는 못한다. 같은 이유(너무 큰 작업, 모호한 완료 기준, 환경 제약)로 계속 실패하면 3회 실패 규칙이 작업을 하나씩 blocked로 만들 뿐 원인은 그대로다. 10작업마다 실패를 분류해 "배운 것"이라는 짧은 레포 전용 규칙으로 남기면, 다음 발굴과 구현이 그 규칙을 따른다. 15줄 제한은 배운 것이 쌓여 매 작업 읽는 비용이 커지거나 오래된 규칙이 판단을 흐리는 것을 막는다. blocked 작업을 그대로 다시 열지 않고 쪼개거나 접게 한 것은 회고가 실패한 작업을 되살리는 통로가 되지 않게 하기 위해서다.
+The state files let the loop remember what it did, but not learn from why it failed. When tasks keep failing for the same reason (too large, vague criteria, environment limits), the 3-failure rule only blocks them one by one and the cause stays. Classifying failures every 10 tasks and keeping short, repository-specific rules under "Learned" makes later discovery and implementation follow them. The 15-line limit keeps the lessons from growing into a cost paid on every task, and keeps stale rules from clouding judgment. Blocked tasks are split or retired rather than reopened unchanged so the retrospective does not become a way to revive failed work.
 
-## 왜 실질/보조를 나누는가
+## Why substantive and auxiliary work are separated
 
-자율 루프의 가장 흔한 실패는 "멈추지 못함"이다. 진짜 할 일이 떨어져도 린트·문서·리팩토링은 언제나 만들어낼 수 있으므로, 이것들을 루프 연료로 허용하면 의미 없는 커밋이 끝없이 쌓인다. 그래서:
+The most common failure of an autonomous loop is "cannot stop". Lint, docs and refactoring can always be produced even when real work has run out, so letting them fuel the loop piles up meaningless commits forever. Therefore:
 
-- 동작을 바꾸는(결함 수정, 기능 추가·개선) 작업만 루프를 이어갈 자격이 있다.
-- 형태만 바꾸는 작업은 실질 작업에 **곁들여서만** 허용한다.
+- Only tasks that change behavior (fixing defects, adding or improving features) may keep the loop going.
+- Tasks that only change form are allowed **only alongside** substantive tasks.
 
-새 작업 유형을 추가할 때는 "이것만으로 루프가 무한히 돌 수 있는가?"를 묻는다. 그렇다면 보조다.
+When adding a new task type, ask: "Could the loop run forever on this alone?" If yes, it is auxiliary.
 
-## 왜 제품 축이 필요한가
+## Why the product axis is needed
 
-유지보수 축(테스트·린트·TODO)만 돌리면 커버리지는 오르지만 소프트웨어는 나아지지 않는다. 사용자가 기대하는 기능이 빠져 있는지는 코드 마커로는 안 보이고, "이 소프트웨어가 무엇인가"를 먼저 써봐야 보인다. 큐의 절반 이상을 제품 축으로, `test` 를 사이클당 2개로 제한한 것은 루프가 쉬운 쪽(테스트 추가)으로 쏠리는 경향을 막기 위해서다.
+Running only the maintenance axis (tests, lint, TODOs) raises coverage but does not make the software better. Whether features users expect are missing cannot be seen from code markers; it shows only after writing down what the software is. Requiring at least half the queue from the product axis and capping `test` at 2 per cycle counters the loop's tendency to drift toward the easy side (adding tests).
 
-## 왜 규칙은 영어 하나, 출력은 사용자의 언어인가
+## Why the rules exist once in English while output follows the user's language
 
-- 규칙(SKILL.md)을 언어별로 여러 벌 두면 하나를 고칠 때 나머지가 어긋나고, 어긋난 규칙은 루프의 동작을 언어마다 다르게 만든다. 그래서 규칙은 영어 한 벌만 둔다. 영어는 모델이 지시를 가장 안정적으로 따르는 언어이고, 공개 배포에서 가장 많은 사람이 읽을 수 있다.
-- 사람이 읽는 기록(ROADMAP·LOG·제안·STOP 요약)은 그 레포를 쓰는 사람의 언어여야 쓸모가 있다. `language`를 CONFIG(사람이 정하는 파일)에 두고, `auto`일 때는 기존 상태 파일의 언어를 가장 먼저 따른다. 실행마다 언어가 바뀌면 한 파일에 여러 언어가 섞이기 때문이다.
-- 스크립트가 읽는 값(상태·유형·제안 상태·설정 키)은 번역하지 않는다. 번역하면 status.sh·archive.sh 같은 도구가 언어마다 깨진다. 1.8.x 이전의 한국어 제안 상태(`제안`·`채택` 등)는 같은 뜻으로 계속 인식해 기존 `.autopilot/`이 깨지지 않게 했다. 그래서 이 변경은 MAJOR가 아니다.
+- Keeping the rules (SKILL.md) in several languages means fixing one leaves the others out of sync, and out-of-sync rules make the loop behave differently per language. So the rules exist once, in English. English is the language models follow instructions in most reliably, and the one most people can read in a public distribution.
+- Notes people read (ROADMAP, LOG, proposals, the STOP summary) are useful only in the language of the people using that repository. `language` lives in CONFIG (a file people set), and `auto` follows the language of the existing state files first, because switching language between runs would mix languages in one file.
+- Values scripts read (statuses, types, proposal statuses, config keys) are never translated; translating them would break tools like status.sh and archive.sh per language. The Korean proposal statuses of 1.8.x and earlier (`제안`, `채택`, …) are still understood with the same meaning so existing `.autopilot/` directories keep working. That is why this change is not MAJOR.
 
-## 왜 직접 써보고 시나리오를 걷는가
+## Why it runs the software and walks through scenarios
 
-코드를 읽어 만든 기능 지도는 "있다/없다"는 알려주지만 "쓸 만하다"는 알려주지 않는다. 테스트는 작성자가 예상한 입력만 확인한다. 실제 결함의 상당수는 예상 밖 입력(빈 값, 없는 파일, 공백 경로)과 문서·동작 불일치에서 나오고, 이것들은 실행해 봐야만 보인다. 사용 시나리오는 개별 기능은 멀쩡해도 이어 붙였을 때 막히는 지점(설정 단계 누락, 다음 할 일을 알려주지 않는 출력)을 찾는다. 사람 없이 "무엇이 불편한가"를 알아내는 유일한 방법이 사용자처럼 써보는 것이다.
+A feature map built from reading code tells you what exists, not whether it is usable. Tests check only the inputs their authors expected. Many real defects come from unexpected inputs (empty values, missing files, paths with spaces) and from mismatches between docs and behavior, and they only show when you run the software. User scenarios find the points where individual features work but get stuck when chained (a missing setup step, output that does not say what to do next). Using the software like a user is the only way to learn what is inconvenient without a human.
 
-실행에는 부작용이 따르므로 임시 디렉터리·타임아웃·외부 호출 금지를 함께 둔다. 실행할 수 없으면 정적 읽기로 대신하되 그 사실을 남겨, 나중에 환경이 갖춰지면 다시 시도할 수 있게 한다.
+Running things has side effects, so temporary directories, timeouts and no external calls come with it. If it cannot be run, reading the code takes its place, and that fact is recorded so it can be tried again once the environment allows.
 
-## 왜 이슈 트래커를 매 작업마다 보는가
+## Why the issue tracker is checked on every task
 
-자율 루프가 스스로 찾는 일은 추측이다. 사람이 이슈로 남긴 요구는 실제 사용자가 겪은 문제라서 그보다 확실하다. 그래서 7일 주기 발굴을 기다리지 않고 매 작업마다 새 이슈만 확인한다(`last_issue_check` 이후만 보므로 비용이 작다). 사람은 이슈를 쓰는 것만으로 루프를 조종할 수 있고, 별도 설명이 필요 없다.
+What an autonomous loop finds on its own is a guess. What people wrote in issues are problems real users hit, so they are more certain. That is why new issues are checked on every task instead of waiting for the 7-day discovery cycle (only issues since `last_issue_check`, so it is cheap). People can steer the loop just by writing issues, with no other explanation.
 
-이슈 본문은 누구나 쓸 수 있는 외부 입력이다. 그 안의 문장을 지시로 따르면 아무나 루프에 명령을 내릴 수 있게 된다. 그래서 본문은 "무엇이 문제인가"를 판단하는 데이터로만 쓰고, 작업 범위와 허용 동작은 스킬 규칙으로만 정한다. 이슈에 댓글을 달거나 닫지 않는 것도 같은 이유로, 외부에 영향을 주는 동작은 통합 정책이 허락할 때만 한다.
+Issue text is external input anyone can write. Following its sentences as instructions would let anyone command the loop. So the text is used only as data for judging what the problem is, and the scope of work and allowed actions come from the skill's rules alone. Not commenting on or closing issues follows the same reasoning: actions with external effects happen only when the integration policy allows them.
 
-## 최종 중단 조건의 근거
+## Why the final stop conditions are what they are
 
-- **실질 작업 0개 → 중단.** 할 일이 없을 때 멈추는 것이 유일하게 정당한 자발적 종료다. 단, 제품 검토를 건너뛰고 "없다"고 하는 것을 막기 위해 ROADMAP에 "빠진 것·약한 것이 비어 있음"을 명시해야만 0개로 판정할 수 있다. 게으른 종료를 막는 장치다.
-- **0개 판정 전 심화 발굴 4단계.** 정적 스캔 한 번은 "읽어서 보이는 것"만 찾는다. 실행·새 시나리오·품질 속성 점검표·외부 신호까지 확인해야 "할 일이 없다"는 판단이 믿을 만해진다. 할 일이 정말 바닥났을 때 멈추는 것은 맞지만, 덜 찾아서 멈추는 것은 조기 종료와 같다. 단계마다 결과를 ROADMAP에 남기게 한 것은 건너뛰기를 막기 위해서다.
-- 심화 발굴은 루프를 억지로 늘리는 장치가 아니다. 단계에서 나온 것도 실질 작업 기준(동작이 바뀌는가)을 통과해야 큐에 들어간다. 보조 작업만 나오면 여전히 중단이다.
-- **반복 실패(10회 중 7회) → 중단.** 환경이 깨졌거나 루프가 감당 못 하는 상태다. 계속 돌면 비용만 쓰고 롤백만 반복한다.
-- **작업별 3회 실패 → blocked.** 한 작업이 루프 전체를 붙잡지 않게 한다.
-- **같은 파일만 5번 연속 → 제외.** 한 곳을 맴도는 진동을 끊는다.
-- **그 외에는 멈추지 않는다.** 특히 "하나 했으니 이쯤에서" 같은 자발적 종료는 금지다. 무인 실행에서 조기 종료는 사람이 다시 깨워야 한다는 뜻이고, 그건 이 스킬의 존재 이유를 부정한다. STOP 파일이 유일한 종료 신호인 이유다.
+- **Zero substantive tasks → stop.** Stopping when there is nothing to do is the only legitimate voluntary exit. To keep it from skipping the product review and declaring "nothing", zero can only be concluded after the ROADMAP states that "Missing" and "Weak" are empty. It guards against lazy exits.
+- **Four stages of deep discovery before concluding zero.** One static scan finds only what reading shows. The judgment "nothing left to do" becomes trustworthy only after running the software, new scenarios, the quality attribute checklist and external signals. Stopping when the work has truly run out is right; stopping because you looked too little is the same as stopping early. Recording each stage's result in the ROADMAP prevents skipping stages.
+- Deep discovery is not a device to stretch the loop. What it finds must still pass the substantive test (does behavior change) to enter the queue. If only auxiliary work comes out, the loop still stops.
+- **Repeated failure (7 of 10) → stop.** The environment is broken or the loop cannot handle the situation. Continuing only spends money on rollbacks.
+- **3 failures per task → blocked.** One task must not hold the whole loop.
+- **Same file 5 times in a row → excluded.** Breaks oscillation around one spot.
+- **Otherwise it never stops.** In particular, voluntary exits like "that's one done, good enough" are forbidden. In unattended runs an early exit means a person has to wake the loop again, which defeats the purpose of this skill. That is why the STOP file is the only exit signal.
 
-## 보수적 기본값
+## Conservative defaults
 
-- 질문하지 않는 대신 애매하면 보수적으로 고르고 LOG에 사유를 남긴다 — 사람이 없으니 되돌리기 쉬운 쪽이 안전하다.
-- 공개 인터페이스는 추가만, 변경·삭제 금지 — 자율 루프가 사용자 코드를 깨는 가장 큰 경로가 시그니처 변경이다.
-- 기본은 push 금지(`local`) — 모든 결과가 로컬에 남아 사람이 검토 후 내보내도록. 이 레포 README의 안전 고지가 이 전제에 기대고 있다.
-- 결과를 밖으로 내보내는 것(`branch`·`pr`·자동 머지·자동 릴리스)은 사람이 `.autopilot/CONFIG.md`로 명시적으로 고를 때만 한다. 그 파일을 Claude가 만들거나 바꾸지 않는 것은 권한 확대를 루프 스스로 할 수 없게 하기 위해서다. 커밋된 파일이므로 누가 언제 바꿨는지 기록에 남는다.
-- 레포의 관례(CONTRIBUTING 등)를 CONFIG의 기본값보다 우선하는 것은 그 레포의 사람들이 이미 정한 방식이 가장 덜 놀라운 결과이기 때문이다. 릴리스도 문서화된 절차가 있을 때만 자동으로 한다. 절차를 지어내면 버전·태그가 사람의 기대와 어긋난다.
-- reset --hard·force push·원격 브랜치 삭제·태그 재작성은 어떤 모드에서도 금지 — 되돌릴 수 없는 손실을 만든다.
+- Instead of asking, pick the conservative option when unsure and write the reason in the LOG — with nobody around, the easily reversible choice is the safe one.
+- Public interfaces may only grow, never change or shrink — signature changes are the main way an autonomous loop breaks users' code.
+- No push by default (`local`) — all results stay local so people can review before publishing. The safety notice in this repository's README relies on this.
+- Publishing results (`branch`, `pr`, automatic merge, automatic release) happens only when people explicitly choose it in `.autopilot/CONFIG.md`. Claude never creates or edits that file so the loop cannot widen its own permissions. It is a committed file, so who changed it and when stays on record.
+- The repository's conventions (CONTRIBUTING etc.) win over CONFIG defaults because what the people in that repository already decided is the least surprising result. Releases are automatic only when a documented procedure exists; invented procedures would produce versions and tags people do not expect.
+- reset --hard, force push, deleting remote branches and rewriting tags are forbidden in every mode — they cause losses that cannot be undone.
 
-## 세션 연속 모드 vs 드라이버 모드
+## Session mode vs driver mode
 
-| | 세션 연속 | 드라이버 |
+| | Session | Driver |
 |---|---|---|
-| 필요 조건 | 없음 (클라우드 세션 가능) | 터미널, `claude` CLI |
-| 컨텍스트 | 작업이 쌓이며 길어짐 | 작업마다 새로 시작 |
-| 판단 품질 | 긴 실행에서 저하 가능 | 일정 |
-| 조기 종료 위험 | 있음 → Stop 훅으로 보강 | 셸 루프가 재호출하므로 낮음 |
-| 권한 | 세션 권한 그대로 | 허용 목록 기본, skip은 opt-in |
+| Requirements | none (works in cloud sessions) | terminal, `claude` CLI |
+| Context | grows as tasks pile up | fresh for every task |
+| Judgment | may degrade in long runs | steady |
+| Early-exit risk | yes → backed by the Stop hook | low, the shell loop calls again |
+| Permissions | the session's own | allowlist by default, skip is opt-in |
 
-- 세션 연속 모드가 기본인 이유: 터미널 없는 환경에서도 동작해야 하고, 설치 직후 바로 쓸 수 있어야 한다.
-- 그 대가로 컨텍스트가 길어지므로 "매 작업 시작 시 상태 파일을 다시 읽는다, 기억을 믿지 않는다"는 규칙이 있다. 이 규칙을 지우면 세션 연속 모드는 긴 실행에서 무너진다.
-- 매 작업 상태를 다시 읽는 규칙은 상태 파일이 커질수록 비싸진다. 수백 작업 뒤에는 LOG·BACKLOG 전체가 컨텍스트를 채워 판단에 쓸 자리를 빼앗는다. 그래서 규칙에 필요한 범위(최근 LOG 20개, 열린 작업)만 읽고, 오래된 기록은 아카이브로 옮긴다. 옮기기는 스크립트가 해서 Claude가 기록을 고쳐 쓰는 일이 없게 한다. 중복 확인은 아카이브를 grep해 기록을 잃지 않는다.
-- Stop 훅은 규칙만으로 막지 못하는 조기 종료에 대한 보험이다. 훅 설치가 막혀도 규칙만으로 진행하도록 한 것은 훅을 필수 의존성으로 만들지 않기 위해서다.
-- 훅은 `.autopilot/RUN`이 있을 때만 동작한다. 훅 설정은 커밋되어 레포에 남지만 STOP은 gitignore되므로, "STOP이 없으면 막는다"만으로는 루프가 끝난 뒤의 평소 세션과 새 클론까지 가둔다. 실행 중이라는 사실을 별도 마커로 표시해야 훅이 루프에만 작용한다.
-- 훅은 LOG·커밋 변화 없이 3회 연속 막으면 스스로 STOP을 쓴다. 권한 거부처럼 Claude가 작업을 진행할 수 없는 상태에서 무한히 막으면 비용만 쓰고 아무것도 나아지지 않는다. "멈추지 않는다"는 진척이 있는 동안의 원칙이다.
-- 드라이버가 기본 권한을 허용 목록으로 둔 것은 무인 반복 실행에서 권한 우회가 기본값이면 안 되기 때문이다.
+- Session mode is the default because it must work without a terminal and right after installation.
+- The price is a growing context, hence the rule "re-read the state files at the start of every task; do not trust memory". Remove that rule and session mode falls apart in long runs.
+- Re-reading the state every task gets expensive as the files grow. After hundreds of tasks the whole LOG and BACKLOG would fill the context and crowd out room for judgment. So only the range the rules need (the last 20 LOG entries, open tasks) is read and old records are moved to archives. A script does the moving so Claude never rewrites records. Duplicate checks grep the archives so nothing is lost.
+- The Stop hook is insurance against early exits the rules alone cannot prevent. Continuing on the rules alone when the hook cannot be installed keeps the hook from becoming a hard dependency.
+- The hook acts only while `.autopilot/RUN` exists. The hook settings are committed and stay in the repository while STOP is gitignored, so "block when there is no STOP" alone would trap ordinary sessions and fresh clones after the loop has ended. Marking "running" separately makes the hook act only on the loop.
+- After 3 consecutive blocks with no change to the LOG or commits, the hook writes STOP itself. Blocking forever in a state where Claude cannot make progress (such as permission denials) only spends money and improves nothing. "Never stop" is a principle for while progress is being made.
+- The driver defaults to an allowlist because unattended repeated runs must not bypass permissions by default.

@@ -20,7 +20,7 @@ Merged head branches are deleted automatically (repository setting). Never open 
 
 1. Branch from `develop`: `git checkout -b feature/<topic> develop`
 2. Make your change and add a line under `## Unreleased` in `CHANGELOG.md`.
-3. Validate locally: `bash scripts/validate.sh` (must print `결과: PASS`; it also runs `tests/`).
+3. Validate locally: `bash scripts/validate.sh` (must print `Result: PASS`; it also runs `tests/`).
 4. Commit using Conventional Commits (`feat(skill): ...`, `fix(hook): ...`) and open a PR against `develop`.
 
 Version numbers are **not** bumped in feature PRs. They are bumped on the release branch.
