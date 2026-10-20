@@ -20,6 +20,8 @@
 #   skip                : --dangerously-skip-permissions. Dedicated machines/containers only. May be refused as root.
 
 set -u
+PY="$(command -v python3 || command -v python || true)"   # Windows Git Bash often has only python
+[ -n "$PY" ] || { echo "[autopilot] needs Python 3 on PATH (python3 or python)" >&2; exit 1; }
 MAX_ITER="${1:-0}"
 case "$MAX_ITER" in
   ''|*[!0-9]*) echo "[driver] max runs must be a non-negative integer (0 = unlimited): $MAX_ITER" >&2; exit 1;;
@@ -52,7 +54,7 @@ if [ -f "$LOCK" ] && kill -0 "$(cat "$LOCK" 2>/dev/null)" 2>/dev/null; then
   exit 1
 fi
 if [ -f .autopilot/RUN ] && [ ! -f .autopilot/STOP ] && \
-   python3 -c 'import os,sys,time; sys.exit(0 if time.time()-os.path.getmtime(".autopilot/RUN") < int(sys.argv[1])*60 else 1)' "${AUTOPILOT_RUN_STALE_MIN:-120}" 2>/dev/null; then
+   "$PY" -c 'import os,sys,time; sys.exit(0 if time.time()-os.path.getmtime(".autopilot/RUN") < int(sys.argv[1])*60 else 1)' "${AUTOPILOT_RUN_STALE_MIN:-120}" 2>/dev/null; then
   echo "[driver] a session-mode autopilot loop is running in this repository (.autopilot/RUN). Let it finish or create .autopilot/STOP." >&2
   exit 1
 fi
