@@ -219,3 +219,16 @@
 - 근거: 이 세션에 로드된 플러그인 스킬이 1.10.2였는데 레포는 1.15 규칙으로 돌고 있었음. 사용자는 알 방법이 없음
 - 변경: scripts/status.sh(Skill: 버전, 새 버전 LOG 경고), tests/test_status.sh(+4), SKILL.md 상태 확인 절, README 2종, CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-20T11:40 | - | release | skill 1.18.0
+- 1.18.0 릴리즈: release/1.18.0 → main, main → develop 역병합. 태그 대기: v1.18.0 (403). release.sh --catch-up --dry-run이 v1.11.0~v1.18.0 9개를 올바른 커밋에 매핑함을 확인
+
+## 2026-10-20T11:45 | T-036 | done | skill 1.18.0
+- 발굴: 스크립트 오류 입력(bump/release/eval) 이상 없음. 통합 정책 정독에서 결함: merge: auto는 CI 통과를 요구하지만 CI가 돌고 있으면 PR을 열어 두고 넘어가며, 그 PR로 돌아오는 규칙이 없음 → 영원히 열림, 이후 작업은 그 파일을 피함
+- 변경: SKILL.md PR 규칙(자기 open PR 재확인), docs/skill-design.md(근거), tests/test_skill_rules.sh(+3), CHANGELOG
+- 검증: validate PASS
+
+## 2026-10-20T11:50 | - | retro | skill 1.18.0
+- 범위: T-027~T-036 (10건). done 10 / failed 0 / blocked 0. 유형: feature 3, enhance 4, fix 3. 출처: 탐색 실행 3, 시나리오 3, 정독·관찰 4
+- 실패 원인 없음. 반복된 사실: 태그·Release 403(매 릴리스), 자기 CHANGELOG 문장이 scan.sh에 걸림 1회
+- "배운 것"에 3줄 추가(실제 세션 확인 방법, 표식 단어, 최소 입력 탐색)

@@ -2,7 +2,7 @@
 
 last_scan: 2026-10-20
 last_issue_check: 2026-10-20 (open 이슈 0건, open PR 0건)
-last_retro: 2026-10-20
+last_retro: 2026-10-20T11:50
 
 ## 제품
 
@@ -65,6 +65,9 @@ last_retro: 2026-10-20
 - 스크립트를 바꾸면 경계 입력(빈 값·숫자 아님·도구 없음·하위 폴더) 테스트를 같이 쓴다. 직접 써보기에서 드라이버 결함 5건이 나왔다
 - SKILL.md에 적힌 명령(롤백 등)은 tests/test_skill_rules.sh로 실제 실행해 검증한다. 문서 속 명령의 버그가 무한 재시도를 만들었다
 - `.autopilot/` 상태를 되돌리거나 치우는 모든 git 명령은 pathspec으로 `.autopilot`을 제외해야 한다
+- 훅·스킬 동작은 `claude -p --plugin-dir plugins/autopilot`로 실제 세션에서 싸게 확인할 수 있다(AUTOPILOT_STALL_LIMIT=1로 1~2턴). 문서만 보고 동작을 가정하지 않는다
+- CHANGELOG·주석에 scan.sh가 잡는 표식 단어(콜론 붙은 TODO 등)를 쓰지 않는다. "this repository scans clean" 테스트가 실패한다
+- 탐색 실행은 파일 하나·비ASCII 이름·공백 경로처럼 최소 입력으로도 돌린다(scan.sh 파일 이름 누락은 다중 파일 테스트로는 안 보였다)
 
 ## 하지 않기로 한 것
 - GitHub Actions CI: 레포 규칙상 로컬 검증만 (CLAUDE.md)

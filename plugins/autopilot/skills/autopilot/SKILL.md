@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.18.0
+  version: 1.19.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.18.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.19.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -319,6 +319,11 @@ PR rules:
 - `merge: auto` merges only when Phase 4 passed, the repository's CI (if any) passed and there are no conflicts. Use the repository's merge method, else a merge commit. If the conditions are not met, leave the PR open and move to the next task.
 - While unmerged PRs exist, the next task starts fresh from the base. Do not select tasks touching the same files as an open PR until it is merged.
 - Read review comments on your own PRs in 1-E like issues and turn them into fix tasks.
+- **Revisit your own open PRs** (head branch starts with `branch_prefix`) at the start of every task, right after 1-E. Do not wait for checks that are still running; look again on the next task.
+  - CI now passed, no conflicts, `merge: auto` → merge it now (this is how a PR left open for pending CI gets merged).
+  - CI failed → a `fix` task on that PR's branch, source `PR #N CI`, with the failing check's name and log summary as evidence. Fix it on the same branch and push; do not open a second PR.
+  - Conflicts with the base → a `fix` task: merge the base into that branch (never rebase or force push), re-run Phase 4, push.
+  - Never create a second task for the same PR while one is open. If the same PR fails 3 tasks in a row, leave it open and record it in the LOG and the STOP summary for a person.
 
 Release (`pr` + `release: auto`):
 - Only if the repository documents a release procedure (how to bump the version, CHANGELOG, tags). Otherwise do not release; leave a proposal (1-F).
@@ -331,7 +336,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30 | T-042 | done | skill 1.18.0
+## 2026-10-01T14:30 | T-042 | done | skill 1.19.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
