@@ -85,4 +85,11 @@ printf '# LOG\n## 2026-01-01T00:00 | T-001 | done | skill 1.0.0\n' > "$d/.autopi
 out="$(bash "$ST" "$d")"
 check "LOG from an older skill → noted, no warning" bash -c "grep -q 'LOG written up to 1.0.0' <<<\"\$1\" && ! grep -q 'newer than' <<<\"\$1\"" _ "$out"
 
+# cloud session + local integration → warning that commits are lost with the container
+d="$(mktemp -d "$TMPROOT/c.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
+check "cloud session, no CONFIG → warning" bash -c "CLAUDE_CODE_REMOTE=true bash '$ST' '$d' | grep -q 'lost when it is reclaimed'"
+check_not "not a cloud session → no warning" bash -c "CLAUDE_CODE_REMOTE= bash '$ST' '$d' | grep -q 'lost when it is reclaimed'"
+printf 'integration: pr\n' > "$d/.autopilot/CONFIG.md"
+check_not "cloud session with integration: pr → no warning" bash -c "CLAUDE_CODE_REMOTE=true bash '$ST' '$d' | grep -q 'lost when it is reclaimed'"
+
 finish

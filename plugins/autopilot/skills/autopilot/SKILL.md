@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.20.2
+  version: 1.21.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.20.2** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.21.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -68,6 +68,7 @@ In session mode, also run `bash <skill folder>/scripts/runlock.sh touch` at the 
    - If a person invoked the skill again while `.autopilot/STOP` exists, treat it as a request to resume: move the STOP content into the LOG and delete STOP.
    - Add `.autopilot/STOP`, `.autopilot/RUN`, `.autopilot/.hook-state`, `.autopilot/driver-logs/` and `.autopilot/driver.lock` to `.gitignore` if they are missing.
    - Claim the run marker with `bash <skill folder>/scripts/runlock.sh start`. It writes this session's ID (`CLAUDE_CODE_SESSION_ID`) into `.autopilot/RUN`. **If it exits with 2, another loop is already running in this repository**: tell the person what it printed and stop without changing any state; two loops on one repository corrupt the BACKLOG and fight over commits. A marker idle for 2 hours counts as abandoned and is taken over.
+   - If `CLAUDE_CODE_REMOTE` is `true` (a cloud session) and the integration mode is `local`, the commits exist only in this container and are lost when it is reclaimed. Tell the person once, in one line at the start (a notice, not a question): set `integration: branch` or `pr` in `.autopilot/CONFIG.md` to keep them. Write it in the LOG and continue in `local` mode. Never change CONFIG yourself.
    - The Stop hook comes with this skill (see "The Stop hook" below); nothing needs installing. If an older version left a copy at `.claude/hooks/autopilot-stop.sh`, refresh it with `bash <skill folder>/scripts/hook.sh install` and commit what it changed.
 1. If the three core files are missing, create them from the templates (never create CONFIG). If the integration mode is not `local`, update the base branch as described in "Integration policy".
    Read the state. Keep the amount read constant even in long runs:
@@ -339,7 +340,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30 | T-042 | done | skill 1.20.2
+## 2026-10-01T14:30 | T-042 | done | skill 1.21.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)

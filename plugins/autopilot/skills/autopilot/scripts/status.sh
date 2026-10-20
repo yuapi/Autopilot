@@ -58,6 +58,8 @@ if os.path.exists(hook):
 
 cfg = dict(re.findall(r"^(integration|merge|release|language):\s*([^\s#]+)", read("CONFIG.md"), re.M))
 print("Integration: " + (", ".join(f"{k}={v}" for k, v in cfg.items()) if cfg else "local (no CONFIG)"))
+if os.environ.get("CLAUDE_CODE_REMOTE") == "true" and cfg.get("integration", "local") == "local":
+    print("Warning: this is a cloud session and integration is local: the loop's commits stay in this container and are lost when it is reclaimed. Set integration: branch (or pr) in .autopilot/CONFIG.md to push them.")
 
 done = count(rows, "done") + count(archived, "done")
 print(f"Tasks: open {count(rows,'open')} · in progress {count(rows,'in_progress')} · done {done} · blocked {count(rows,'blocked') + count(archived,'blocked')}")
