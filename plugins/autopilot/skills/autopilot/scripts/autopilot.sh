@@ -102,7 +102,7 @@ case "$integration" in
 esac
 
 # Call the skill by name so the one installed for the account/project is used, not a repository path.
-PROMPT='Use the autopilot skill and follow its procedure to do exactly one task, then exit. Do not ask questions and do not start a second task.'
+PROMPT='Use the autopilot skill and follow its procedure in driver mode (AUTOPILOT_DRIVER=1 is set): do exactly one task, then exit. This is driver mode, not a task budget: do not run runlock.sh and do not write STOP unless the skill says so. Do not ask questions and do not start a second task.'
 
 case "${AUTOPILOT_PERMISSION:-allowlist}" in
   skip)

@@ -99,7 +99,7 @@ print(f"[task] {tid}: {status} (attempts {attempts})")
 PY
 
 # Task budget (runlock.sh start --tasks N): count completed tasks and stop at N
-if [ "$cmd" = done ] && [ -f .autopilot/RUN ] && grep -q '^tasks:' .autopilot/RUN; then
+if [ "$cmd" = done ] && [ "${AUTOPILOT_DRIVER:-}" != 1 ] && [ -f .autopilot/RUN ] && grep -q '^tasks:' .autopilot/RUN; then
   n="$(sed -n 's/^tasks:[[:space:]]*//p' .autopilot/RUN | head -1)"
   k="$(sed -n 's/^done:[[:space:]]*//p' .autopilot/RUN | head -1)"; k=$(( ${k:-0} + 1 ))
   { grep -v '^done:' .autopilot/RUN; echo "done: $k"; } > .autopilot/RUN.tmp && mv .autopilot/RUN.tmp .autopilot/RUN

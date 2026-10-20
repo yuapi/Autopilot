@@ -170,4 +170,6 @@ d="$(newrepo)"; out="$(FAKE_MODE=ok drive "$d" 1 2>&1)"
 check_not "no JSON result → no cost line" grep -q "cost \\$" <<<"$out"
 check_not "AUTOPILOT_MAX_COST=abc → refused" bash -c "cd '$d' && AUTOPILOT_MAX_COST=abc PATH='$FAKEBIN:$PATH' bash '$DRIVER' 1 >/dev/null 2>&1"
 
+check "driver prompt says one task is not a task budget" grep -q "not a task budget" "$DRIVER"
+
 finish
