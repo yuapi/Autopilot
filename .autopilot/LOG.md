@@ -200,3 +200,8 @@
 - 변경: scripts/hook.sh(uninstall), scripts/status.sh(사본 있으면 uninstall 안내), tests/test_hook_install.sh(+9), SKILL.md, README 2종
 - 검증: validate PASS
 - 판단: 이 레포의 .claude 사본은 아직 지우지 않음(다른 세션에 동기화된 플러그인이 1.16 미만이면 사본이 유일한 훅)
+
+## 2026-10-20T11:05 | T-033 | done | skill 1.16.0
+- 발견: 탐색 실행에서 파일 하나짜리 레포의 scan.sh 출력이 `1:# ...`(파일 이름 없음). grep에 파일이 하나만 넘어가면 이름을 생략함. 한글 이름 파일은 core.quotePath 때문에 아예 빠짐
+- 변경: scripts/scan.sh(grep -H, git -c core.quotePath=false), tests/test_scan.sh(+1), CHANGELOG
+- 검증: validate PASS

@@ -17,7 +17,7 @@ cd "$root"
 
 EXCLUDE='(^|/)(\.autopilot|\.git|node_modules|vendor|third_party|dist|build|target|\.venv|venv|__pycache__|\.tox|\.mypy_cache|coverage|fixtures?[^/]*|testdata)(/|$)'
 files() {
-  if git rev-parse --git-dir >/dev/null 2>&1; then git ls-files -co --exclude-standard; else find . -type f | sed 's#^\./##'; fi \
+  if git rev-parse --git-dir >/dev/null 2>&1; then git -c core.quotePath=false ls-files -co --exclude-standard; else find . -type f | sed 's#^\./##'; fi \
     | grep -vE "$EXCLUDE" | while IFS= read -r f; do
         [ -f "$f" ] && grep -Iq . "$f" 2>/dev/null || continue
         head -5 "$f" | grep -q 'autopilot-scan: ignore-file' && continue
@@ -26,7 +26,7 @@ files() {
 }
 search() {  # <label> <extended regex> [extra grep flags]
   local hits
-  hits="$(files | tr '\n' '\0' | xargs -0 grep -nIE ${3:-} -- "$2" 2>/dev/null | grep -v 'autopilot-scan: ignore' | cut -c1-200)"
+  hits="$(files | tr '\n' '\0' | xargs -0 grep -HnIE ${3:-} -- "$2" 2>/dev/null | grep -v 'autopilot-scan: ignore' | cut -c1-200)"
   [ -n "$hits" ] || return 0
   echo "## $1"
   printf '%s\n' "$hits"
