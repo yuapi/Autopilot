@@ -132,8 +132,9 @@ if [ -n "${AUTOPILOT_IN_TESTS:-}" ]; then
 else
   for t in tests/test_*.sh; do
     [ -f "$t" ] || continue
+    started=$(date +%s)
     if out="$(with_timeout "${AUTOPILOT_TEST_TIMEOUT:-300}" bash "$t" 2>&1)"; then
-      ok "$t ($(printf '%s\n' "$out" | grep -c '^  ok') passed)"
+      ok "$t ($(printf '%s\n' "$out" | grep -c '^  ok') passed, $(( $(date +%s) - started ))s)"
     else
       printf '%s\n' "$out" | grep -v '^  ok' | sed 's/^/        /'
       bad "$t"

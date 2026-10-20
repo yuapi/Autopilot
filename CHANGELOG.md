@@ -7,6 +7,9 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.10.2 — 2026-10-20
+- tests/test_portability.sh builds its PATH without tac/timeout from the ~40 tools the scripts use instead of linking every executable on PATH (6.3 s → 2.8 s here, far more on large PATHs). validate.sh shows how long each test file took
+
 ## 1.10.1 — 2026-10-20
 - tests/test_portability.sh ran the whole test suite again inside its sandbox, which ran itself again, and so on; on machines with a large PATH (e.g. WSL with Windows paths) `validate.sh` and therefore `release.sh` looked stuck and then failed on the 5-minute limit. The sandbox now holds only a trivial test, and Windows drives under /mnt are skipped
 
