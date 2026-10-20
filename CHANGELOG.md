@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- Verification commands run non-interactively (`CI=1`, no stdin) with a time limit in Phase 0 and Phase 4. A watch-mode test command (`jest --watch`, plain `vitest`) or one waiting for input hung until the tool call was killed, on every task; a timeout is recorded and its one-shot form used instead
 
 ## 1.32.1 — 2026-10-20
 - A repository path that does not exist gets `[script] no such directory: <path>` from every skill script, instead of a raw `cd` error (status, archive, log) or "not inside a git repository" (runlock, task, finalstop, hook, workbranch)

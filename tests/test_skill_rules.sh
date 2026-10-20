@@ -91,4 +91,9 @@ check "Phase 5: publish after done accepts" grep -q "Only after \`done\` accepts
 done_line="$(grep -n 'task.sh done <ID>' <<<"$p5" | head -1 | cut -d: -f1)"; pub_line="$(grep -n 'Only after `done` accepts' <<<"$p5" | cut -d: -f1)"
 check "Phase 5: done comes before publishing" test "${done_line:-99}" -lt "${pub_line:-0}"
 
+# verification commands cannot hang the loop
+check "baseline runs non-interactively with a time limit" grep -q "Run them so they cannot hang" "$SKILL"
+check "baseline names watch-mode commands and their one-shot form" bash -c "grep -q 'jest --watch' '$SKILL' && grep -q 'vitest run' '$SKILL'"
+check "Phase 4 treats a timeout as worse than the baseline" grep -q "A timeout counts as worse than the baseline" "$SKILL"
+
 finish
