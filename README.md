@@ -37,7 +37,7 @@ Start on a dedicated branch at the root of the repository you want to work on.
 
 ### Session-continuous mode (default)
 
-Ask Claude in a session, for example "run autopilot". The skill keeps working task after task in the same session until `.autopilot/STOP` exists. On first entry it installs a Stop hook (`.claude/hooks/autopilot-stop.sh`) so the session does not end early. The hook only acts while `.autopilot/RUN` exists, so ordinary sessions are never blocked, and it writes `STOP` and lets go after three consecutive blocks without progress. This is the only mode available in cloud sessions without a terminal.
+Ask Claude in a session, for example "run autopilot". The skill keeps working task after task in the same session until `.autopilot/STOP` exists. On first entry it installs a Stop hook (`.claude/hooks/autopilot-stop.sh`) so the session does not end early. The hook only acts while `.autopilot/RUN` exists and only on the session that started the loop, so ordinary sessions and other sessions you open in the same repository are never blocked. Only one loop runs per repository: a second session or driver is refused while one is active (a marker idle for 2 hours is taken over). The hook writes `STOP` and lets go after three consecutive blocks without progress. This is the only mode available in cloud sessions without a terminal.
 
 To stop: `touch .autopilot/STOP`.
 
