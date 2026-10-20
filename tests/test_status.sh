@@ -106,4 +106,13 @@ k="$(mktemp -d "$TMPROOT/sq.XXXX")"; mkdir -p "$k/scripts"; cp "$ST" "$k/scripts
 d="$(mktemp -d "$TMPROOT/sqr.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
 check "single-quoted version shown" bash -c "bash '$k/scripts/status.sh' '$d' | grep -q '^Skill: 9.8.7'"
 
+# a running driver is shown from driver.lock
+d="$(mktemp -d "$TMPROOT/drv.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
+sleep 300 & live=$!; echo "$live" > "$d/.autopilot/driver.lock"
+check "live driver.lock → running (driver, pid)" bash -c "bash '$ST' '$d' | grep -q '^Run: running (driver, pid $live, started 0 min ago)'"
+kill "$live" 2>/dev/null; wait "$live" 2>/dev/null
+check "dead driver.lock → stale lock noted" bash -c "bash '$ST' '$d' | grep -q 'stale driver.lock'"
+rm -f "$d/.autopilot/driver.lock"
+check "no lock → idle" bash -c "bash '$ST' '$d' | grep -q '^Run: idle (no RUN or STOP)'"
+
 finish

@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- status.sh shows a running driver (`Run: running (driver, pid N, started M min ago)`) and a stale driver.lock, instead of "idle" while the driver works
 
 ## 1.35.1 — 2026-10-20
 - finalstop.sh refused the final stop because of the `.gitignore` line `task.sh start` adds; it now treats `.gitignore` as state, like task.sh
