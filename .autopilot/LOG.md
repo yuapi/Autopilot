@@ -459,3 +459,10 @@
 ## 2026-10-20T15:08Z | T-069 | done | skill 1.28.4
 - 변경: plugins/autopilot/commands/run.md(신규), SKILL.md 상태 확인 절, README 2종, docs/plugin-structure.md, tests/test_skill_rules.sh(+1), CHANGELOG
 - 검증: validate PASS(claude plugin validate 포함). 실제 claude -p "/autopilot:run 1" --plugin-dir(todo): T-001 한 개 후 "Stopped after 1 task(s) as asked"로 끝남
+
+## 2026-10-20T15:14Z | - | release | skill 1.29.0
+- 1.29.0 릴리즈: release/1.29.0 → main, main → develop 역병합. 태그 대기: v1.29.0 (403, 누적 v1.11.0~v1.29.0)
+
+## 2026-10-20T15:17Z | T-070 | done | skill 1.29.0
+- 변경: docs/skill-design.md(작업 수 예산은 사람이 미리 쓴 STOP, scope가 CONFIG이고 done에서 검사되는 이유, LOG가 UTC인 이유)
+- 검증: validate PASS
