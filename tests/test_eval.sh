@@ -193,4 +193,10 @@ check "stats fixture starts with a failing test" bash -c "cd '$REPO/tests/eval/f
 d="$(mkrun)"; task "$d" T-001 10:00; (cd "$d" && echo "| T-002 | fix | open | 0 | x | t | s | |" >> .autopilot/BACKLOG.md && git add -A && git commit -qm "chore: record T-001 and queue T-002") >/dev/null
 check "a state-only commit naming two tasks is not a broken rule" grep -q "ok      one commit per completed task" <<<"$(grade "$d")"
 
+# --model is passed to claude
+out="$(CLAUDE_BIN="$FAKES" bash "$EV" --mode session --iterations 1 --model some-model --keep 2>&1)"
+kept="$(sed -n 's/^\[eval\] kept the run in \([^ ]*\).*/\1/p' <<<"$out")"
+check "--model reaches claude" grep -q -- "--model some-model" "$kept/.autopilot/args"
+rm -rf "$kept"
+
 finish

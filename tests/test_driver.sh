@@ -9,6 +9,7 @@ FAKEBIN="$TMPROOT/fakebin"; mkdir -p "$FAKEBIN"
 cat > "$FAKEBIN/claude" <<'SH'
 #!/usr/bin/env bash
 echo "driver=${AUTOPILOT_DRIVER:-}" >> .autopilot/calls
+echo "$*" > .autopilot/args
 n=$(wc -l < .autopilot/calls)
 case "${FAKE_MODE:-ok}" in
   fail) exit 1;;
@@ -145,5 +146,13 @@ d="$(newrepo)"
 out="$(FAKE_MODE=ok drive "$d" 2 2>&1)"
 check "progress → the run's LOG entry is printed" grep -q "#2 → 2026-01-01T00:00 | T-002 | done" <<<"$out"
 check "progress → no STOP" test ! -e "$d/.autopilot/STOP"
+
+# AUTOPILOT_MODEL is passed to claude --model
+d="$(newrepo)"
+out="$(AUTOPILOT_MODEL=some-model FAKE_MODE=ok drive "$d" 1 2>&1)"
+check "AUTOPILOT_MODEL → claude --model" grep -q -- "--model some-model" "$d/.autopilot/args"
+check "AUTOPILOT_MODEL is announced" grep -q "\[driver\] model: some-model" <<<"$out"
+d="$(newrepo)"; FAKE_MODE=ok drive "$d" 1 >/dev/null 2>&1
+check_not "no AUTOPILOT_MODEL → no --model" grep -q -- "--model" "$d/.autopilot/args"
 
 finish

@@ -337,3 +337,10 @@
 ## 2026-10-20T12:55 | T-052 | done | skill 1.24.0
 - 변경: scripts/task.sh(다른 작업 ID 검사는 .autopilot/·.gitignore 밖을 바꾼 커밋만), tests/test_task.sh(+1), CHANGELOG
 - 검증: validate PASS. 재현: start → 코드 커밋 → "chore: record T-001 and queue T-004"(상태 전용) → done 거부 → 수정 후 허용
+
+## 2026-10-20T12:59 | - | release | skill 1.24.1
+- 1.24.1 릴리즈: release/1.24.1 → main, main → develop 역병합. 태그 대기: v1.24.1 (403, 누적 v1.11.0~v1.24.1)
+
+## 2026-10-20T13:03 | T-053 | done | skill 1.24.1
+- 변경: scripts/autopilot.sh(AUTOPILOT_MODEL → --model), scripts/eval.sh(--model, 사용법에 --grade도), tests(driver +3, eval +1), SKILL.md 드라이버 절, README 2종, CHANGELOG
+- 검증: validate PASS

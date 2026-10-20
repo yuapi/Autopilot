@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.24.1
+  version: 1.25.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.24.1** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.25.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -341,7 +341,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30 | T-042 | done | skill 1.24.1
+## 2026-10-01T14:30 | T-042 | done | skill 1.25.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
@@ -404,7 +404,7 @@ bash <skill folder>/scripts/autopilot.sh          # unlimited
 bash <skill folder>/scripts/autopilot.sh 20       # 20 runs at most
 ```
 
-The default is an `--allowedTools` allowlist. In a dedicated container, `AUTOPILOT_PERMISSION=skip`.
+The default is an `--allowedTools` allowlist. In a dedicated container, `AUTOPILOT_PERMISSION=skip`. `AUTOPILOT_MODEL` picks the model for every run.
 
 The driver only gives Claude Bash and file tools, not MCP servers, so in `pr` mode PRs are opened with the `gh` CLI (merge requests with `glab` when `origin` is on GitLab). Before the loop starts, the driver checks the integration mode and warns if `origin` is missing (`branch`/`pr`) or if `gh` (`glab`) is missing or cannot push to the repository (`pr`).
 

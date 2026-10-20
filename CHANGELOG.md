@@ -7,6 +7,9 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.25.0 — 2026-10-20
+- Model choice: the driver passes `AUTOPILOT_MODEL` to `claude --model` for every run, and `scripts/eval.sh --model <name>` runs an eval with another model to compare
+
 ## 1.24.1 — 2026-10-20
 - `task.sh done` refused when a bookkeeping commit since `start` (changing only `.autopilot/`, e.g. queueing a follow-up task) named another task ID; only commits that change code count now
 - Third eval fixture `stats`: a repository whose CONTRIBUTING requires Conventional Commits and `make test`, with a failing test and a README/behavior mismatch. New `commit=` expectations grade every commit subject against the repository's convention. The rule check for combined commits ignores bookkeeping commits that change only `.autopilot/`
