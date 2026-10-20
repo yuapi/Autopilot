@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 63
+next_id: 64
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -69,3 +69,4 @@ next_id: 63
 | T-060 | enhance | done | 1 | eval.sh --fixture all: 모든 예제를 같은 옵션으로 돌리고 예제별 점수·규칙 결과 요약, 하나라도 실패하면 exit 1 | 가짜 claude 테스트, CLAUDE.md 안내 갱신 | CLAUDE.md: 발굴 규칙 변경 시 모든 예제 eval — 지금은 명령 4개 | 2026-10-20 |
 | T-061 | enhance | done | 1 | task.sh: 칸 수가 틀린 BACKLOG 행(사람이 손으로 추가 등)에 기대 형식과 예시를 보여 주고 고치게 안내 | 7칸 행 거부 메시지 테스트 | 심화 발굴 2단계 시나리오: 사람이 Completed 칸 없이 행 추가 | 2026-10-20 |
 | T-062 | feature | done | 1 | CONFIG scope: 모노레포에서 지정한 경로 안에서만 발굴·수정, task.sh done이 범위 밖 변경 거부, status.sh 표시 | task.sh·status 테스트, SKILL.md 규칙, CONFIG 템플릿 | 시나리오: 모노레포의 패키지 하나만 맡기기 | 2026-10-20 |
+| T-063 | test | done | 1 | eval 예제 mono: CONFIG scope: pkg/a인 모노레포, 두 패키지 모두 결함. nofile= 기대값으로 pkg/b를 건드린 커밋이 없는지 채점 | 가짜 claude 채점, 실제 실행 1회 | T-062: scope를 실제 모델이 지키는지 측정 수단 없음 | 2026-10-20 |
