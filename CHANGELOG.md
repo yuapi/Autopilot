@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.21.0 — 2026-10-20
 - Cloud sessions with `integration: local`: the loop's commits live only in the container and are lost when it is reclaimed. Phase 0 now tells the person once on first entry (and logs it), and status.sh warns; CONFIG is still never changed by Claude
 
 ## 1.20.2 — 2026-10-20
