@@ -344,3 +344,11 @@
 ## 2026-10-20T13:03 | T-053 | done | skill 1.24.1
 - 변경: scripts/autopilot.sh(AUTOPILOT_MODEL → --model), scripts/eval.sh(--model, 사용법에 --grade도), tests(driver +3, eval +1), SKILL.md 드라이버 절, README 2종, CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-20T13:07 | - | release | skill 1.25.0
+- 1.25.0 릴리즈: release/1.25.0 → main, main → develop 역병합. 태그 대기: v1.25.0 (403, 누적 v1.11.0~v1.25.0)
+
+## 2026-10-20T13:13 | T-054 | done | skill 1.25.0
+- 변경: tests/eval/fixture-kv(Go 모듈, 결함 5)·.expected, tests/test_eval.sh(+3: 시작 상태 확인, go 없으면 건너뜀), README 2종, CHANGELOG
+- 검증: validate PASS. 실제 eval --fixture kv --mode session --iterations 2: 10/10, 규칙 검사 전부 ok, 기준선에 go test ./...·go vet ./... 기록
+- 메모: printf 형식 오류는 go test가 vet 일부를 돌려 빌드가 깨져 실패 테스트를 가림 → go test가 안 돌리는 unreachable로 바꿈

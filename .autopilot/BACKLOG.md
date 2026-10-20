@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 54
+next_id: 55
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -60,3 +60,4 @@ next_id: 54
 | T-051 | test | done | 1 | eval 예제 conventions: CONTRIBUTING이 커밋 형식·검증 명령을 정한 레포에서 규칙("레포 관례 우선")을 따르는지 채점(commit= 기대값) | 가짜 claude 채점 테스트, 실제 실행 1회 | 품질: "레포 관례 우선" 규칙을 재는 수단 없음 | 2026-10-20 |
 | T-052 | fix | done | 1 | task.sh done이 상태만 고친 커밋(후속 작업 등록 "queue T-4")에 적힌 다른 작업 ID 때문에 거부함 | 상태 전용 커밋이 있어도 done 허용 테스트 | eval stats 실제 실행(같은 원인으로 채점 오탐) | 2026-10-20 |
 | T-053 | feature | done | 1 | 모델 선택: 드라이버 AUTOPILOT_MODEL(claude -p --model로 전달), eval.sh --model | 가짜 claude로 --model 전달 테스트, README | 빠진 것: 무인 장시간 실행의 비용·품질을 모델로 조절할 수 없음 | 2026-10-20 |
+| T-054 | test | done | 1 | Go eval 예제 kv: 실패 테스트·go vet 경고·패닉·무시된 오류·README의 없는 플래그 5개 결함, 기준선 탐색이 go test/go vet을 찾는지 | 가짜 claude 채점, 실제 실행 1회 | 품질(이식성): 예제가 Python·Node뿐 | 2026-10-20 |
