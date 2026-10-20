@@ -5,8 +5,9 @@
 # --iterations runs the driver n times (default 1) and also checks the later runs: each completes one
 # task, no task is completed twice, nothing failed. --timeout applies to each run (each task in session mode).
 # --mode session loads the working copy as a plugin (--plugin-dir) and runs one session in session mode,
-# Stop hook included; once the LOG has <n> task entries it writes STOP and checks that the session
-# then ended on its own (the hook let go) rather than on the timeout.
+# Stop hook included, asking for <n> tasks: the run should stop itself on that task budget. If the LOG
+# reaches n+1 task entries the eval writes STOP itself (and that check fails); it also checks that the
+# session then ended on its own (the hook let go) rather than on the timeout.
 # Fixtures live in tests/eval/fixture-<name>/ with expectations in tests/eval/fixture-<name>.expected
 # (default: todo). `--fixture list` prints the available ones. An expectation regex starting with type=
 # grades the first completed task's type; one starting with commit= must match every commit subject.
@@ -87,9 +88,10 @@ else
 
   start_all=$(date +%s)
   if [ "$mode" = session ]; then
-    prompt="Run the autopilot skill (autopilot:autopilot) in this repository with the Skill tool and follow it in session mode. Do not ask questions."
-    echo "[eval] fixture $fixture: one session-mode run until $iterations task(s) are logged, in $work (timeout $((timeout_s * iterations))s)…"
-    run_claude $((timeout_s * iterations)) "$iterations" env -u AUTOPILOT_DRIVER "$CLAUDE_BIN" -p "$prompt" ${model_args[@]+"${model_args[@]}"} \
+    prompt="Run the autopilot skill (autopilot:autopilot) in this repository for $iterations tasks, with the Skill tool, in session mode. Do not ask questions."
+    echo "[eval] fixture $fixture: one session-mode run asked for $iterations task(s), in $work (timeout $((timeout_s * iterations))s)…"
+    # the run should stop itself on its task budget; the watcher only steps in one task later
+    run_claude $((timeout_s * iterations)) "$((iterations + 1))" env -u AUTOPILOT_DRIVER "$CLAUDE_BIN" -p "$prompt" ${model_args[@]+"${model_args[@]}"} \
       --plugin-dir "$REPO/plugins/autopilot" --allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,TodoWrite,Skill"
   else
     prompt="Read $SKILL/SKILL.md and follow its procedure exactly, in driver mode (AUTOPILOT_DRIVER=1 is set): do exactly one task in this repository, then exit. <skill folder> in the rules means $SKILL. Do not ask questions."
@@ -109,6 +111,9 @@ python3 - "$work" "$REPO/$EXPECTED" "${AUTOPILOT_EVAL_THRESHOLD:-0.6}" "$iterati
 import os, re, subprocess, sys
 work, expected, threshold, iterations = sys.argv[1], sys.argv[2], float(sys.argv[3]), int(sys.argv[4])
 mode, timed_out = sys.argv[5], sys.argv[6] == "1"
+def read_stop():
+    try: return open(os.path.join(work, ".autopilot", "STOP"), encoding="utf-8").read()
+    except FileNotFoundError: return ""
 try:
     backlog = open(os.path.join(work, ".autopilot", "BACKLOG.md"), encoding="utf-8").read()
 except FileNotFoundError:
@@ -153,6 +158,7 @@ if iterations > 1 or mode == "session":
     if mode == "session":
         checks += [
             ("the session ended after STOP, not on the timeout", not timed_out),
+            ("it ended on its task budget or a final stop (not on the eval's STOP)", bool(re.match(r"(Stopped after|Final stop|최종 정지)", read_stop()))),
             ("RUN removed when it ended", not os.path.exists(os.path.join(work, ".autopilot", "RUN"))),
         ]
     print(f"Multi-run checks ({iterations} {'task(s) in one session' if mode == 'session' else 'iterations'}):")
