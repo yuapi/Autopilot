@@ -121,6 +121,7 @@ bash scripts/eval.sh                        # the todo fixture; add --keep to in
 bash scripts/eval.sh --fixture wordcount    # a repository with no tests: is the first task a test harness?
 bash scripts/eval.sh --fixture stats        # CONTRIBUTING sets the commit format: does every commit follow it?
 bash scripts/eval.sh --fixture kv           # a Go module: are go test and go vet found and their findings queued?
+bash scripts/eval.sh --fixture mono         # CONFIG scope: pkg/a in a monorepo: does every commit stay inside it?
 bash scripts/eval.sh --iterations 3         # three driver runs: one new task each, nothing repeated, nothing failed
 bash scripts/eval.sh --mode session --iterations 2   # one session-mode run as a plugin, asked for 2 tasks: keeps going, stops on its budget
 bash scripts/eval.sh --grade <kept dir> [same options]   # grade a run kept with --keep again
