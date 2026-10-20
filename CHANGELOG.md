@@ -7,6 +7,10 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.31.1 — 2026-10-20
+- The driver names its permission mode at start: a loud warning for `AUTOPILOT_PERMISSION=skip`, and a warning when the value is unknown (a typo used to fall back to the allowlist silently)
+- eval.sh driver mode sends the real driver's prompt and allowlist (read from autopilot.sh) and loads the working copy as a plugin. Its own prompt hid the driver-only bug fixed in 1.31
+
 ## 1.31.0 — 2026-10-20
 - task.sh done printed a shell error (`.autopilot/CONFIG.md: No such file or directory`) in repositories without a CONFIG
 - log.sh and status.sh read the skill version when it is single-quoted, as the claude.ai account plugin sync writes it (`version: '1.27.0'`); LOG entries said `skill unknown` and status showed no version

@@ -518,3 +518,15 @@
 - 가장 큰 결함은 실제 드라이버 실행에서 나옴(T-076: 1.27부터 드라이버가 1회 후 멈춤). 단위 테스트·세션 eval로는 안 보였음
 - 정정: T-078 항목의 "이 레포에서 done 실행 시 오류 출력 사라짐"은 틀림. 이 레포엔 CONFIG가 있어 원래 오류가 없었음; 오류는 CONFIG 없는 테스트 레포와 실제 드라이버 실행에서 보였음
 - "배운 것"에 2줄 추가(새 기능은 드라이버로도 실행, 배포본으로 파서 확인)
+
+## 2026-10-20T16:16Z | - | release | skill 1.31.0
+- 1.31.0 릴리즈: release/1.31.0 → main, main → develop 역병합. 태그 대기: v1.31.0 (403, 누적 v1.11.0~v1.31.0)
+
+## 2026-10-20T16:22Z | T-079 | done | skill 1.31.0
+- 변경: scripts/eval.sh(드라이버 모드가 autopilot.sh의 PROMPT·허용 도구를 읽어 쓰고 --plugin-dir로 작업 사본), tests/test_eval.sh(+3), CHANGELOG
+- 검증: validate PASS. 실제 eval 드라이버 2회 3번: 7/8, 8/8, 8/8 (7/8은 발굴 1건 누락, 다시 돌리면 재현 안 됨 → 변동)
+
+## 2026-10-20T16:31Z | T-080 | done | skill 1.31.0
+- 발굴: eval --fixture all(드라이버, 실제 프롬프트) 5개 예제 100%. docs/versioning.md 정확. 안전한 기본값 점검에서 skip 모드 무음·오타 무음 발견
+- 변경: scripts/autopilot.sh(권한 모드 안내, skip 경고, 알 수 없는 값 경고), tests/test_driver.sh(+5), CHANGELOG
+- 검증: validate PASS
