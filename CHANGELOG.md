@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.32.1 — 2026-10-20
 - A repository path that does not exist gets `[script] no such directory: <path>` from every skill script, instead of a raw `cd` error (status, archive, log) or "not inside a git repository" (runlock, task, finalstop, hook, workbranch)
 
 ## 1.32.0 — 2026-10-20
