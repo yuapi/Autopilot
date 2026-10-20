@@ -471,3 +471,11 @@
 - 발굴: eval --fixture all --mode session --iterations 3 — 5개 예제 100%, 실행당 약 $0.21·10턴(실제 측정, 세션 전체 비용). 심화 3단계(성능 10배 입력)에서 scan.sh 5000파일 2분 18초
 - 변경: scripts/scan.sh(파일 목록을 Python 한 번으로, NUL 구분, 검색 6번이 공유; git 모드와 walk 모드 구분), tests/test_scan.sh(+3: 3000파일 10초 미만, 마지막 파일 찾음, 빈 git 레포에서 무시 파일 안 읽음), CHANGELOG
 - 검증: validate PASS. 5000파일 2분 18초 → 0.25초, 출력 동일(diff)
+
+## 2026-10-20T15:36Z | - | release | skill 1.29.1
+- 1.29.1 릴리즈: release/1.29.1 → main, main → develop 역병합. 태그 대기: v1.29.1 (403, 누적 v1.11.0~v1.29.1)
+
+## 2026-10-20T15:39Z | T-072 | done | skill 1.29.1
+- 변경: scripts/task.sh(CONFIG에서 \r 제거 후 scope 파싱), tests/test_task.sh(+2), CHANGELOG
+- 검증: validate PASS. 재현(CRLF CONFIG에서 pkg/a/f가 범위 밖으로 거부) → 수정 후 허용
+- 다른 CONFIG 파서 확인: autopilot.sh·status.sh는 공백 클래스에서 멈춰 \r 영향 없음
