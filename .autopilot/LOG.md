@@ -444,3 +444,10 @@
 ## 2026-10-20T14:50Z | T-067 | done | skill 1.28.3
 - 변경: 스킬 스크립트 7개(autopilot·finalstop·task·status·hook·runlock·archive)에 PY=python3||python, 없으면 분명한 오류. tests/test_portability.sh(+6: python만 있는 PATH에서 runlock·task·status·archive, Python 없음 오류), README 2종 요구 사항, CHANGELOG
 - 검증: validate PASS. 수정 전 새 검사 4개 실패 → 통과
+
+## 2026-10-20T14:55Z | - | release | skill 1.28.4
+- 1.28.4 릴리즈: release/1.28.4 → main, main → develop 역병합. 태그 대기: v1.28.4 (403, 누적 v1.11.0~v1.28.4)
+
+## 2026-10-20T14:56Z | - | discover | skill 1.28.4
+- 심화 발굴 3단계(문서 예제 정확성): 격리된 CLAUDE_CONFIG_DIR에서 README대로 claude plugin marketplace add ./ → install → list/details 동작. 스킬 3개(autopilot, status, stop), 상시 ~403 토큰, 호출 시 ~14.5k 토큰
+- 제안 P-001 근거 갱신(423줄·14.5k 토큰, 스크립트화 후 eval 100%). 상태는 그대로 proposed(사람 결정)
