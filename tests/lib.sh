@@ -1,4 +1,4 @@
-# 테스트 공용 함수. 각 테스트 파일이 source 한다.
+# Shared test helpers. Every test file sources this.
 set -u
 export AUTOPILOT_IN_TESTS=1
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -12,20 +12,20 @@ bad()  { FAIL=$((FAIL + 1)); echo "  FAIL $*"; }
 check() { local name="$1"; shift; if "$@" >/dev/null 2>&1; then ok "$name"; else bad "$name"; fi; }
 check_not() { local name="$1"; shift; if "$@" >/dev/null 2>&1; then bad "$name"; else ok "$name"; fi; }
 
-# 레포 작업 트리를 임시 폴더로 복사 (.git, dist 제외)
+# Copy the repository working tree to a temp folder (without .git and dist)
 sandbox() {
   local d; d="$(mktemp -d "$TMPROOT/sb.XXXX")"
   (cd "$REPO" && tar --exclude=.git --exclude=dist --exclude=.autopilot -cf - .) | (cd "$d" && tar -xf -)
   echo "$d"
 }
 
-# GNU/BSD 공통 sed 제자리 편집: sedi [-E] '<식>' <파일>
+# In-place sed that works with GNU and BSD: sedi [-E] '<expr>' <file>
 sedi() {
   local f="${!#}" n=$(($# - 1))
   sed "${@:1:$n}" "$f" > "$f.sedi.tmp" && mv "$f.sedi.tmp" "$f"
 }
 
-# timeout이 없는 환경(macOS 기본)용
+# For environments without timeout (macOS default)
 with_timeout() {
   local secs="$1"; shift
   if command -v timeout >/dev/null 2>&1; then timeout "$secs" "$@"
@@ -36,6 +36,6 @@ with_timeout() {
 }
 
 finish() {
-  echo "  -- $PASS 통과, $FAIL 실패"
+  echo "  -- $PASS passed, $FAIL failed"
   [ "$FAIL" -eq 0 ]
 }

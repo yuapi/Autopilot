@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# scripts/status.sh (실행 상태 요약) 테스트
+# Tests for scripts/status.sh (run status summary). The fixture mixes Korean legacy values on purpose
 . "$(dirname "$0")/lib.sh"
 ST="$REPO/$SKILL_REL/scripts/status.sh"
 
@@ -32,39 +32,39 @@ MD
 printf '```\nintegration: pr\nmerge: auto\nrelease: off\nlanguage: ko\n```\n' > "$d/.autopilot/CONFIG.md"
 
 out="$(bash "$ST" "$d" 2>&1)"
-check "작업 수 집계 (아카이브 포함)" grep -q "open 1 · in progress 1 · done 2 · blocked 1" <<<"$out"
-check "실행 상태: 대기" grep -q "Run: idle" <<<"$out"
-check "통합 설정·언어 표시" grep -q "integration=pr, merge=auto, release=off, language=ko" <<<"$out"
-check "영어 상태 proposed 제안 표시" grep -q "P-003 Switch config format" <<<"$out"
-check_not "adopted 제안은 표시 안 함" grep -q "P-004" <<<"$out"
-check "최근 성공률은 작업 항목만 셈 (1/2)" grep -q "Success rate of the last 2 runs: 1/2" <<<"$out"
-check "열린 작업에 진행 중 포함" grep -q "T-004 \[test\]" <<<"$out"
-check "blocked 목록" grep -q "T-002 \[feature\] 막힌 기능" <<<"$out"
-check "결정 대기 제안만 표시" grep -q "P-001 설정 파일 형식 변경" <<<"$out"
-check_not "거절된 제안은 표시 안 함" grep -q "P-002" <<<"$out"
+check "task counts (including the archive)" grep -q "open 1 · in progress 1 · done 2 · blocked 1" <<<"$out"
+check "run state: idle" grep -q "Run: idle" <<<"$out"
+check "shows integration and language" grep -q "integration=pr, merge=auto, release=off, language=ko" <<<"$out"
+check "shows English proposed status" grep -q "P-003 Switch config format" <<<"$out"
+check_not "hides adopted proposals" grep -q "P-004" <<<"$out"
+check "success rate counts task entries only (1/2)" grep -q "Success rate of the last 2 runs: 1/2" <<<"$out"
+check "open tasks include in_progress" grep -q "T-004 \[test\]" <<<"$out"
+check "blocked list" grep -q "T-002 \[feature\] 막힌 기능" <<<"$out"
+check "shows legacy Korean proposed status (제안)" grep -q "P-001 설정 파일 형식 변경" <<<"$out"
+check_not "hides rejected proposals" grep -q "P-002" <<<"$out"
 
 touch "$d/.autopilot/RUN"
-check "RUN 있으면 진행 중" bash -c "bash '$ST' '$d' | grep -q 'Run: running'"
+check "RUN → running" bash -c "bash '$ST' '$d' | grep -q 'Run: running'"
 printf '최종 중단: 실질 작업 없음\n- 사이클: 3회\n' > "$d/.autopilot/STOP"
 out="$(bash "$ST" "$d/sub" 2>&1)"
-check "STOP 있으면 멈춤과 사유 첫 줄" grep -q "Run: stopped — 최종 중단: 실질 작업 없음" <<<"$out"
-check "STOP 전체 내용 표시" grep -q "사이클: 3회" <<<"$out"
-check "하위 폴더에서도 레포 루트 기준" grep -q "autopilot status — $d" <<<"$out"
+check "STOP → stopped with the first line of the reason" grep -q "Run: stopped — 최종 중단: 실질 작업 없음" <<<"$out"
+check "shows the full STOP content" grep -q "사이클: 3회" <<<"$out"
+check "works from a subfolder" grep -q "autopilot status — $d" <<<"$out"
 
 mkdir -p "$d/.claude/hooks"
 cp "$REPO/$SKILL_REL/assets/autopilot-stop.sh" "$d/.claude/hooks/autopilot-stop.sh"
-check_not "새 훅이면 구버전 경고 없음" bash -c "bash '$ST' '$d' | grep -q 'old (1.5.x)'"
+check_not "no old-hook warning for the new hook" bash -c "bash '$ST' '$d' | grep -q 'old (1.5.x)'"
 printf '#!/usr/bin/env bash\nif [ -f .autopilot/STOP ]; then exit 0; fi\necho block\n' > "$d/.claude/hooks/autopilot-stop.sh"
-check "구버전 훅이면 경고와 교체 안내" bash -c "bash '$ST' '$d' | grep -q 'old (1.5.x) Stop hook'"
+check "old hook → warning and how to replace it" bash -c "bash '$ST' '$d' | grep -q 'old (1.5.x) Stop hook'"
 rm -rf "$d/.claude"
 
-check "출력이 중간에 끊겨도 오류 없음" test -z "$({ bash "$ST" "$d" | head -1 >/dev/null; } 2>&1)"
+check "no error when the output is cut off" test -z "$({ bash "$ST" "$d" | head -1 >/dev/null; } 2>&1)"
 
 rm "$d/.autopilot/CONFIG.md"
-check "CONFIG 없으면 local" bash -c "bash '$ST' '$d' | grep -q 'local (no CONFIG)'"
+check "no CONFIG → local" bash -c "bash '$ST' '$d' | grep -q 'local (no CONFIG)'"
 e="$(mktemp -d "$TMPROOT/e.XXXX")"
-check_not ".autopilot 없으면 실패" bash "$ST" "$e"
+check_not "fails without .autopilot" bash "$ST" "$e"
 before="$(cat "$d"/.autopilot/* | cksum)"; bash "$ST" "$d" >/dev/null 2>&1
-check "상태 파일을 바꾸지 않음" test "$(cat "$d"/.autopilot/* | cksum)" = "$before"
+check "does not modify state files" test "$(cat "$d"/.autopilot/* | cksum)" = "$before"
 
 finish

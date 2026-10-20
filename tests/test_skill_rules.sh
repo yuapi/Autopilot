@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# SKILL.md에 적힌 명령이 의도대로 동작하는지 검증
+# Commands written in SKILL.md must do what they claim
 . "$(dirname "$0")/lib.sh"
 SKILL="$REPO/$SKILL_REL/SKILL.md"
 
-# Phase 4 롤백 명령: "실패 시:" 줄의 첫 번째 `...` 코드
+# Phase 4 rollback command: the first `...` code on the "On failure:" line
 rollback="$(grep -m1 'On failure:' "$SKILL" | sed -n 's/^[^`]*`\([^`]*\)`.*/\1/p')"
-check "Phase 4 롤백 명령 추출" test -n "$rollback"
+check "extracts the Phase 4 rollback command" test -n "$rollback"
 
 d="$(mktemp -d "$TMPROOT/r.XXXX")"
 (
@@ -16,20 +16,20 @@ d="$(mktemp -d "$TMPROOT/r.XXXX")"
   echo "attempts 1" > .autopilot/BACKLOG.md; echo s > .autopilot/untracked-state
   eval "$rollback"
 ) >/dev/null 2>&1
-check "롤백: 수정한 파일 복원" grep -qx a "$d/src/x"
-check "롤백: 새 파일 삭제" test ! -e "$d/src/new"
-check "롤백: 새 폴더 삭제" test ! -e "$d/src/newdir"
-check "롤백: .autopilot 변경(attempts) 유지" grep -qx "attempts 1" "$d/.autopilot/BACKLOG.md"
-check "롤백: .autopilot 새 파일 유지" test -f "$d/.autopilot/untracked-state"
+check "rollback: modified file restored" grep -qx a "$d/src/x"
+check "rollback: new file removed" test ! -e "$d/src/new"
+check "rollback: new folder removed" test ! -e "$d/src/newdir"
+check "rollback: .autopilot change (attempts) kept" grep -qx "attempts 1" "$d/.autopilot/BACKLOG.md"
+check "rollback: new .autopilot file kept" test -f "$d/.autopilot/untracked-state"
 
-# Stop 훅 설치 예시 JSON이 유효하고 훅 경로가 \$CLAUDE_PROJECT_DIR 기준인지
+# The Stop hook settings example is valid JSON and uses \$CLAUDE_PROJECT_DIR
 json="$(grep -m1 '{"hooks":{"Stop"' "$SKILL")"
-check "Stop 훅 설정 예시가 유효한 JSON" python3 -c 'import json,sys; json.loads(sys.argv[1])' "$json"
-check "Stop 훅 명령이 \$CLAUDE_PROJECT_DIR 기준" grep -q 'CLAUDE_PROJECT_DIR' <<<"$json"
+check "Stop hook settings example is valid JSON" python3 -c 'import json,sys; json.loads(sys.argv[1])' "$json"
+check "Stop hook command uses \$CLAUDE_PROJECT_DIR" grep -q 'CLAUDE_PROJECT_DIR' <<<"$json"
 
-# Phase 0 작업 트리 정리 명령: .autopilot 밖만 치우고 .autopilot 미커밋 상태는 남김
+# Phase 0 working tree command: stashes only outside .autopilot, keeps uncommitted .autopilot state
 tidy="$(grep -m1 'Working tree check:' "$SKILL" | sed -n 's/^[^`]*`[^`]*`[^`]*`\([^`]*\)`.*/\1/p')"
-check "Phase 0 정리 명령 추출" grep -q '^git stash' <<<"$tidy"
+check "extracts the Phase 0 tidy command" grep -q '^git stash' <<<"$tidy"
 d="$(mktemp -d "$TMPROOT/r.XXXX")"
 (
   cd "$d" && git init -q && git config user.email t@t && git config user.name t
@@ -38,20 +38,20 @@ d="$(mktemp -d "$TMPROOT/r.XXXX")"
   echo b > src/x; echo new > src/new; echo "attempts 1" > .autopilot/BACKLOG.md; echo f > .autopilot/LOG.md
   eval "$tidy"
 ) >/dev/null 2>&1
-check "정리: 작업 파일 변경은 stash로" grep -qx a "$d/src/x"
-check "정리: 새 작업 파일도 stash로" test ! -e "$d/src/new"
-check "정리: stash 하나 생김" test "$(git -C "$d" stash list | wc -l)" -eq 1
-check "정리: .autopilot 수정 유지" grep -qx "attempts 1" "$d/.autopilot/BACKLOG.md"
-check "정리: .autopilot 새 파일 유지" test -f "$d/.autopilot/LOG.md"
+check "tidy: work file changes stashed" grep -qx a "$d/src/x"
+check "tidy: new work files stashed too" test ! -e "$d/src/new"
+check "tidy: one stash created" test "$(git -C "$d" stash list | wc -l)" -eq 1
+check "tidy: .autopilot change kept" grep -qx "attempts 1" "$d/.autopilot/BACKLOG.md"
+check "tidy: new .autopilot file kept" test -f "$d/.autopilot/LOG.md"
 
-# CONFIG 템플릿: 기본값이 가장 안전한 값이고 알려진 키만 있는지
+# CONFIG template: defaults are the safest values and only known keys exist
 cfg="$REPO/$SKILL_REL/assets/CONFIG.md"
 val() { sed -n "s/^$1:[[:space:]]*\([^[:space:]#]*\).*/\1/p" "$cfg"; }
-check "CONFIG 기본 integration=local" test "$(val integration)" = local
-check "CONFIG 기본 merge=off" test "$(val merge)" = off
-check "CONFIG 기본 release=off" test "$(val release)" = off
+check "CONFIG default integration=local" test "$(val integration)" = local
+check "CONFIG default merge=off" test "$(val merge)" = off
+check "CONFIG default release=off" test "$(val release)" = off
 keys="$(sed -n 's/^\([a-z_]*\):.*/\1/p' "$cfg" | sort | tr '\n' ' ')"
-check "CONFIG 키 목록" test "$keys" = "base_branch branch_prefix integration language merge release "
-check "SKILL.md: CONFIG는 Claude가 바꾸지 않음" grep -q "Claude never creates it or changes its values" "$REPO/$SKILL_REL/SKILL.md"
+check "CONFIG key list" test "$keys" = "base_branch branch_prefix integration language merge release "
+check "SKILL.md: Claude never changes CONFIG" grep -q "Claude never creates it or changes its values" "$REPO/$SKILL_REL/SKILL.md"
 
 finish
