@@ -586,3 +586,8 @@
 - 발굴: git worktree에서 전체 흐름 정상(.git이 파일). 드라이버 실행 중 status.sh가 "idle"인 관찰성 공백
 - 변경: scripts/status.sh(driver.lock pid 확인), tests/test_status.sh(+3), CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-20T17:21Z | - | retro | skill 1.35.1
+- 범위: T-079~T-088 (10건). done 10 / failed 0 / blocked 0. 유형: fix 4, enhance 3, test 2, feature 1(T-075 이전 포함 시 T-080 등). 출처: 품질 점검(도움말·오류·관찰성) 4, 처음 쓰는 환경 시나리오 3, 실제 실행 2, 회고 후속 1
+- 실패 원인 없음. eval: 6개 예제(세션·드라이버) 모두 100%
+- "배운 것"에 1줄 추가(처음 쓰는 환경은 미리 확인하고 STOP)
