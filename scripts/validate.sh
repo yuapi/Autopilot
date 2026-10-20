@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# 로컬 검증 (CI 대체). 커밋 전에 반드시 실행: bash scripts/validate.sh
-# 실패 항목이 하나라도 있으면 exit 1.
+# Local validation (instead of CI). Run before every commit: bash scripts/validate.sh
+# Exits 1 if any check fails.
 set -u
 cd "$(dirname "$0")/.."
 
@@ -12,7 +12,7 @@ CHECKLIST="docs/open-source-checklist.md"
 
 fail=0; warn=0
 
-# timeout이 없는 환경(macOS 기본)을 위한 대체: timeout → gtimeout → perl alarm
+# Fallback where timeout is missing (macOS default): timeout → gtimeout → perl alarm
 with_timeout() {
   local secs="$1"; shift
   if command -v timeout >/dev/null 2>&1; then timeout "$secs" "$@"
@@ -26,114 +26,114 @@ bad()  { echo "  FAIL  $*"; fail=$((fail + 1)); }
 wrn()  { echo "  WARN  $*"; warn=$((warn + 1)); }
 skip() { echo "  SKIP  $*"; }
 
-# SKILL.md frontmatter(첫 '---' 블록)만 추출
+# Extract only the SKILL.md frontmatter (the first '---' block)
 frontmatter() { awk 'NR==1 && $0=="---"{f=1; next} f && $0=="---"{exit} f' "$SKILL_MD"; }
 
-echo "[1] JSON 파싱"
+echo "[1] JSON parsing"
 for j in "$MARKET_JSON" "$PLUGIN_JSON"; do
   if python3 -c 'import json,sys; json.load(open(sys.argv[1]))' "$j" 2>/dev/null; then
     ok "$j"
   else
-    bad "$j 파싱 실패"
+    bad "$j does not parse"
   fi
 done
 
 echo "[2] SKILL.md frontmatter"
 fm="$(frontmatter)"
 name="$(printf '%s\n' "$fm" | sed -n 's/^name:[[:space:]]*//p' | head -1)"
-if [ -z "$name" ]; then bad "name 없음"
-elif [ "$name" != "autopilot" ]; then bad "name이 autopilot이 아님: $name"
+if [ -z "$name" ]; then bad "name missing"
+elif [ "$name" != "autopilot" ]; then bad "name is not autopilot: $name"
 else ok "name: $name"; fi
 desc="$(printf '%s\n' "$fm" | sed -n 's/^description:[[:space:]]*//p' | head -1)"
 desc_len="$(printf '%s' "$desc" | python3 -c 'import sys; print(len(sys.stdin.read()))')"
 if [ -z "$desc" ]; then
-  bad "description 없음"
+  bad "description missing"
 elif [ "$desc_len" -gt 1024 ]; then
-  bad "description이 1024자를 넘음 ($desc_len자)"
+  bad "description exceeds 1024 characters ($desc_len)"
 else
-  ok "description 존재 (${desc_len}자)"
+  ok "description present (${desc_len} characters)"
 fi
 
-echo "[2b] SKILL.md가 참조하는 스킬 파일"
+echo "[2b] Skill files referenced by SKILL.md"
 refs="$(grep -oE '(assets|scripts)/[A-Za-z0-9_.-]+\.(md|sh)' "$SKILL_MD" | sort -u)"
 missing=0
 for r in $refs; do
-  [ -f "$SKILL_DIR/$r" ] || { bad "없는 파일 참조: $r"; missing=1; }
+  [ -f "$SKILL_DIR/$r" ] || { bad "references a missing file: $r"; missing=1; }
 done
-[ "$missing" -eq 0 ] && ok "참조 $(printf '%s\n' "$refs" | grep -c .)개 모두 존재"
+[ "$missing" -eq 0 ] && ok "all $(printf '%s\n' "$refs" | grep -c .) references exist"
 for f in $(cd "$SKILL_DIR" && find assets scripts -type f | sort); do
-  printf '%s\n' "$refs" | grep -qxF "$f" || wrn "SKILL.md가 언급하지 않는 스킬 파일: $f"
+  printf '%s\n' "$refs" | grep -qxF "$f" || wrn "skill file not mentioned in SKILL.md: $f"
 done
 
-echo "[3] 버전 일치"
+echo "[3] Versions match"
 v_skill="$(printf '%s\n' "$fm" | sed -n "s/^[[:space:]]\{1,\}version:[[:space:]]*['\"]\{0,1\}\([0-9][0-9.]*\).*/\1/p" | head -1)"
 v_plugin="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("version",""))' "$PLUGIN_JSON" 2>/dev/null)"
 v_log="$(sed -n 's/^## \([0-9][0-9.]*\).*/\1/p' CHANGELOG.md | head -1)"
-v_body="$(sed -n 's/^\*\*버전 \([0-9][0-9.]*\)\*\*.*/\1/p' "$SKILL_MD" | head -1)"
+v_body="$(sed -n 's/^\*\*Version \([0-9][0-9.]*\)\*\*.*/\1/p' "$SKILL_MD" | head -1)"
 v_example="$(grep -m1 -oE '\| skill [0-9]+\.[0-9]+\.[0-9]+' "$SKILL_MD" | grep -oE '[0-9.]+$')"
-echo "        SKILL.md metadata.version=$v_skill  본문=$v_body  LOG예시=$v_example  plugin.json=$v_plugin  CHANGELOG=$v_log"
+echo "        SKILL.md metadata.version=$v_skill  body=$v_body  LOG example=$v_example  plugin.json=$v_plugin  CHANGELOG=$v_log"
 if [ -n "$v_skill" ] && [ "$v_skill" = "$v_plugin" ] && [ "$v_skill" = "$v_log" ] && [ "$v_skill" = "$v_body" ] && [ "$v_skill" = "$v_example" ]; then
-  ok "버전 일치: $v_skill"
+  ok "versions match: $v_skill"
 else
-  bad "버전 불일치"
+  bad "versions differ"
 fi
 
-echo "[4] 셸 스크립트 문법 (bash -n)"
+echo "[4] Shell syntax (bash -n)"
 while IFS= read -r f; do
-  if bash -n "$f" 2>/dev/null; then ok "$f"; else bad "$f 문법 오류"; fi
+  if bash -n "$f" 2>/dev/null; then ok "$f"; else bad "$f has a syntax error"; fi
 done < <(find scripts tests "$SKILL_DIR" -name '*.sh' -type f 2>/dev/null | sort)
 
 echo "[5] claude plugin validate"
 if [ -n "${AUTOPILOT_IN_TESTS:-}" ]; then
-  skip "테스트 안에서는 생략"
+  skip "skipped inside tests"
 elif command -v claude >/dev/null 2>&1; then
   if out="$(claude plugin validate . 2>&1)"; then
     printf '%s\n' "$out" | sed 's/^/        /'
     ok "claude plugin validate ."
   else
     printf '%s\n' "$out" | sed 's/^/        /'
-    bad "claude plugin validate . 실패"
+    bad "claude plugin validate . failed"
   fi
 else
-  skip "claude CLI 없음"
+  skip "no claude CLI"
 fi
 
-echo "[6] 금지어 ($CHECKLIST)"
+echo "[6] Forbidden patterns ($CHECKLIST)"
 patterns="$(awk '/FORBIDDEN-PATTERNS:BEGIN/{f=1; next} /FORBIDDEN-PATTERNS:END/{f=0} f' "$CHECKLIST" \
-  | grep -v '^```' | grep -v '^[[:space:]]*#' | grep -v '<여기에 추가>' | grep -v '^[[:space:]]*$' || true)"
+  | grep -v '^```' | grep -v '^[[:space:]]*#' | grep -v '<add here>' | grep -v '^[[:space:]]*$' || true)"
 if [ -z "$patterns" ]; then
-  skip "금지어 목록이 비어 있음 ($CHECKLIST 에 추가)"
+  skip "forbidden pattern list is empty (add them to $CHECKLIST)"
 else
   hits=0
   while IFS= read -r p; do
     if m="$(grep -rIniE --exclude-dir=.git --exclude-dir=dist --exclude="$(basename "$CHECKLIST")" -e "$p" . 2>/dev/null)"; then
       printf '%s\n' "$m" | sed 's/^/        /'
-      bad "금지어 발견: $p"
+      bad "forbidden pattern found: $p"
       hits=$((hits + 1))
     fi
   done <<< "$patterns"
-  [ "$hits" -eq 0 ] && ok "금지어 없음 ($(printf '%s\n' "$patterns" | wc -l | tr -d ' ')개 패턴)"
+  [ "$hits" -eq 0 ] && ok "no forbidden patterns ($(printf '%s\n' "$patterns" | wc -l | tr -d ' ') patterns)"
 fi
 
-echo "[7] 플레이스홀더"
+echo "[7] Placeholders"
 ph="$(grep -rIn --exclude-dir=.git --exclude-dir=dist \
   --exclude=validate.sh --exclude="$(basename "$CHECKLIST")" \
   -e '<GITHUB_ID>' -e '<NAME>' . 2>/dev/null || true)"
 if [ -n "$ph" ]; then
   printf '%s\n' "$ph" | sed 's/^/        /'
-  wrn "플레이스홀더가 남아 있음"
+  wrn "placeholders remain"
 else
-  ok "플레이스홀더 없음"
+  ok "no placeholders"
 fi
 
-echo "[8] 테스트 (tests/test_*.sh)"
+echo "[8] Tests (tests/test_*.sh)"
 if [ -n "${AUTOPILOT_IN_TESTS:-}" ]; then
-  skip "테스트 안에서는 생략"
+  skip "skipped inside tests"
 else
   for t in tests/test_*.sh; do
     [ -f "$t" ] || continue
     if out="$(with_timeout "${AUTOPILOT_TEST_TIMEOUT:-300}" bash "$t" 2>&1)"; then
-      ok "$t ($(printf '%s\n' "$out" | grep -c '^  ok') 통과)"
+      ok "$t ($(printf '%s\n' "$out" | grep -c '^  ok') passed)"
     else
       printf '%s\n' "$out" | grep -v '^  ok' | sed 's/^/        /'
       bad "$t"
@@ -143,7 +143,7 @@ fi
 
 echo
 if [ "$fail" -gt 0 ]; then
-  echo "결과: FAIL ($fail 실패, $warn 경고)"
+  echo "Result: FAIL ($fail failed, $warn warnings)"
   exit 1
 fi
-echo "결과: PASS ($warn 경고)"
+echo "Result: PASS ($warn warnings)"

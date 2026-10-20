@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# 버전 올리기 (release/<ver> 브랜치에서): bash scripts/bump.sh <major|minor|patch> ["<추가 요약>"]
-# 갱신 대상: SKILL.md(metadata.version, 본문 **버전 x.y.z**, LOG 예시 skill x.y.z),
-#            plugin.json version, CHANGELOG.md (## Unreleased → ## x.y.z — 날짜). 커밋은 하지 않는다.
+# Bump the version (on a release/<ver> branch): bash scripts/bump.sh <major|minor|patch> ["<extra summary>"]
+# Updates: SKILL.md (metadata.version, body **Version x.y.z**, LOG example skill x.y.z),
+#          plugin.json version, CHANGELOG.md (## Unreleased → ## x.y.z — date). Does not commit.
 set -eu
 cd "$(dirname "$0")/.."
 kind="${1:-}"
 note="${2:-}"
-case "$kind" in major|minor|patch) ;; *) echo "사용법: bump.sh <major|minor|patch> [\"<추가 요약>\"]" >&2; exit 1;; esac
+case "$kind" in major|minor|patch) ;; *) echo "usage: bump.sh <major|minor|patch> [\"<extra summary>\"]" >&2; exit 1;; esac
 
 python3 - "$kind" "$note" << 'PY'
 import datetime, json, re, sys
@@ -18,13 +18,13 @@ log = "CHANGELOG.md"
 s = open(skill, encoding="utf-8").read()
 m = re.search(r"^metadata:\n\s+version:\s*['\"]?(\d+)\.(\d+)\.(\d+)['\"]?\s*$", s, re.M)
 if not m:
-    sys.exit("SKILL.md에서 metadata.version을 찾지 못함")
+    sys.exit("metadata.version not found in SKILL.md")
 a, b, c = map(int, m.groups())
 cur = f"{a}.{b}.{c}"
 a, b, c = {"major": (a + 1, 0, 0), "minor": (a, b + 1, 0), "patch": (a, b, c + 1)}[kind]
 new = f"{a}.{b}.{c}"
 
-# CHANGELOG 먼저 계산 (실패 시 아무 파일도 바꾸지 않도록)
+# Work out the CHANGELOG first so a failure changes no files
 t = open(log, encoding="utf-8").read()
 today = datetime.date.today()
 um = re.search(r"^## Unreleased[ \t]*\n(.*?)(?=^## |\Z)", t, re.M | re.S)
@@ -34,7 +34,7 @@ if items:
     t = t[: um.start()] + f"## Unreleased\n\n## {new} — {today}\n{body}\n\n" + t[um.end():]
 else:
     if not note:
-        sys.exit("## Unreleased 항목이 없음. 요약을 인자로 주거나 CHANGELOG에 항목을 먼저 쓸 것")
+        sys.exit("no items under ## Unreleased. Pass a summary or add items to the CHANGELOG first")
     entry = f"## {new} — {today}\n- {note}\n\n"
     if um:
         t = t[: um.start()] + "## Unreleased\n\n" + entry + t[um.end():]
@@ -44,18 +44,18 @@ else:
 
 p = json.load(open(plugin, encoding="utf-8"))
 if p.get("version") != cur:
-    sys.exit(f"plugin.json 버전({p.get('version')})이 SKILL.md({cur})와 다름. 먼저 맞출 것")
+    sys.exit(f"plugin.json version ({p.get('version')}) differs from SKILL.md ({cur}). Make them match first")
 
 def sub(pattern, repl, text, label):
     out, n = re.subn(pattern, repl, text, flags=re.M)
     if n == 0:
-        sys.exit(f"SKILL.md에서 {label}을(를) 찾지 못함")
+        sys.exit(f"{label} not found in SKILL.md")
     return out
 
 esc = re.escape(cur)
 s = sub(rf"(^metadata:\n\s+version:\s*['\"]?){esc}", rf"\g<1>{new}", s, "metadata.version")
-s = sub(rf"\*\*버전 {esc}\*\*", f"**버전 {new}**", s, "본문 **버전**")
-s = sub(rf"skill {esc}\b", f"skill {new}", s, "LOG 형식 skill 버전")
+s = sub(rf"\*\*Version {esc}\*\*", f"**Version {new}**", s, "body **Version**")
+s = sub(rf"skill {esc}\b", f"skill {new}", s, "LOG format skill version")
 
 p["version"] = new
 open(skill, "w", encoding="utf-8").write(s)

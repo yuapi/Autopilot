@@ -62,7 +62,7 @@ last_retro: 2026-10-19
 - 검증 명령: `bash scripts/validate.sh` (JSON·frontmatter·버전·bash -n·claude plugin validate·tests/test_*.sh). 약 20초. 2026-10-19 PASS, 테스트 93개
 
 ## 배운 것
-- 클라우드 세션은 태그 push(403)·원격 브랜치 삭제가 막힌다. 릴리스는 main 머지까지 하고 태그는 `release.sh --catch-up`으로 로컬에서 처리
+- 클라우드 세션은 태그 push(403)·Release API(세션 정책)·원격 브랜치 삭제가 막힌다. PAT를 넣어도 마찬가지. 릴리스는 main 머지까지 하고 태그·Release는 사람이 로컬에서 `release.sh --catch-up`
 - 스크립트를 바꾸면 경계 입력(빈 값·숫자 아님·도구 없음·하위 폴더) 테스트를 같이 쓴다. 직접 써보기에서 드라이버 결함 5건이 나왔다
 - SKILL.md에 적힌 명령(롤백 등)은 tests/test_skill_rules.sh로 실제 실행해 검증한다. 문서 속 명령의 버그가 무한 재시도를 만들었다
 - `.autopilot/` 상태를 되돌리거나 치우는 모든 git 명령은 pathspec으로 `.autopilot`을 제외해야 한다
