@@ -2,7 +2,7 @@
 
 last_scan: 2026-10-20
 last_issue_check: 2026-10-20 (open 이슈 0건, open PR 0건)
-last_retro: 2026-10-20T11:50
+last_retro: 2026-10-20T12:08
 
 ## 제품
 
@@ -73,6 +73,8 @@ last_retro: 2026-10-20T11:50
 - 훅·스킬 동작은 `claude -p --plugin-dir plugins/autopilot`로 실제 세션에서 싸게 확인할 수 있다(AUTOPILOT_STALL_LIMIT=1로 1~2턴). 문서만 보고 동작을 가정하지 않는다
 - CHANGELOG·주석에 scan.sh가 잡는 표식 단어(콜론 붙은 TODO 등)를 쓰지 않는다. "this repository scans clean" 테스트가 실패한다
 - 탐색 실행은 파일 하나·비ASCII 이름·공백 경로처럼 최소 입력으로도 돌린다(scan.sh 파일 이름 누락은 다중 파일 테스트로는 안 보였다)
+- 점수만 보지 말고 규칙 검사를 본다. 세션 모드 실제 실행 2회가 10/10이면서 커밋 묶기·LOG 역순·심화 발굴 생략을 했다. 모델이 "작은 레포라 이 정도면 됐다"고 스스로 규칙을 풀어 버리는 곳은 스크립트로 막는다
+- LOG 항목은 log.sh로만 쓴다. 손으로 쓴 시각은 지어낸 값이었다(이 레포 포함)
 
 ## 하지 않기로 한 것
 - GitHub Actions CI: 레포 규칙상 로컬 검증만 (CLAUDE.md)
