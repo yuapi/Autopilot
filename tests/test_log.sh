@@ -25,4 +25,14 @@ check "rejected calls write nothing" test "$(grep -c '^## ' "$d/.autopilot/LOG.m
 (cd "$d" && mkdir -p sub && cd sub && echo "- from a subfolder" | bash "$LG" T-7 failed >/dev/null)
 check "works from a subfolder of the repository" grep -q "| T-7 | failed |" "$d/.autopilot/LOG.md"
 check "status.sh reads what it writes" bash -c "bash '$REPO/$SKILL_REL/scripts/status.sh' '$d' | grep -q 'T-7  failed'"
+# done after a commit that covers several tasks → warning, entry still written
+(cd "$d" && git config user.email t@t && git config user.name t && echo a > a && git add a && git commit -qm "autopilot(T-003,T-004): two" )
+err="$(echo "- x" | bash "$LG" T-004 done "$d" 2>&1 >/dev/null)"
+check "several task IDs in the last commit → warning" grep -q "covers several tasks" <<<"$err"
+check "the entry is written anyway" grep -q "| T-004 | done |" "$d/.autopilot/LOG.md"
+(cd "$d" && echo b > a && git commit -qam "autopilot(T-005): one")
+check "one task ID → no warning" test -z "$(echo "- x" | bash "$LG" T-005 done "$d" 2>&1 >/dev/null)"
+(cd "$d" && echo c > a && git commit -qam "autopilot(T-001..T-005): range")
+check "a task ID range → warning" bash -c "echo '- x' | bash '$LG' T-005 done '$d' 2>&1 >/dev/null | grep -q 'covers several'"
+
 finish

@@ -259,3 +259,8 @@
 - 변경: scripts/eval.sh(규칙 검사 4개: 작업당 커밋, LOG 추가만, LOG 시간 순서, 심화 발굴 후 최종 정지 / --grade로 남긴 실행 재채점), tests/test_eval.sh(+10, 가짜 claude는 작업마다 커밋), README 2종, CHANGELOG
 - 검증: validate PASS. 남겨 둔 실제 실행 2개 재채점: 1회차 시간 순서 위반(6건), 2회차 작업당 커밋·LOG 삭제·심화 발굴 생략 위반 — 둘 다 점수는 10/10인데 이제 실패
 - 다음: T-041(위반을 막는 규칙 수정)
+
+## 2026-10-20T11:39 | T-041 | done | skill 1.19.1
+- 변경: scripts/finalstop.sh(신규: 심화 발굴 4단계·빈 큐·커밋 안 된 코드 없음을 확인해야 STOP), SKILL.md(최종 정지는 finalstop.sh, Phase 2 시작에 이전 작업 커밋 확인, "사람에게 남기지 않기" 원칙), scripts/log.sh(done인데 마지막 커밋이 여러 작업이면 경고), tests/test_finalstop.sh(15)·test_log.sh(+4), docs/skill-design.md, CHANGELOG
+- 검증: validate PASS. 실제 eval --mode session 2회: 3회차(iterations 3) 규칙 검사 전부 ok·10/10, 2회차 1건 위반(T-003,T-004 한 커밋)·나머지 ok. 수정 전 2회차는 위반 3건
+- 판단: 커밋 묶음은 규칙과 log.sh 경고까지만. 이미 만든 커밋을 쪼개는 것은 히스토리 재작성이라 하지 않음
