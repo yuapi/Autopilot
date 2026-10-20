@@ -172,4 +172,14 @@ check_not "AUTOPILOT_MAX_COST=abc → refused" bash -c "cd '$d' && AUTOPILOT_MAX
 
 check "driver prompt says one task is not a task budget" grep -q "not a task budget" "$DRIVER"
 
+# the permission mode is always named; skip warns, unknown values fall back to the allowlist with a warning
+d="$(newrepo)"
+check "default → allowlist named" grep -q "permissions: allowlist" <<<"$(FAKE_MODE=ok drive "$d" 1 2>&1)"
+out="$(AUTOPILOT_PERMISSION=skip FAKE_MODE=ok drive "$d" 1 2>&1)"
+check "skip → loud warning" grep -q "permissions: SKIPPED" <<<"$out"
+check "skip → claude gets --dangerously-skip-permissions" grep -q -- "--dangerously-skip-permissions" "$d/.autopilot/args"
+out="$(AUTOPILOT_PERMISSION=skp FAKE_MODE=ok drive "$d" 1 2>&1)"
+check "typo → unknown value warning" grep -q "unknown AUTOPILOT_PERMISSION value: skp" <<<"$out"
+check "typo → still the allowlist" grep -q -- "--allowedTools" "$d/.autopilot/args"
+
 finish

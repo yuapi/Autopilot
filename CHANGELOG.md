@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- The driver names its permission mode at start: a loud warning for `AUTOPILOT_PERMISSION=skip`, and a warning when the value is unknown (a typo used to fall back to the allowlist silently)
 - eval.sh driver mode sends the real driver's prompt and allowlist (read from autopilot.sh) and loads the working copy as a plugin. Its own prompt hid the driver-only bug fixed in 1.31
 
 ## 1.31.0 — 2026-10-20
