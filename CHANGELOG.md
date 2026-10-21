@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.54.1 — 2026-10-21
 - `task.sh done` refuses a task whose commits add well-known generated files (`__pycache__/`, `*.pyc`, `node_modules/`, `.DS_Store`, caches, coverage output, `*.egg-info/`) and names them; the rule was in SKILL.md only
 
 ## 1.54.0 — 2026-10-21
