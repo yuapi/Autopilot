@@ -720,3 +720,7 @@
 - 발굴: 직접 겪음. T-099 eval을 백그라운드로 두고 턴을 끝내자 훅이 진행 없는 차단을 셈, 횟수가 보이지 않아 3번째에 조용히 STOP될 뻔함. 같은 사이클 문서 대조에서 T-104(docs)도 큐에 넣음
 - 변경: assets/autopilot-stop.sh(진행 없는 차단부터 "Stop N of LIMIT"과 포그라운드 대기 안내, printf로 JSON), .claude/hooks 사본(hook.sh install), tests/test_hook.sh(+4), CHANGELOG
 - 검증: test_hook 35 통과(JSON 유효성 포함), validate PASS
+
+## 2026-10-21T10:18Z | T-104 | done | skill 1.47.0
+- 변경: README.md·README.ko.md(AUTOPILOT_RUN_STALE_MIN, AUTOPILOT_SCAN_MAX·--all, 드라이버 CONFIG 사전 점검 3종, 훅의 남은 횟수 안내), CHANGELOG
+- 검증: 스크립트가 읽는 AUTOPILOT_* 변수를 README와 대조(사용자용은 전부 문서화, EVAL_*·DRIVER는 개발·내부용), validate PASS
