@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- Discovery done-check: a proposal settles a `scan.sh` line only when 1-F requires one; a marker asking for something new is a `feature` task. A Haiku eval run had sent a TODO for a new option to a proposal
 - README (EN/KO) brought up to date: driver stop conditions and `glab`, the status screen, the stop conditions including the task budget and cost cap, and the eval section
 
 ## 1.36.0 — 2026-10-20

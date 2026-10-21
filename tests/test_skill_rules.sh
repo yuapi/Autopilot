@@ -96,4 +96,6 @@ check "baseline runs non-interactively with a time limit" grep -q "Run them so t
 check "baseline names watch-mode commands and their one-shot form" bash -c "grep -q 'jest --watch' '$SKILL' && grep -q 'vitest run' '$SKILL'"
 check "Phase 4 treats a timeout as worse than the baseline" grep -q "A timeout counts as worse than the baseline" "$SKILL"
 
+check "a scan.sh line is not settled by a proposal unless 1-F requires it" grep -q "neither does a proposal unless 1-F requires one" "$SKILL"
+
 finish
