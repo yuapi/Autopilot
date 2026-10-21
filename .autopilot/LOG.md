@@ -808,3 +808,8 @@
 ## 2026-10-21T11:55Z | - | release | skill 1.54.1
 - 1.54.1 (patch): 생성 파일을 추가하는 작업 커밋 거절(T-112). PR #292 → main, #293 → develop
 - tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-10-21T12:02Z | T-113 | done | skill 1.54.1
+- 발굴: 배운 것 적용(규칙 강제 확인). Never 목록·Phase 3의 "파일 삭제는 cleanup 작업에서만"이 강제되지 않음
+- 변경: task.sh(BACKLOG 행의 유형이 cleanup이 아니면 .autopilot/ 밖 삭제 거절, -M으로 rename은 삭제 아님), SKILL.md Phase 3, tests/test_task.sh(+3), CHANGELOG
+- 검증: test_task 72 통과(처음엔 테스트 커밋이 수정 파일을 스테이징 안 해 3건 실패 → commit -a로 고침), validate PASS. 실제 eval 세션 2작업: kv 10/11, mono 8/8, 실패 0

@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- `task.sh done` refuses a task that is not `cleanup` when its commits delete files outside `.autopilot/` (renames are fine): "delete files only in cleanup tasks" was a rule only
 
 ## 1.54.1 — 2026-10-21
 - `task.sh done` refuses a task whose commits add well-known generated files (`__pycache__/`, `*.pyc`, `node_modules/`, `.DS_Store`, caches, coverage output, `*.egg-info/`) and names them; the rule was in SKILL.md only
