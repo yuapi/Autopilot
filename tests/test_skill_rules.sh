@@ -100,4 +100,6 @@ check "a scan.sh line is not settled by a proposal unless 1-F requires it" grep 
 
 check "Phase 5 commits .autopilot/ at the end of every task" grep -q "Commit \`.autopilot/\` alone, in every mode" "$SKILL"
 
+check "commit hooks are verification and never bypassed" bash -c "grep -q 'Never bypass hooks' '$SKILL' && grep -q 'Bypass the repository' '$SKILL'"
+
 finish

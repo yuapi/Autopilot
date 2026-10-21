@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- Repository commit hooks count as verification: files a hook rewrote are staged and committed again, a rejected commit is fixed or treated as a failure, and hooks are never bypassed (`--no-verify`, `core.hooksPath`)
 
 ## 1.40.0 — 2026-10-21
 - status.sh explains a task left in progress while no loop runs: the last run ended in the middle of it, and the next run finishes or rolls it back
