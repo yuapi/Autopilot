@@ -144,7 +144,8 @@ Check this before leaving Phase 1. If anything is missing, discovery is not fini
 - The ROADMAP feature map has a row per feature (no template placeholder left).
 - "Observations" records at least one command you actually ran and what it did, or why nothing could be run.
 - "Scenarios" has three scenarios with where each got stuck (or "no friction").
-- Every `scan.sh` line is a BACKLOG task (a code marker becomes a `todo` task, or a `feature` task if it describes a feature) or has a one-line reason under "Not doing". Writing it only under "Missing" or "Weak" does not count, and neither does a proposal unless 1-F requires one (it would change or remove an existing interface). A marker asking for something new, such as an option or a command, is a `feature` task: interfaces may grow.
+- Every `scan.sh` line is a BACKLOG task (a code marker becomes a `todo` task, or a `feature` task if it describes a feature), a PROPOSALS row when 1-F requires one (it would change or remove an existing interface, …), or has a one-line reason under "Not doing". Writing it only under "Missing" or "Weak" does not count. A marker asking for something new, such as an option or a command, is a `feature` task: interfaces may grow.
+- An idea 1-F sends to proposals gets its PROPOSALS row in this cycle, written in `.autopilot/PROPOSALS.md`. "Not doing" is for what nobody should do; a "Not doing" line for it, or one that only says "see PROPOSALS", drops it and does not count.
 - `last_scan` is today.
 
 #### 1-B. Discovery sources
@@ -201,7 +202,7 @@ When selecting (Phase 2), pick issue-sourced tasks first within the same priorit
 
 #### 1-F. Proposals (PROPOSALS)
 
-Discovery turns up ideas that are valuable but that this skill's rules do not allow it to carry out alone. Do not drop them; hand them to people with evidence. This is not a question, so the loop does not wait for an answer.
+Discovery turns up ideas that are valuable but that this skill's rules do not allow it to carry out alone. Do not drop them; hand them to people with evidence, as a row in `.autopilot/PROPOSALS.md` (create it from `assets/PROPOSALS.md` if missing). A mention under ROADMAP "Not doing" is not a proposal. This is not a question, so the loop does not wait for an answer.
 
 Send these to proposals (never to the BACKLOG):
 - Anything that changes or removes an existing public interface
