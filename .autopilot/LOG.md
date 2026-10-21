@@ -760,3 +760,7 @@
 - 발굴: LOG·BACKLOG 순서 탐색 실행. in_progress 작업의 done 항목, 없는 ID(T-999)도 log.sh가 기록
 - 변경: log.sh(작업 항목은 BACKLOG·archive 행과 상태 일치 필요, 어긴 경우 할 task.sh 단계 안내, BACKLOG 없는 레포와 '-' 항목은 제외, CRLF 허용), SKILL.md LOG 형식, tests/test_log.sh(+11), CHANGELOG
 - 검증: test_log 44 통과, validate PASS. 실제 eval 세션 2작업: todo 10/11(놓친 항목이 매번 다름), hooks 8/8, 규칙 검사 전부 ok — 실제 세션이 새 순서 검사와 충돌 없음
+
+## 2026-10-21T10:58Z | - | release | skill 1.51.0
+- 1.51.0 (minor): BACKLOG과 어긋나는 LOG 작업 항목 거절(T-108). PR #275 → main, #276 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
