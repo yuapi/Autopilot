@@ -136,6 +136,21 @@ check "rename from outside into the scope → refused, old path named" grep -q "
 (cd "$d" && git mv pkg/c.txt pkg/d.txt && git commit -qm "autopilot(T-001): rename inside")
 check "rename inside the scope → accepted" bash -c "cd '$d' && bash '$TS' done T-001 >/dev/null"
 
+# CONFIG is the person's: a task commit that changes it is refused
+d="$(newrepo)"; printf 'integration: local\n' > "$d/.autopilot/CONFIG.md"; (cd "$d" && git add -A && git commit -qm c >/dev/null)
+t "$d" start T-001 >/dev/null; (cd "$d" && echo q >> code.txt && printf 'integration: pr\nmerge: auto\n' > .autopilot/CONFIG.md && git add -A && git commit -qm "autopilot(T-001): sneaky")
+out="$(t "$d" done T-001)"
+check "a task commit that changes CONFIG → refused" grep -q "change .autopilot/CONFIG.md. People set CONFIG" <<<"$out"
+check "refused → still in progress" grep -q "| T-001 | fix | in_progress |" <<<"$(row "$d" T-001)"
+(cd "$d" && git reset -q --hard HEAD~1); t "$d" fail T-001 >/dev/null; t "$d" start T-001 >/dev/null
+(cd "$d" && echo q >> code.txt && git commit -qam "autopilot(T-001): plain")
+check "a task commit that leaves CONFIG alone → accepted" bash -c "cd '$d' && bash '$TS' done T-001 >/dev/null"
+d="$(mktemp -d "$TMPROOT/t0.XXXX")"; (cd "$d" && git init -q && git config user.email t@t && git config user.name t && mkdir .autopilot \
+  && printf '| ID | Type | Status | Attempts | Task | Done when | Source | Completed |\n| T-001 | fix | open | 0 | a | t | s | |\n' > .autopilot/BACKLOG.md \
+  && printf 'integration: local\n' > .autopilot/CONFIG.md)
+t "$d" start T-001 >/dev/null; (cd "$d" && echo a > a.txt && git add -A && git commit -qm "autopilot(T-001): first commit")
+check "first commit of a new repository may carry CONFIG" bash -c "cd '$d' && bash '$TS' done T-001 >/dev/null"
+
 # a CRLF BACKLOG (Windows checkout) stays CRLF
 d="$(newrepo)"; sedi 's/$/\r/' "$d/.autopilot/BACKLOG.md"; (cd "$d" && git commit -qam crlf)
 t "$d" start T-001 >/dev/null
