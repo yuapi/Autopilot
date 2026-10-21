@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.43.0 — 2026-10-21
 - A CONFIG value that is not one of the documented ones (a typo such as `integration: prr`) now counts as the safest one: `workbranch.sh` treats it as `local` and leaves a default branch instead of committing on it, and `status.sh` warns with the allowed values
 
 ## 1.42.0 — 2026-10-21
