@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.42.0
+  version: 1.43.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.42.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.43.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -48,7 +48,7 @@ These rules are written in English. Follow them exactly whatever language you wr
 | `.autopilot/ROADMAP.md` | Direction document Claude writes and updates from code analysis |
 | `.autopilot/BACKLOG.md` | Task queue with status, attempts and completion criteria |
 | `.autopilot/LOG.md` | Record of every run (append only) |
-| `.autopilot/CONFIG.md` | Integration policy (push, PR, merge, release), output language and `scope`. **People set it; Claude only reads it.** Missing means `local` |
+| `.autopilot/CONFIG.md` | Integration policy (push, PR, merge, release), output language and `scope`. **People set it; Claude only reads it.** Missing means `local`; a value that is not one of the documented ones (a typo) counts as the safest: `local`, `off`, `local_branch: auto` |
 | `.autopilot/PROPOSALS.md` | Proposals for large changes the loop does not make on its own. People decide by changing the status |
 | `.autopilot/features/<slug>.md` | Design and stage document for a feature that spans several tasks |
 | `.autopilot/STOP` | If present, the loop stops (created by Claude or a person) |
@@ -347,7 +347,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30Z | T-042 | done | skill 1.42.0
+## 2026-10-01T14:30Z | T-042 | done | skill 1.43.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)

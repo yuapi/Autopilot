@@ -19,6 +19,12 @@ cfg_value() {
 }
 integration="$(cfg_value integration)"; integration="${integration:-local}"
 local_branch="$(cfg_value local_branch)"; local_branch="${local_branch:-auto}"
+# An unknown value (a typo such as "prr") counts as the safest one: otherwise it would read as
+# "not local" and leave the loop committing on a default branch
+case "$integration" in local|branch|pr) ;; *)
+  echo "[workbranch] CONFIG integration: $integration is not local, branch or pr; treating it as local" >&2; integration=local;; esac
+case "$local_branch" in auto|current) ;; *)
+  echo "[workbranch] CONFIG local_branch: $local_branch is not auto or current; treating it as auto" >&2; local_branch=auto;; esac
 
 current="$(git symbolic-ref --short -q HEAD || true)"
 if [ "$integration" != "local" ] || [ "$local_branch" = "current" ]; then

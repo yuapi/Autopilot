@@ -60,4 +60,16 @@ check "works from a subfolder" grep -q '^autopilot/' <<<"$(branch "$d")"
 
 check_not "fails outside a git repository" bash "$WB" "$(mktemp -d "$TMPROOT/n.XXXX")"
 
+# a CONFIG typo counts as the safest value, never as "not local"
+d="$(newrepo main)"; printf 'integration: prr\n' > "$d/.autopilot/CONFIG.md"
+out="$(bash "$WB" "$d" 2>&1)"
+check "unknown integration → treated as local, leaves main" grep -q '^autopilot/' <<<"$(branch "$d")"
+check "unknown integration → says so" grep -q 'integration: prr is not local, branch or pr' <<<"$out"
+d="$(newrepo main)"; printf 'local_branch: curent\n' > "$d/.autopilot/CONFIG.md"
+bash "$WB" "$d" >/dev/null 2>&1
+check "unknown local_branch → treated as auto, leaves main" grep -q '^autopilot/' <<<"$(branch "$d")"
+d="$(newrepo main)"; printf 'integration: pr\n' > "$d/.autopilot/CONFIG.md"
+out="$(bash "$WB" "$d" 2>&1)"
+check "integration: pr → stays, no warning" bash -c "test '$(branch "$d")' = main && ! grep -q 'is not' <<<'$out'"
+
 finish

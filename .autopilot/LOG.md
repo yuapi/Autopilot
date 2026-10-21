@@ -659,3 +659,12 @@
 - 발굴: 큐가 비어 재발굴. 이슈 0·PR 0·scan.sh 0건. 빈 레포 탐색 실행에서 runlock.sh start 후 .gitignore가 없음을 확인 → T-097
 - 변경: runlock.sh(start에서 실행 산출물 6줄을 .gitignore에 추가, 중복 없음, 거절 시 변경 없음), SKILL.md Phase 0·Stop 훅 문단, tests/test_runlock.sh(+5), CHANGELOG
 - 검증: test_runlock 31 통과, validate PASS
+
+## 2026-10-21T09:27Z | - | release | skill 1.42.0
+- 1.42.0 (minor): runlock.sh start가 .gitignore 처리(T-097). PR #233 → main, #234 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-10-21T09:32Z | T-098 | done | skill 1.42.0
+- 발굴: 잘못된 CONFIG 탐색 실행. integration: prr에서 workbranch.sh가 master에 머물고 status.sh는 경고 없음 → T-098
+- 변경: workbranch.sh(모르는 integration→local, local_branch→auto, 경고), status.sh(키별 허용값 경고, 클라우드 경고 판단도 local로), autopilot.sh(기존 경고에 "local로 취급" 추가), SKILL.md 상태 파일 표, 테스트(workbranch +4, status +4, driver 1 수정), CHANGELOG
+- 검증: validate PASS

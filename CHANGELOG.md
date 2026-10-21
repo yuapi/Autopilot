@@ -7,6 +7,9 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.43.0 — 2026-10-21
+- A CONFIG value that is not one of the documented ones (a typo such as `integration: prr`) now counts as the safest one: `workbranch.sh` treats it as `local` and leaves a default branch instead of committing on it, and `status.sh` warns with the allowed values
+
 ## 1.42.0 — 2026-10-21
 - `runlock.sh start` adds the run artifacts (STOP, RUN, .hook-state, driver-logs/, driver.lock, .task) to `.gitignore` itself, as the driver does; Phase 0 no longer edits it by hand, so a missed step cannot commit RUN
 
