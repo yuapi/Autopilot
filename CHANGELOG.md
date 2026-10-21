@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.42.0 — 2026-10-21
 - `runlock.sh start` adds the run artifacts (STOP, RUN, .hook-state, driver-logs/, driver.lock, .task) to `.gitignore` itself, as the driver does; Phase 0 no longer edits it by hand, so a missed step cannot commit RUN
 
 ## 1.41.1 — 2026-10-21
