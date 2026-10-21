@@ -304,7 +304,7 @@ On success:
    - Only after `done` accepts, publish as described in "Integration policy" (push, PR, merge). Publishing first would push or merge a commit the check then refuses.
 3. Add follow-up tasks found during implementation to the BACKLOG.
 4. Append to the LOG with `scripts/log.sh` (see "LOG format").
-   Never commit generated files (`__pycache__`, build output, coverage, logs). If the task created them, add them to `.gitignore` instead; if they were already tracked, queue a `cleanup` task rather than deleting them in this one.
+   Never commit generated files (`__pycache__`, build output, coverage, logs); `task.sh done` refuses a task that adds the well-known ones. If the task created them, add them to `.gitignore` instead; if they were already tracked, queue a `cleanup` task rather than deleting them in this one.
 5. If the integration mode is `pr` and `release: auto`, check the "Release" conditions below.
 6. Commit `.autopilot/` alone, in every mode (message `autopilot: record state` or the repository's convention; in `branch`/`pr` modes on the task branch before publishing). The `done` row and the LOG entry are written after the task's commit; without this they stay uncommitted, are lost with the working tree, and are missing when the loop stops (task budget, a person's STOP, the driver's run limit). Every task ends with a clean working tree.
 7. **Driver mode**: exit. **Session mode**: drop what you remember about the task and go back to Phase 0. No summary, no report, no "next I will …". Go straight to the next task.
