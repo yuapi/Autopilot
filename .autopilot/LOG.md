@@ -711,3 +711,7 @@
 - 발굴: 잘못된 CONFIG 시나리오 4번째. branch_prefix에 공백·~·..가 있으면 모든 작업 브랜치 생성 실패, 확인 없음
 - 변경: autopilot.sh(git check-ref-format로 사전 점검, exit 1과 고칠 방법), status.sh(경고), SKILL.md Phase 0 1, 테스트(driver +4, status +2), CHANGELOG
 - 검증: test_driver 92, test_status 50 통과, validate PASS. 이로써 CONFIG 키 전부(integration·merge·release·local_branch·scope·base_branch·branch_prefix)가 검사됨, language는 자유값
+
+## 2026-10-21T10:12Z | - | release | skill 1.47.0
+- 1.47.0 (minor): 잘못된 branch_prefix에서 정지(T-102). PR #254 → main, #255 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
