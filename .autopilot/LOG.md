@@ -639,3 +639,7 @@
 ## 2026-10-21T03:29Z | - | release | skill 1.40.0
 - 1.40.0 릴리즈: release/1.40.0 → main, main → develop 역병합. 태그 대기: v1.40.0 (403, 누적 v1.11.0~v1.40.0)
 - ROADMAP 심화 발굴에 이번 사이클 4단계 기록(모든 단계에서 실질 작업이 나와 루프 계속)
+
+## 2026-10-21T03:32Z | T-095 | done | skill 1.40.0
+- 변경: SKILL.md Phase 5 1단계(커밋 훅은 검증의 일부, 고친 파일 재스테이징, 거부는 수정 또는 실패, 우회 금지), Never 목록, tests/test_skill_rules.sh(+1), CHANGELOG
+- 검증: validate PASS. 실제 /autopilot:run 1(todo + pre-commit 공백 검사·commit-msg "Checked-by: hook" 요구): 두 커밋 모두 훅을 통과(Checked-by 줄 추가), --no-verify 0회, 트리 깨끗
