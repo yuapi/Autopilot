@@ -60,4 +60,21 @@ for q in "" '"' "'"; do
   check "version read with quote [${q:-none}]" bash -c "echo '- x' | bash '$k/scripts/log.sh' - discover '$r' | grep -q 'skill 9.8.7\$'"
 done
 
+# a task entry must agree with the BACKLOG row (task.sh first, then log.sh)
+d="$(mktemp -d "$TMPROOT/b.XXXX")"; mkdir -p "$d/.autopilot"
+printf '| ID | Type | Status | Attempts | Task | Done when | Source | Completed |\r\n| T-001 | fix | in_progress | 1 | a | t | s | |\r\n| T-002 | fix | done | 1 | b | t | s | 2026-01-01 |\r\n| T-003 | fix | open | 1 | c | t | s | |\r\n| T-004 | fix | blocked | 3 | d | t | s | |\r\n' > "$d/.autopilot/BACKLOG.md"
+printf '| T-010 | fix | done | 1 | old | t | s | 2026-01-01 |\n' > "$d/.autopilot/BACKLOG.archive.md"
+err="$(echo "- x" | bash "$LG" T-001 done "$d" 2>&1 >/dev/null)"; rc=$?
+check "done while in progress → refused" test "$rc" -ne 0
+check "refusal says to run task.sh done first" grep -q "T-001 is in_progress in the BACKLOG, not done. Run task.sh done T-001 first" <<<"$err"
+check_not "refused → nothing written" grep -q "| T-001 | done |" "$d/.autopilot/LOG.md"
+check "unknown task ID → refused" bash -c "echo '- x' | bash '$LG' T-999 done '$d' 2>&1 | grep -q 'T-999 has no BACKLOG row'"
+check "done task → done entry written" bash -c "echo '- x' | bash '$LG' T-002 done '$d' >/dev/null"
+check "row in BACKLOG.archive.md counts" bash -c "echo '- x' | bash '$LG' T-010 done '$d' >/dev/null"
+check "failed entry for an open task (CRLF BACKLOG)" bash -c "echo '- x' | bash '$LG' T-003 failed '$d' >/dev/null"
+check "failed entry for a task blocked at the 3rd attempt" bash -c "echo '- x' | bash '$LG' T-004 failed '$d' >/dev/null"
+check "blocked entry for a blocked task" bash -c "echo '- x' | bash '$LG' T-004 blocked '$d' >/dev/null"
+check_not "blocked entry for an open task → refused" bash -c "echo '- x' | bash '$LG' T-003 blocked '$d' >/dev/null 2>&1"
+check "'-' entries are not checked" bash -c "echo '- x' | bash '$LG' - discover '$d' >/dev/null"
+
 finish
