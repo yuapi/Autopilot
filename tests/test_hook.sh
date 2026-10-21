@@ -47,6 +47,21 @@ check "counter 0 after a commit" grep -q ' 0$' "$d/.autopilot/.hook-state"
 d="$(newrepo)"; touch "$d/.autopilot/RUN" "$d/.autopilot/STOP"
 check_not "STOP → allows ending" blocks "$d"
 check "STOP → RUN removed" test ! -e "$d/.autopilot/RUN"
+# a final stop that finalstop.sh did not write is refused; other STOPs are obeyed
+d="$(newrepo)"; touch "$d/.autopilot/RUN"; printf 'Final stop: no substantive work left\n- Cycles: 1\n' > "$d/.autopilot/STOP"
+out="$(run_hook "$d")"
+check "hand-written final stop → still blocks" grep -q '"decision":"block"' <<<"$out"
+check "hand-written final stop → says to run finalstop.sh" grep -q "not written by scripts/finalstop.sh" <<<"$out"
+check "hand-written final stop → moved to STOP.refused, RUN kept" bash -c "test ! -e '$d/.autopilot/STOP' && grep -q 'Final stop' '$d/.autopilot/STOP.refused' && test -f '$d/.autopilot/RUN'"
+check "the refusal is valid JSON" python3 -c 'import json,sys; json.loads(sys.argv[1])' "$out"
+printf '최종 정지: 할 일 없음\n' > "$d/.autopilot/STOP"
+check "hand-written Korean final stop → refused too" blocks "$d"
+printf 'Final stop: no substantive work left\n(checked by finalstop.sh)\n' > "$d/.autopilot/STOP"
+check_not "final stop from finalstop.sh → allows ending" blocks "$d"
+for body in 'Stopped by a person' 'Stopped after 3 task(s) as asked' 'Final stop: no progress' 'please stop'; do
+  d="$(newrepo)"; touch "$d/.autopilot/RUN"; printf '%s\n' "$body" > "$d/.autopilot/STOP"
+  check_not "STOP \"$body\" → allows ending" blocks "$d"
+done
 
 d="$(newrepo)"; touch "$d/.autopilot/RUN"; echo "garbage" > "$d/.autopilot/.hook-state"
 check "blocks even with a corrupt state file" blocks "$d"

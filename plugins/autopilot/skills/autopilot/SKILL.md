@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.53.0
+  version: 1.54.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.53.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.54.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -66,7 +66,7 @@ In session mode, also run `bash <skill folder>/scripts/runlock.sh touch` at the 
 
 0. **Only on first entry in session mode**:
    - If a person invoked the skill again while `.autopilot/STOP` exists, treat it as a request to resume: move the STOP content into the LOG and delete STOP.
-   - Claim the run marker with `bash <skill folder>/scripts/runlock.sh start`. It writes this session's ID (`CLAUDE_CODE_SESSION_ID`) into `.autopilot/RUN` and adds the run artifacts (`.autopilot/STOP`, `RUN`, `.hook-state`, `driver-logs/`, `driver.lock`, `.task`) to `.gitignore`; if the script cannot run, add those lines yourself. **If it exits with 2, another loop is already running in this repository**: tell the person what it printed and stop without changing any state; two loops on one repository corrupt the BACKLOG and fight over commits. A marker idle for 2 hours counts as abandoned and is taken over.
+   - Claim the run marker with `bash <skill folder>/scripts/runlock.sh start`. It writes this session's ID (`CLAUDE_CODE_SESSION_ID`) into `.autopilot/RUN` and adds the run artifacts (`.autopilot/STOP`, `STOP.refused`, `RUN`, `.hook-state`, `driver-logs/`, `driver.lock`, `.task`) to `.gitignore`; if the script cannot run, add those lines yourself. **If it exits with 2, another loop is already running in this repository**: tell the person what it printed and stop without changing any state; two loops on one repository corrupt the BACKLOG and fight over commits. A marker idle for 2 hours counts as abandoned and is taken over.
    - If the person asked for a number of tasks ("do 3 tasks", `/autopilot:run 3`), add `--tasks 3` to that call: `task.sh done` then writes STOP after the third completed task and the loop ends normally. Only a person sets a budget; never add one on your own to end early.
    - If the repository has no commit yet (`git rev-parse --verify HEAD` fails) and has files outside `.autopilot/`, no task can start (they count as uncommitted) and nothing can be stashed. Write STOP with the fix (commit the existing files first), tell the person, and stop. Do not commit their files for them.
    - If CONFIG `scope` names a path that does not exist, discovery would find nothing and `task.sh done` would refuse every change, ending in a final stop that is not true. Write STOP with the path and the fix (correct `scope:` in `.autopilot/CONFIG.md`), tell the person, and stop. Never change CONFIG yourself.
@@ -240,7 +240,7 @@ Quality attribute checklist: error handling (does it give the cause and the fix)
 
 You may conclude zero only after writing each stage's result (what was checked, how many found) under ROADMAP "Deep discovery", as one record for this cycle that starts with the UTC time (`date -u +%Y-%m-%dT%H:%MZ`). Never skip stages and call it zero. On the final stop:
 1. Do not queue auxiliary tasks either.
-2. Run `bash <skill folder>/scripts/finalstop.sh <<'EOF'` with the STOP content below (in the output language) and `EOF`. It refuses (exit 1) while the latest ROADMAP "Deep discovery" record lacks any of the four stages or is older than the last task in the LOG, while a task is `open` or `in_progress`, or while changes outside `.autopilot/` are uncommitted, and lists what is missing: then this is not the final stop — do what it lists and continue the loop. When it accepts, it writes STOP, deletes RUN and adds the `stop` LOG entry. Never write a final-stop STOP by hand.
+2. Run `bash <skill folder>/scripts/finalstop.sh <<'EOF'` with the STOP content below (in the output language) and `EOF`. It refuses (exit 1) while the latest ROADMAP "Deep discovery" record lacks any of the four stages or is older than the last task in the LOG, while a task is `open` or `in_progress`, or while changes outside `.autopilot/` are uncommitted, and lists what is missing: then this is not the final stop — do what it lists and continue the loop. When it accepts, it writes STOP (marked `(checked by finalstop.sh)`), deletes RUN and adds the `stop` LOG entry. Never write a final-stop STOP by hand: the Stop hook and the driver move an unmarked one to `STOP.refused` and the loop goes on.
 3. Commit the state if the integration mode commits state, then exit.
 
 ```
@@ -349,7 +349,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30Z | T-042 | done | skill 1.53.0
+## 2026-10-01T14:30Z | T-042 | done | skill 1.54.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
@@ -427,4 +427,4 @@ Shows on one screen whether the loop is running or stopped and why (and which se
 
 ## When the repository has its own Stop hook
 
-If the repository has a Stop hook that demands committing untracked files, this skill's Phase 4 rollback (`git clean`) and Phase 5 commit satisfy it naturally. The `.autopilot/` run artifacts (STOP, RUN, .hook-state, .task, driver-logs, driver.lock) are added to `.gitignore` by `runlock.sh start` (session mode) and by the driver.
+If the repository has a Stop hook that demands committing untracked files, this skill's Phase 4 rollback (`git clean`) and Phase 5 commit satisfy it naturally. The `.autopilot/` run artifacts (STOP, STOP.refused, RUN, .hook-state, .task, driver-logs, driver.lock) are added to `.gitignore` by `runlock.sh start` (session mode) and by the driver.

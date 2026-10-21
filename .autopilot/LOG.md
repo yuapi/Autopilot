@@ -779,3 +779,19 @@
 - 원인: 보존 실행에서 모델이 별도 test 작업 대신 첫 fix 안에서 node:test를 세우고 회귀 테스트 실패→통과를 보임. 의도(검증 없는 커밋 금지)는 지켰고 문구("별도 test 작업 먼저")만 어김 — 강한 문구에도 약 절반
 - 변경: SKILL.md Phase 0 3·선택 예외(별도 하네스 작업 또는 러너를 세우는 첫 fix 둘 다 허용, 테스트 없는 fix는 여전히 금지), docs/skill-design.md(이유), scripts/eval.sh(first= 기대값: 첫 작업 커밋이 테스트 파일을 추가), fixture-wordcount.expected, tests/test_eval.sh(+2, 가짜 커밋 갱신), CHANGELOG
 - 검증: test_eval 100 통과, validate PASS. eval wordcount 전 harness-first 3/6 → 후 3/3(9/9). --fixture all: kv 10/11(vet, 재실행 11/11 → 변동), 나머지 100%, 규칙 위반 0, 약 $2.2
+
+## 2026-10-21T11:35Z | - | release | skill 1.53.0
+- 1.53.0 (minor): 첫 fix가 테스트 러너와 자기 테스트를 가져와도 됨, eval first=(T-110). PR #283 → main, #284 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-10-21T11:35Z | - | retro | skill 1.53.0
+- 범위: T-101~T-110, 10건 done·0 failed·0 blocked(성공률 100%). 유형: fix 5, enhance 3, security 1, docs 1. 출처: 탐색 실행 6, eval 관찰 2, 직접 겪음 1, 심화 발굴 1
+- 실패 원인: 없음. 막힌 것은 매 릴리스의 태그·Release(세션 정책)뿐
+- 관찰: 결함 대부분이 "규칙은 있는데 스크립트가 강제 안 함"(T-105~T-108)과 "잘못된 설정"(T-101, T-102)에서 나옴. eval 반복 누락 2건(todo missing-db, wordcount harness-first)은 보존 실행으로 원인을 찾아 둘 다 3/3으로 올림
+- 배운 것: 설정 규칙 확장, "규칙 강제 확인"·"반복 누락은 보존 실행으로" 두 줄 추가, eval 예제 줄은 합침(15줄). last_retro 갱신
+
+## 2026-10-21T11:41Z | T-111 | done | skill 1.53.0
+- 발굴: 회고의 새 배운 것("사람만/항상/먼저 규칙이 스크립트에서 거절되는지") 적용. "최종 정지 STOP을 손으로 쓰지 않는다"가 강제되지 않아 finalstop.sh 검사를 통째로 건너뛸 수 있었음
+- 변경: finalstop.sh(STOP에 "(checked by finalstop.sh)" 표시), assets/autopilot-stop.sh·.claude/hooks 사본(표시 없는 Final stop/최종 정지 → STOP.refused로 옮기고 계속 막음), autopilot.sh(같은 처리 후 다음 실행), runlock.sh·드라이버 .gitignore에 STOP.refused, SKILL.md, 테스트(hook +10, driver +5, finalstop +1), CHANGELOG
+- 순서: 구현을 task.sh start보다 먼저 해 버림 → 변경을 stash하고 행 추가·start 후 되돌려 순서를 바로잡음
+- 검증: hook 45·driver 97·finalstop 23·runlock 31 통과, validate PASS. 실제 eval: 세션 todo 예산 정지 정상 종료(RUN 제거), 드라이버 stats 2작업 규칙 검사 ok
