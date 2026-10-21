@@ -612,3 +612,10 @@
 ## 2026-10-21T03:00Z | T-091 | done | skill 1.37.0
 - 변경: SKILL.md Phase 5 6단계(STOP이 생겼으면 .autopilot/만 커밋하고 끝냄, 기존 6단계는 7로), tests/test_skill_rules.sh(+1), CHANGELOG
 - 검증: validate PASS. 실제 claude -p "/autopilot:run 1"(todo): 끝난 뒤 작업 트리 깨끗, 마지막 커밋 "autopilot: record state"
+
+## 2026-10-21T03:04Z | - | release | skill 1.38.0
+- 1.38.0 릴리즈: release/1.38.0 → main, main → develop 역병합. 태그 대기: v1.38.0 (403, 누적 v1.11.0~v1.38.0)
+
+## 2026-10-21T03:07Z | T-092 | done | skill 1.38.0
+- 변경: SKILL.md Phase 5 6단계(모든 모드에서 매 작업 끝에 .autopilot/만 커밋), scripts/eval.sh(규칙 검사 "끝난 뒤 작업 트리 깨끗", 실행 부산물 제외), tests(skill_rules 갱신, eval +2), CHANGELOG
+- 검증: validate PASS. 예전 드라이버 실행 재채점 → BROKEN(4개 미커밋). 새 실행 드라이버 2회 8/8·세션 2작업 11/11, 둘 다 트리 깨끗
