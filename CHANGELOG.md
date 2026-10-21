@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.39.1 — 2026-10-21
 - `release.sh --catch-up` builds the version → commit map once instead of rescanning every commit for every version: 44 missing versions took 49 s in a dry run, now 13 s with the same result
 
 ## 1.39.0 — 2026-10-21
