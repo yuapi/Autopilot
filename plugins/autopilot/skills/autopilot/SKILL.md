@@ -397,7 +397,7 @@ It also refreshes such a copy whenever it differs from this skill's version. `ho
 - Delete things outside `.autopilot/` (except under the cleanup rules)
 - Upgrade a dependency's major version
 - Change or remove an existing public interface (except within an adopted proposal)
-- Create or modify secrets, tokens or keys
+- Create or modify secrets, tokens or keys (`task.sh done` refuses added lines that match `scan.sh`'s secret pattern; a deliberate fake value in a test carries `autopilot-scan: ignore`)
 
 ## Templates
 

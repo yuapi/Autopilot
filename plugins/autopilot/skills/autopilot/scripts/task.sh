@@ -5,7 +5,7 @@
 #   bash task.sh done <ID> [repo]   refuse unless the task has its own commit(s) since `start` that change
 #                                   files outside .autopilot/, name no other task, leave CONFIG.md alone and
 #                                   add no generated files (__pycache__, *.pyc, node_modules, .DS_Store, …)
-#                                   and delete files only when it is a cleanup task;
+#                                   and delete files only when it is a cleanup task, and add no secrets;
 #                                   then status done + date
 #   bash task.sh fail <ID> [repo]   status back to open (attempts kept), or blocked from the 3rd attempt
 #   bash task.sh drop <ID> [repo]   the task turned out unnecessary (cannot reproduce, already fixed):
@@ -61,6 +61,14 @@ if [ "$cmd" = done ]; then
     deleted="$(git log -M --diff-filter=D --format= --name-only "$range" -- . ':!.autopilot' | grep -v '^$' | sort -u | head -5 | tr '\n' ' ' || true)"
     [ -z "$deleted" ] || { echo "[task] refused: $id is a ${ttype:-?} task, and its commits delete $deleted— files are deleted only in cleanup tasks (after confirming zero references). Restore them, or queue a cleanup task" >&2; exit 1; }
   fi
+  # no secrets in a task commit (SKILL.md Never list): the lines the task added, against scan.sh's
+  # secret pattern (keep the two the same; tests/test_task.sh checks it). Lines marked
+  # "autopilot-scan: ignore" and fixture/testdata folders are skipped, as in scan.sh.
+  SECRET_RX='AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----|(password|passwd|secret|api_?key|token)[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"'[:space:]]{8,}["'"'"']'
+  base="$start"; [ "$base" = none ] && base="$(git hash-object -t tree /dev/null)"
+  secrets="$(git diff --no-color -U0 "$base" HEAD -- . ':!.autopilot' | awk '/^\+\+\+ b\// { f = substr($0, 7); next } /^\+/ && !/^\+\+\+/ { print f "\t" substr($0, 2) }' \
+    | grep -v 'autopilot-scan: ignore' | grep -vE '^[^	]*(^|/)(fixtures?[^/]*|testdata)/' | grep -iE -- "$SECRET_RX" | cut -f1 | sort -u | head -5 | tr '\n' ' ' || true)"
+  [ -z "$secrets" ] || { echo "[task] refused: the commits since $id started add what looks like a secret (key, token or password) in: $secrets— never commit secrets; read them from the environment or a file kept out of git. A deliberate fake value can carry the comment autopilot-scan: ignore" >&2; exit 1; }
   # generated files never go into a task commit (SKILL.md Phase 5): name the ones the task added
   gen="$(git log --no-renames --diff-filter=A --format= --name-only "$range" -- . ':!.autopilot' | grep -v '^$' | sort -u \
     | grep -E '(^|/)(__pycache__|\.pytest_cache|\.mypy_cache|\.ruff_cache|\.tox|node_modules|htmlcov|\.nyc_output|[^/]+\.egg-info)/|\.py[co]$|(^|/)(\.DS_Store|Thumbs\.db|\.coverage)$' | head -5 | tr '\n' ' ' || true)"
