@@ -143,7 +143,7 @@ Check this before leaving Phase 1. If anything is missing, discovery is not fini
 - The ROADMAP feature map has a row per feature (no template placeholder left).
 - "Observations" records at least one command you actually ran and what it did, or why nothing could be run.
 - "Scenarios" has three scenarios with where each got stuck (or "no friction").
-- Every `scan.sh` line is a BACKLOG task (a code marker becomes a `todo` task, or a `feature` task if it describes a feature) or has a one-line reason under "Not doing". Writing it only under "Missing" or "Weak" does not count.
+- Every `scan.sh` line is a BACKLOG task (a code marker becomes a `todo` task, or a `feature` task if it describes a feature) or has a one-line reason under "Not doing". Writing it only under "Missing" or "Weak" does not count, and neither does a proposal unless 1-F requires one (it would change or remove an existing interface). A marker asking for something new, such as an option or a command, is a `feature` task: interfaces may grow.
 - `last_scan` is today.
 
 #### 1-B. Discovery sources
