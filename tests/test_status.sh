@@ -92,6 +92,14 @@ check_not "not a cloud session → no warning" bash -c "CLAUDE_CODE_REMOTE= bash
 printf 'integration: pr\n' > "$d/.autopilot/CONFIG.md"
 check_not "cloud session with integration: pr → no warning" bash -c "CLAUDE_CODE_REMOTE=true bash '$ST' '$d' | grep -q 'lost when it is reclaimed'"
 
+# CONFIG values that are not documented are named with the allowed ones
+printf 'integration: prr\nmerge: yes\nrelease: auto\nlocal_branch: current\n' > "$d/.autopilot/CONFIG.md"
+out="$(CLAUDE_CODE_REMOTE=true bash "$ST" "$d")"
+check "unknown integration → warning with the allowed values" grep -q '^Warning: CONFIG integration: prr is not one of local | branch | pr; autopilot treats it as local' <<<"$out"
+check "unknown merge → warning" grep -q '^Warning: CONFIG merge: yes is not one of off | auto' <<<"$out"
+check "unknown integration counts as local for the cloud warning" grep -q 'lost when it is reclaimed' <<<"$out"
+check_not "valid release and local_branch → no warning" grep -qE 'CONFIG (release|local_branch):' <<<"$out"
+
 # the task in progress is shown with its start time
 d="$(mktemp -d "$TMPROOT/n.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
 printf '| T-007 | fix | in_progress | 2 | fix the parser | t | s | |\n| T-008 | fix | open | 0 | other | t | s | |\n' > "$d/.autopilot/BACKLOG.md"

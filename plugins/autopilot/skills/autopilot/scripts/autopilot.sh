@@ -117,7 +117,7 @@ case "$integration" in
     fi
     ;;
   local) ;;
-  *) echo "[driver] unknown integration value in .autopilot/CONFIG.md: $integration (expected local, branch or pr)." >&2 ;;
+  *) echo "[driver] unknown integration value in .autopilot/CONFIG.md: $integration (expected local, branch or pr); autopilot treats it as local." >&2 ;;
 esac
 
 # Call the skill by name so the one installed for the account/project is used, not a repository path.

@@ -48,7 +48,7 @@ These rules are written in English. Follow them exactly whatever language you wr
 | `.autopilot/ROADMAP.md` | Direction document Claude writes and updates from code analysis |
 | `.autopilot/BACKLOG.md` | Task queue with status, attempts and completion criteria |
 | `.autopilot/LOG.md` | Record of every run (append only) |
-| `.autopilot/CONFIG.md` | Integration policy (push, PR, merge, release), output language and `scope`. **People set it; Claude only reads it.** Missing means `local` |
+| `.autopilot/CONFIG.md` | Integration policy (push, PR, merge, release), output language and `scope`. **People set it; Claude only reads it.** Missing means `local`; a value that is not one of the documented ones (a typo) counts as the safest: `local`, `off`, `local_branch: auto` |
 | `.autopilot/PROPOSALS.md` | Proposals for large changes the loop does not make on its own. People decide by changing the status |
 | `.autopilot/features/<slug>.md` | Design and stage document for a feature that spans several tasks |
 | `.autopilot/STOP` | If present, the loop stops (created by Claude or a person) |
