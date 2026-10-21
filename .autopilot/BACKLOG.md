@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 93
+next_id: 94
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -99,3 +99,4 @@ next_id: 93
 | T-090 | fix | done | 1 | Haiku가 scan.sh의 TODO(기능 추가 요청)를 작업 대신 제안으로 보냄 → "제안은 1-F가 요구할 때만 scan 줄의 처리로 인정, 추가를 요청하는 마커는 feature 작업(인터페이스는 늘릴 수 있음)" 명시 | 규칙 검사 테스트, Haiku eval 2회, --fixture all | Haiku eval 관찰 | 2026-10-21 |
 | T-091 | fix | done | 1 | 루프가 예산이나 사람의 STOP으로 끝나면 마지막 작업 뒤의 상태 변경(BACKLOG done, LOG)이 커밋되지 않고 남음(최종 정지만 커밋 규칙이 있음) → Phase 5에서 STOP이 생겼으면 .autopilot/만 커밋하고 끝내기 | 규칙 검사, 예산 1 실제 실행에서 작업 트리 깨끗 | 직접 겪음: 사용자 stop-hook-git-check가 커밋 안 된 LOG를 지적 | 2026-10-21 |
 | T-092 | fix | done | 1 | local 모드에서 .autopilot/ 상태를 커밋하라는 규칙이 없음: 드라이버 eval 3회 중 1회는 .autopilot/가 끝까지 untracked, 나머지도 마지막 상태가 남을 수 있음 → 매 작업 끝에 .autopilot/만 커밋(T-091의 STOP 전용 규칙을 일반화), eval 규칙 검사에 "끝난 뒤 작업 트리 깨끗" 추가 | 규칙 검사·eval 검사 테스트, 실제 드라이버·세션 eval | 남겨 둔 드라이버 eval 실행 점검 | 2026-10-21 |
+| T-093 | perf | done | 1 | release.sh --catch-up가 버전마다 plugin.json을 바꾼 모든 커밋을 다시 보며 커밋마다 Python 실행(버전×커밋): 44개 버전 dry-run 48초 → 한 번 훑어 버전→첫 커밋 표 | 같은 매핑, 시간 단축, 기존 테스트 통과 | 사용자가 로컬에서 돌릴 catch-up(태그 44개 대기) 점검 | 2026-10-21 |

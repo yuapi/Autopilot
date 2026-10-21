@@ -34,13 +34,27 @@ fi
 PLUGIN_JSON=plugins/autopilot/.claude-plugin/plugin.json
 
 # First commit on the current branch's first-parent history where plugin.json became version v (on main: the release merge commit)
+# Built once: for each version, the first commit on the current branch's first-parent history where
+# plugin.json became that version (on main: the release merge commit). It used to scan every commit
+# again for every version, starting Python per commit: 48 s for 44 versions.
+VERSION_MAP=""
 first_commit_with_version() {
-  local v="$1" c
-  for c in $(git rev-list --first-parent --reverse HEAD -- "$PLUGIN_JSON"); do
-    if git show "$c:$PLUGIN_JSON" 2>/dev/null | python3 -c 'import json,sys; sys.exit(0 if json.load(sys.stdin).get("version")==sys.argv[1] else 1)' "$v"; then
-      echo "$c"; return
-    fi
-  done
+  if [ -z "$VERSION_MAP" ]; then
+    VERSION_MAP="$(git rev-list --first-parent --reverse HEAD -- "$PLUGIN_JSON" | python3 -c '
+import json, subprocess, sys
+seen = {}
+for c in sys.stdin.read().split():
+    try:
+        v = json.loads(subprocess.run(["git", "show", c + ":" + sys.argv[1]], capture_output=True, text=True).stdout).get("version")
+    except ValueError:
+        continue
+    if v and v not in seen:
+        seen[v] = c
+        print(v, c)
+' "$PLUGIN_JSON")"
+    [ -n "$VERSION_MAP" ] || VERSION_MAP=" "
+  fi
+  printf '%s\n' "$VERSION_MAP" | awk -v v="$1" '$1 == v { print $2; exit }'
 }
 
 # Whether gh exists and can push to this repository (gh auth status is not used: it can fail for repository-scoped tokens)
