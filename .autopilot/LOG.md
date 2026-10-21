@@ -697,3 +697,8 @@
 - 관찰: 이번 사이클 결함은 대부분 "잘못된 설정" 시나리오(T-098, T-100)와 출력 크기(T-099)에서 나옴. eval --fixture all 7개 예제 100%
 - 직접 겪음: eval을 백그라운드로 두고 턴을 끝내자 Stop 훅이 연속 차단(3번이면 STOP). 코드를 먼저 커밋하고 포그라운드로 기다려 해결
 - 배운 것: 18줄 → 14줄로 합침, 설정 오류·출력 크기·긴 대기 규칙 추가. last_retro 갱신
+
+## 2026-10-21T10:03Z | T-101 | done | skill 1.45.0
+- 발굴: 잘못된 CONFIG 시나리오 3번째(배운 것의 새 규칙대로 같은 계열 계속). base_branch를 읽는 스크립트가 없어 오타가 조용히 통과
+- 변경: autopilot.sh(branch·pr에서 로컬·origin 둘 다 없으면 exit 1과 고칠 방법), status.sh(같은 조건 경고), SKILL.md Phase 0 1(STOP), 테스트(driver +6, status +3), CHANGELOG
+- 검증: test_driver 88, test_status 48 통과, validate PASS
