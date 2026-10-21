@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.54.2
+  version: 1.54.3
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.54.2** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.54.3** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -349,7 +349,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30Z | T-042 | done | skill 1.54.2
+## 2026-10-01T14:30Z | T-042 | done | skill 1.54.3
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
@@ -397,7 +397,7 @@ It also refreshes such a copy whenever it differs from this skill's version. `ho
 - Delete things outside `.autopilot/` (except under the cleanup rules)
 - Upgrade a dependency's major version
 - Change or remove an existing public interface (except within an adopted proposal)
-- Create or modify secrets, tokens or keys
+- Create or modify secrets, tokens or keys (`task.sh done` refuses added lines that match `scan.sh`'s secret pattern; a deliberate fake value in a test carries `autopilot-scan: ignore`)
 
 ## Templates
 

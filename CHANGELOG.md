@@ -7,6 +7,9 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.54.3 — 2026-10-21
+- `task.sh done` refuses a task whose added lines look like a secret (the same pattern as `scan.sh`: AWS keys, private keys, `password`/`token`/`api_key` assignments), skipping lines marked `autopilot-scan: ignore` and fixture/testdata folders
+
 ## 1.54.2 — 2026-10-21
 - `task.sh done` refuses a task that is not `cleanup` when its commits delete files outside `.autopilot/` (renames are fine): "delete files only in cleanup tasks" was a rule only
 

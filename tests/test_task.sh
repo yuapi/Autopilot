@@ -173,6 +173,18 @@ sedi 's/| T-002 | fix |/| T-002 | cleanup |/' "$d/.autopilot/BACKLOG.md"
 t "$d" start T-002 >/dev/null; (cd "$d" && git rm -q old.txt && git commit -qm "autopilot(T-002): remove dead file")
 check "a cleanup task may delete" bash -c "cd '$d' && bash '$TS' done T-002 >/dev/null"
 
+# secrets in the lines a task adds are refused (the same pattern as scan.sh)
+d="$(newrepo)"; mkdir -p "$d/testdata"
+t "$d" start T-001 >/dev/null; (cd "$d" && printf 'API_KEY = "%s"\n' "sk_live_abcdefghijkl" >> code.txt && git commit -qam "autopilot(T-001): key")
+out="$(t "$d" done T-001)"
+check "an added API key → refused, file named" grep -q "add what looks like a secret (key, token or password) in: code.txt" <<<"$out"
+(cd "$d" && git reset -q --hard HEAD~1); t "$d" fail T-001 >/dev/null; t "$d" start T-001 >/dev/null
+(cd "$d" && printf 'password = "%s"  # autopilot-scan: ignore\n' "not-a-real-one" >> code.txt && printf 'token: "%s"\n' "fake-token-value" > testdata/cfg.yml && git add -A && git commit -qm "autopilot(T-001): marked fake values")
+check "a marked fake value and testdata → accepted" bash -c "cd '$d' && bash '$TS' done T-001 >/dev/null"
+t "$d" start T-002 >/dev/null; (cd "$d" && printf -- '-----BEGIN RSA %s-----\n' "PRIVATE KEY" > id_rsa && git add -A && git commit -qm "autopilot(T-002): key file")
+check "an added private key → refused" grep -q "looks like a secret.*id_rsa" <<<"$(t "$d" done T-002)"
+check "task.sh uses scan.sh's secret pattern" bash -c "a=\$(sed -n \"s/^  SECRET_RX='\\(.*\\)'\$/\\1/p\" '$REPO/$SKILL_REL/scripts/task.sh'); b=\$(sed -n \"s/^search \\\"Possible hard-coded secret (security)\\\" '\\(.*\\)' -i\$/\\1/p\" '$REPO/$SKILL_REL/scripts/scan.sh'); test -n \"\$a\" && test \"\$a\" = \"\$b\""
+
 # a CRLF BACKLOG (Windows checkout) stays CRLF
 d="$(newrepo)"; sedi 's/$/\r/' "$d/.autopilot/BACKLOG.md"; (cd "$d" && git commit -qam crlf)
 t "$d" start T-001 >/dev/null
