@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- A CONFIG `branch_prefix` that git rejects as a branch name (a space, `~`, `..`) in `branch`/`pr` mode: `status.sh` warns, the driver stops before the first run with the fix, and SKILL.md Phase 0 writes STOP with it
 
 ## 1.46.0 — 2026-10-21
 - A CONFIG `base_branch` that exists neither locally nor on origin (a typo) in `branch`/`pr` mode: `status.sh` warns, the driver stops before the first run with the fix, and SKILL.md Phase 0 writes STOP with it
