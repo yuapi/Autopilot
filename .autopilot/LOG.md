@@ -733,3 +733,7 @@
 - 발굴: scope 경계 탐색 실행. scope: pkg에서 other/a.py를 pkg/로 git mv한 커밋을 task.sh done이 통과시킴(rename 검출로 새 경로만 보임)
 - 변경: task.sh(scope 검사에 --no-renames), tests/test_task.sh(+2: 밖→안 이동 거절·옛 경로 이름, 안에서 rename 통과), CHANGELOG
 - 검증: 새 테스트가 수정 전 코드에서 실패(62/63), 수정 후 63 통과, validate PASS
+
+## 2026-10-21T10:29Z | - | release | skill 1.48.1
+- 1.48.1 (patch): scope 검사에서 rename 양쪽 경로(T-105). PR #263 → main, #264 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
