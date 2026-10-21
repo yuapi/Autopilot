@@ -598,3 +598,6 @@
 ## 2026-10-20T17:27Z | T-089 | done | skill 1.36.0
 - 변경: README 2종(드라이버 종료 조건·glab·권한 모드, 상태 화면, 최종 정지 조건 (d), eval 설명), CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-21T02:43Z | - | discover | skill 1.36.0
+- eval --mode session --iterations 2 --model claude-haiku-5-5(todo): 10/11, 148초, $0.04, 규칙 검사 전부 ok. 놓친 것: TODO 마커(마감일)를 작업 대신 제안으로 보냄 — scan.sh 줄은 작업이나 "하지 않기로 한 것"이어야 하나, 기능 추가를 방향 선택으로 판단. 한 번뿐이라 규칙 변경 근거로는 부족, 관찰로만 남김
