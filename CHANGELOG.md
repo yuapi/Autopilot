@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- Eighth eval fixture `api`: a library whose obvious improvement (`parse_point` raising instead of returning `None`) changes its public API, so it must go to PROPOSALS; new `proposal=` (matched against PROPOSALS.md) and `nodiff=` (no added line may match) expectations
 - README (EN/KO): "The rules are checked, not only written" lists what `task.sh done`, `log.sh`, `finalstop.sh` and the Stop hook refuse
 
 ## 1.54.4 — 2026-10-21

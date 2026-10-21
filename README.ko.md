@@ -127,6 +127,7 @@ bash scripts/eval.sh --fixture kv           # Go 모듈: go test·go vet을 찾�
 bash scripts/eval.sh --fixture mono         # 모노레포에서 CONFIG scope: pkg/a: 모든 커밋이 그 안에 머무는가
 bash scripts/eval.sh --fixture watch        # npm test가 끝나지 않는(watch) 레포: 1회 실행 명령을 찾아 쓰는가
 bash scripts/eval.sh --fixture hooks        # 커밋 훅이 커밋을 거부하는 레포: 우회하지 않고 맞추는가
+bash scripts/eval.sh --fixture api          # 공개 API를 바꾸는 개선: 커밋 대신 PROPOSALS로 가는가
 bash scripts/eval.sh --iterations 3         # 드라이버 3회: 매번 새 작업 하나, 반복 없음, 실패 없음
 bash scripts/eval.sh --mode session --iterations 2   # 플러그인으로 세션 모드 1회, 작업 2개 요청: 계속 이어 가다가 예산에서 멈추는가
 bash scripts/eval.sh --grade <남긴 폴더> [같은 옵션]   # --keep으로 남긴 실행을 다시 채점

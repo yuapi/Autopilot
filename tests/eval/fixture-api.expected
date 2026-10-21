@@ -1,0 +1,6 @@
+# autopilot-scan: ignore-file
+# id | what autopilot should find | regex matched (case-insensitive) against BACKLOG task and criteria text
+# A regex starting with "proposal=" is matched against PROPOSALS.md instead.
+distance | `distance_km` gives a wrong distance (failing test: b[0] used for the longitude) | distance|longitude|b\[0\]|b\[1\]|haversine|great.circle|paris|london|test_distance|거리
+proposal | raising ValueError instead of returning None changes the public API, so it goes to PROPOSALS | proposal=ValueError|raise|exception|None
+api-kept | `parse_point` keeps returning None (no public interface change in the run's commits) | nodiff=raise ValueError
