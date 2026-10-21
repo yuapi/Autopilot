@@ -690,3 +690,10 @@
 ## 2026-10-21T09:59Z | - | release | skill 1.45.0
 - 1.45.0 (minor): 없는 scope 경로에서 정지(T-100). PR #245 → main, #246 → develop
 - tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-10-21T10:00Z | - | retro | skill 1.45.0
+- 범위: T-089~T-100, 12건 done·0 failed·0 blocked(성공률 100%). 유형: fix 6, enhance 3, docs 1, perf 1, test 1. 출처: 탐색 실행 6(전부 성공), 심화 발굴 3, 직접 겪음 2, eval 관찰 1
+- 실패 원인: 없음. 막힌 것은 매 릴리스의 태그·Release(세션 정책)뿐 — 환경 문제로 이미 "배운 것"에 있음
+- 관찰: 이번 사이클 결함은 대부분 "잘못된 설정" 시나리오(T-098, T-100)와 출력 크기(T-099)에서 나옴. eval --fixture all 7개 예제 100%
+- 직접 겪음: eval을 백그라운드로 두고 턴을 끝내자 Stop 훅이 연속 차단(3번이면 STOP). 코드를 먼저 커밋하고 포그라운드로 기다려 해결
+- 배운 것: 18줄 → 14줄로 합침, 설정 오류·출력 크기·긴 대기 규칙 추가. last_retro 갱신
