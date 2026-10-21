@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 113
+next_id: 114
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -119,3 +119,4 @@ next_id: 113
 | T-110 | enhance | done | 1 | eval wordcount가 harness-first(검증 수단이 없으면 첫 작업은 테스트 러너 설정)를 최근 6회 중 3회 놓침. 보존 실행으로 원인(첫 작업 선택·우선순위)을 확인하고 규칙 보강 | wordcount 세션 3회에서 harness-first 발견, --fixture all 유지, 규칙 위반 0 | eval 관찰(2026-10-21, T-107·T-109 eval) | 2026-10-21 |
 | T-111 | fix | done | 1 | "최종 정지 STOP을 손으로 쓰지 않는다"가 강제되지 않음: 모델이 'Final stop: …'을 직접 쓰면 finalstop.sh 검사(심화 발굴·열린 작업·커밋 안 된 변경)를 모두 건너뛰고 훅·드라이버가 그대로 끝냄. finalstop.sh가 STOP에 표시, 훅·드라이버는 표시 없는 최종 정지를 STOP.refused로 옮기고 계속 | 손으로 쓴 Final stop/최종 정지 → 훅이 계속 막고 STOP.refused, 드라이버는 다음 실행; finalstop.sh가 쓴 것·사람·예산·진행 없음 STOP은 그대로 끝; 테스트 추가 | 배운 것 적용(규칙 강제 확인, 2026-10-21) | 2026-10-21 |
 | T-112 | fix | done | 1 | "생성 파일(__pycache__ 등)은 커밋하지 않는다"가 강제되지 않음: 작업 커밋이 __pycache__/*.pyc·.DS_Store를 추가해도 task.sh done 통과. 잘 알려진 생성 파일을 추가하는 커밋은 거절하고 .gitignore 안내 | pyc·.DS_Store·node_modules 추가 커밋 → 거절·파일 이름, 일반 파일·dist/ 는 통과, 이미 추적 중인 파일 수정은 통과; test_task 추가 검사 | 배운 것 적용(규칙 강제 확인, 2026-10-21) | 2026-10-21 |
+| T-113 | fix | in_progress | 1 | "파일 삭제는 cleanup 작업에서만"(Phase 3, Never 목록)이 강제되지 않음: fix·feature 작업 커밋이 파일을 지워도 task.sh done 통과. 작업 유형이 cleanup이 아니면 .autopilot/ 밖 삭제를 거절(rename은 삭제 아님) | fix 작업이 파일 삭제 → 거절·파일 이름·cleanup 안내, cleanup은 통과, rename(refactor)은 통과; test_task 추가 검사 | 배운 것 적용(규칙 강제 확인, 2026-10-21) | |
