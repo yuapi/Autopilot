@@ -770,3 +770,7 @@
 - 변경: SKILL.md 1-A 탐색 실행에 "처음 상태" 규칙(쓰기 전에 읽기 명령을 데이터·설정·캐시 없는 상태에서), CHANGELOG
 - 검증: validate PASS. eval todo 세션 전 missing-db 1/4 → 후 3/3(11/11 세 번). --fixture all: hooks·kv·mono·stats·todo·watch 100%, wordcount 8/9(harness-first — 변경 전에도 반복 누락, T-110으로 큐), 규칙 위반 0, 약 $1.9
 - 후속: T-110 추가(wordcount harness-first 반복 누락 조사)
+
+## 2026-10-21T11:14Z | - | release | skill 1.52.0
+- 1.52.0 (minor): 처음 상태에서 읽기 명령 먼저(T-109). PR #279 → main, #280 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
