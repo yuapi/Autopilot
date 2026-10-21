@@ -686,3 +686,7 @@
 - 발굴: 잘못된 CONFIG 탐색 실행의 두 번째 결과. scope: nope/가 경고 없이 통과 → 발굴 0건·변경 전부 거절로 거짓 최종 정지 위험
 - 변경: status.sh(없는 scope 경로 경고, CRLF 허용), autopilot.sh(사전 점검에서 exit 1과 고칠 방법), SKILL.md Phase 0(STOP과 고칠 방법, CONFIG는 바꾸지 않음), 테스트(driver +5, status +3), CHANGELOG
 - 검증: test_driver 82, test_status 45 통과, validate PASS
+
+## 2026-10-21T09:59Z | - | release | skill 1.45.0
+- 1.45.0 (minor): 없는 scope 경로에서 정지(T-100). PR #245 → main, #246 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
