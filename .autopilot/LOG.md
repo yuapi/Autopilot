@@ -724,3 +724,7 @@
 ## 2026-10-21T10:18Z | T-104 | done | skill 1.47.0
 - 변경: README.md·README.ko.md(AUTOPILOT_RUN_STALE_MIN, AUTOPILOT_SCAN_MAX·--all, 드라이버 CONFIG 사전 점검 3종, 훅의 남은 횟수 안내), CHANGELOG
 - 검증: 스크립트가 읽는 AUTOPILOT_* 변수를 README와 대조(사용자용은 전부 문서화, EVAL_*·DRIVER는 개발·내부용), validate PASS
+
+## 2026-10-21T10:22Z | - | release | skill 1.48.0
+- 1.48.0 (minor): 훅의 남은 횟수 안내(T-103), README 설정·사전 점검 문서(T-104). PR #259 → main, #260 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
