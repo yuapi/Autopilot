@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.38.0 — 2026-10-21
 - When the loop ends on a task budget or a person's STOP, Phase 5 commits the state written after the last task's commit (`done` row, LOG entry); it was left uncommitted, which Stop hooks that check for a clean tree reported
 
 ## 1.37.0 — 2026-10-21
