@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.50.0 — 2026-10-21
 - `finalstop.sh` requires this cycle's deep discovery: the latest dated record must hold all four stages and be no older than the last task in the LOG (a record from an earlier cycle let every later final stop through). The ROADMAP template and SKILL.md ask for the UTC time on each record
 
 ## 1.49.0 — 2026-10-21
