@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.44.0
+  version: 1.45.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.44.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.45.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -69,6 +69,7 @@ In session mode, also run `bash <skill folder>/scripts/runlock.sh touch` at the 
    - Claim the run marker with `bash <skill folder>/scripts/runlock.sh start`. It writes this session's ID (`CLAUDE_CODE_SESSION_ID`) into `.autopilot/RUN` and adds the run artifacts (`.autopilot/STOP`, `RUN`, `.hook-state`, `driver-logs/`, `driver.lock`, `.task`) to `.gitignore`; if the script cannot run, add those lines yourself. **If it exits with 2, another loop is already running in this repository**: tell the person what it printed and stop without changing any state; two loops on one repository corrupt the BACKLOG and fight over commits. A marker idle for 2 hours counts as abandoned and is taken over.
    - If the person asked for a number of tasks ("do 3 tasks", `/autopilot:run 3`), add `--tasks 3` to that call: `task.sh done` then writes STOP after the third completed task and the loop ends normally. Only a person sets a budget; never add one on your own to end early.
    - If the repository has no commit yet (`git rev-parse --verify HEAD` fails) and has files outside `.autopilot/`, no task can start (they count as uncommitted) and nothing can be stashed. Write STOP with the fix (commit the existing files first), tell the person, and stop. Do not commit their files for them.
+   - If CONFIG `scope` names a path that does not exist, discovery would find nothing and `task.sh done` would refuse every change, ending in a final stop that is not true. Write STOP with the path and the fix (correct `scope:` in `.autopilot/CONFIG.md`), tell the person, and stop. Never change CONFIG yourself.
    - If `git config user.name` or `git config user.email` is empty, every commit would fail and the loop could only burn attempts. Write STOP with the reason and the fix (`git config user.name "…"` and `git config user.email …`), tell the person, and stop. Never set an identity yourself: the commits would carry a made-up author.
    - If `CLAUDE_CODE_REMOTE` is `true` (a cloud session) and the integration mode is `local`, the commits exist only in this container and are lost when it is reclaimed. Tell the person once, in one line at the start (a notice, not a question): set `integration: branch` or `pr` in `.autopilot/CONFIG.md` to keep them. Write it in the LOG and continue in `local` mode. Never change CONFIG yourself.
    - The Stop hook comes with this skill (see "The Stop hook" below); nothing needs installing. If an older version left a copy at `.claude/hooks/autopilot-stop.sh`, refresh it with `bash <skill folder>/scripts/hook.sh install` and commit what it changed.
@@ -347,7 +348,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30Z | T-042 | done | skill 1.44.0
+## 2026-10-01T14:30Z | T-042 | done | skill 1.45.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)

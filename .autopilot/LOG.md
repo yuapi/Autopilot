@@ -677,3 +677,12 @@
 - 발굴: 심화 3단계(성능 10배 입력) 탐색 실행. 2만 파일·400 TODO 레포에서 scan.sh는 1초로 빠르나 모든 줄을 출력(약 2만 토큰)하고, 규칙상 400개 모두 작업/하지 않기로 해야 함 → T-099
 - 변경: scan.sh(섹션당 50줄, AUTOPILOT_SCAN_MAX·--all, 남은 수와 20그룹 이내 가장 깊은 폴더별 개수), SKILL.md 1-B(잘린 섹션은 파일·폴더 단위로 사이클당 10개까지), tests/test_scan.sh(+7), CHANGELOG
 - 검증: validate PASS. eval --fixture all --mode session 전(1.36 기록: kv 11/11, mono 8/8, stats 8/9, todo 10/11, watch 8/8, wordcount 9/9; hooks 8/8은 T-096) → 후 7개 모두 100%(64/64), 규칙 위반 0, 약 $1.26
+
+## 2026-10-21T09:53Z | - | release | skill 1.44.0
+- 1.44.0 (minor): scan.sh 큰 섹션 묶기(T-099). PR #241 → main, #242 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-10-21T09:56Z | T-100 | done | skill 1.44.0
+- 발굴: 잘못된 CONFIG 탐색 실행의 두 번째 결과. scope: nope/가 경고 없이 통과 → 발굴 0건·변경 전부 거절로 거짓 최종 정지 위험
+- 변경: status.sh(없는 scope 경로 경고, CRLF 허용), autopilot.sh(사전 점검에서 exit 1과 고칠 방법), SKILL.md Phase 0(STOP과 고칠 방법, CONFIG는 바꾸지 않음), 테스트(driver +5, status +3), CHANGELOG
+- 검증: test_driver 82, test_status 45 통과, validate PASS

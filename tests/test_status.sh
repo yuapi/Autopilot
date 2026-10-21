@@ -100,6 +100,15 @@ check "unknown merge → warning" grep -q '^Warning: CONFIG merge: yes is not on
 check "unknown integration counts as local for the cloud warning" grep -q 'lost when it is reclaimed' <<<"$out"
 check_not "valid release and local_branch → no warning" grep -qE 'CONFIG (release|local_branch):' <<<"$out"
 
+# a scope path that does not exist is named
+d="$(mktemp -d "$TMPROOT/sc.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot" "$d/pkg"
+printf 'scope: pkg nope/\r\n' > "$d/.autopilot/CONFIG.md"
+out="$(bash "$ST" "$d")"
+check "missing scope path → warning names it" grep -q '^Warning: CONFIG scope names nope/, which does not exist' <<<"$out"
+check_not "existing scope path → not named" grep -q 'scope names pkg' <<<"$out"
+printf 'scope: .\n' > "$d/.autopilot/CONFIG.md"
+check_not "scope: . → no warning" bash -c "bash '$ST' '$d' | grep -q 'scope names'"
+
 # the task in progress is shown with its start time
 d="$(mktemp -d "$TMPROOT/n.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
 printf '| T-007 | fix | in_progress | 2 | fix the parser | t | s | |\n| T-008 | fix | open | 0 | other | t | s | |\n' > "$d/.autopilot/BACKLOG.md"
