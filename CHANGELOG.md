@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- `task.sh done` refuses a task that raises a dependency's major version in `package.json`, `requirements*.txt`, `pyproject.toml` or `Cargo.toml` and points to PROPOSALS; it was a rule only
 
 ## 1.54.3 — 2026-10-21
 - `task.sh done` refuses a task whose added lines look like a secret (the same pattern as `scan.sh`: AWS keys, private keys, `password`/`token`/`api_key` assignments), skipping lines marked `autopilot-scan: ignore` and fixture/testdata folders

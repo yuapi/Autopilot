@@ -826,3 +826,9 @@
 ## 2026-10-21T12:15Z | - | release | skill 1.54.3
 - 1.54.3 (patch): 비밀을 추가하는 작업 커밋 거절(T-114). PR #300 → main, #301 → develop
 - tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-10-21T12:20Z | T-115 | done | skill 1.54.3
+- 발굴: 배운 것 적용(규칙 강제 확인). Never 목록의 마지막 강제 가능 항목 "의존성 메이저 버전 상승"
+- 변경: task.sh(package.json·requirements*.txt·pyproject.toml·Cargo.toml의 의존성 메이저를 start와 HEAD 사이 비교, 상승이면 거절·PROPOSALS 안내, 프로젝트 자체 version·requires-python 등은 제외), SKILL.md Never 목록, tests/test_task.sh(+2), CHANGELOG
+- 검증: test_task 78 통과, validate PASS. 실제 eval 세션 2작업: wordcount 9/9(package.json 있음), todo 11/11, 실패 0
+- 메모: Never 목록에서 남은 것(질문하지 않기, 훅 우회, 공개 인터페이스 변경)은 스크립트로 판단할 수 없어 규칙으로 둠

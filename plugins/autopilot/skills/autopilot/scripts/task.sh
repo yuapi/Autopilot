@@ -5,7 +5,8 @@
 #   bash task.sh done <ID> [repo]   refuse unless the task has its own commit(s) since `start` that change
 #                                   files outside .autopilot/, name no other task, leave CONFIG.md alone and
 #                                   add no generated files (__pycache__, *.pyc, node_modules, .DS_Store, …)
-#                                   and delete files only when it is a cleanup task, and add no secrets;
+#                                   delete files only when it is a cleanup task, add no secrets and raise
+#                                   no dependency major version (package.json, requirements, pyproject, Cargo);
 #                                   then status done + date
 #   bash task.sh fail <ID> [repo]   status back to open (attempts kept), or blocked from the 3rd attempt
 #   bash task.sh drop <ID> [repo]   the task turned out unnecessary (cannot reproduce, already fixed):
@@ -69,6 +70,44 @@ if [ "$cmd" = done ]; then
   secrets="$(git diff --no-color -U0 "$base" HEAD -- . ':!.autopilot' | awk '/^\+\+\+ b\// { f = substr($0, 7); next } /^\+/ && !/^\+\+\+/ { print f "\t" substr($0, 2) }' \
     | grep -v 'autopilot-scan: ignore' | grep -vE '^[^	]*(^|/)(fixtures?[^/]*|testdata)/' | grep -iE -- "$SECRET_RX" | cut -f1 | sort -u | head -5 | tr '\n' ' ' || true)"
   [ -z "$secrets" ] || { echo "[task] refused: the commits since $id started add what looks like a secret (key, token or password) in: $secrets— never commit secrets; read them from the environment or a file kept out of git. A deliberate fake value can carry the comment autopilot-scan: ignore" >&2; exit 1; }
+  # no major dependency upgrades (SKILL.md Never list; they go to PROPOSALS): compare the manifests before and after
+  manifests="$(git log --format= --name-only "$range" -- . ':!.autopilot' | grep -E '(^|/)(package\.json|requirements[^/]*\.txt|pyproject\.toml|Cargo\.toml)$' | sort -u || true)"
+  if [ -n "$manifests" ] && [ "$start" != none ]; then
+    majors="$(printf '%s\n' "$manifests" | "$PY" -c '
+import json, re, subprocess, sys
+start = sys.argv[1]
+def show(rev, path):
+    r = subprocess.run(["git", "show", f"{rev}:{path}"], capture_output=True, text=True)
+    return r.stdout if r.returncode == 0 else None
+SKIP = {"version", "requires-python", "python", "edition", "rust-version", "name"}
+def deps(path, text):
+    out = {}
+    if path.endswith("package.json"):
+        try: data = json.loads(text)
+        except ValueError: return out
+        for k in ("dependencies", "devDependencies", "peerDependencies", "optionalDependencies"):
+            for n, spec in (data.get(k) or {}).items():
+                m = re.match(r"^[\^~=<>v ]*(\d+)", str(spec))
+                if m: out[n] = int(m.group(1))
+        return out
+    for line in text.splitlines():
+        line = line.split("#", 1)[0]
+        for m in re.finditer(r"[\x27\x22]?([A-Za-z0-9_.-]+)(?:\[[^\]]*\])?\s*(?:==|>=|~=|===|>)\s*v?(\d+)", line):
+            out.setdefault(m.group(1).lower(), int(m.group(2)))
+        m = re.match(r"^\s*([A-Za-z0-9_.-]+)\s*=\s*(?:\{[^}]*?version\s*=\s*)?[\x27\x22][\^~=<> ]*v?(\d+)", line)
+        if m and m.group(1).lower() not in SKIP:
+            out[m.group(1).lower()] = int(m.group(2))
+    return out
+bad = []
+for path in sys.stdin.read().split():
+    old, new = show(start, path), show("HEAD", path)
+    if old is None or new is None: continue
+    a, b = deps(path, old), deps(path, new)
+    bad += [f"{n} {a[n]}→{b[n]} ({path})" for n in sorted(a) if n in b and b[n] > a[n]]
+print("; ".join(bad[:5]))
+' "$start")"
+    [ -z "$majors" ] || { echo "[task] refused: the commits since $id started raise a dependency major version: $majors. Major upgrades are not made alone: roll it back and record a proposal in PROPOSALS.md" >&2; exit 1; }
+  fi
   # generated files never go into a task commit (SKILL.md Phase 5): name the ones the task added
   gen="$(git log --no-renames --diff-filter=A --format= --name-only "$range" -- . ':!.autopilot' | grep -v '^$' | sort -u \
     | grep -E '(^|/)(__pycache__|\.pytest_cache|\.mypy_cache|\.ruff_cache|\.tox|node_modules|htmlcov|\.nyc_output|[^/]+\.egg-info)/|\.py[co]$|(^|/)(\.DS_Store|Thumbs\.db|\.coverage)$' | head -5 | tr '\n' ' ' || true)"

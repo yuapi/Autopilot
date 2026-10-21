@@ -185,6 +185,19 @@ t "$d" start T-002 >/dev/null; (cd "$d" && printf -- '-----BEGIN RSA %s-----\n' 
 check "an added private key → refused" grep -q "looks like a secret.*id_rsa" <<<"$(t "$d" done T-002)"
 check "task.sh uses scan.sh's secret pattern" bash -c "a=\$(sed -n \"s/^  SECRET_RX='\\(.*\\)'\$/\\1/p\" '$REPO/$SKILL_REL/scripts/task.sh'); b=\$(sed -n \"s/^search \\\"Possible hard-coded secret (security)\\\" '\\(.*\\)' -i\$/\\1/p\" '$REPO/$SKILL_REL/scripts/scan.sh'); test -n \"\$a\" && test \"\$a\" = \"\$b\""
 
+# a dependency major upgrade is refused; minor bumps and new dependencies pass
+d="$(newrepo)"; (cd "$d" && printf '{"name": "x", "version": "1.0.0", "dependencies": {"react": "^17.0.2", "left-pad": "~1.1.0"}}\n' > package.json \
+  && printf 'requests==2.31.0\nflask>=2.0\n' > requirements.txt \
+  && printf '[package]\nname = "x"\nversion = "0.1.0"\n\n[dependencies]\nserde = { version = "1.0", features = ["derive"] }\nrand = "0.8"\n' > Cargo.toml \
+  && printf '[project]\nversion = "1.0.0"\ndependencies = ["httpx>=0.24", "pydantic>=1.10"]\n' > pyproject.toml && git add -A && git commit -qm deps >/dev/null)
+t "$d" start T-001 >/dev/null
+(cd "$d" && sed -i.bak 's/\^17.0.2/^18.2.0/' package.json && sed -i.bak 's/requests==2.31.0/requests==3.0.0/' requirements.txt && sed -i.bak 's/version = "1.0", features/version = "2.0", features/' Cargo.toml && sed -i.bak 's/pydantic>=1.10/pydantic>=2.5/' pyproject.toml && rm -f ./*.bak && git commit -qam "autopilot(T-001): upgrade")
+out="$(t "$d" done T-001)"
+check "major upgrades → refused, packages named" bash -c "for p in 'react 17→18' 'requests 2→3' 'serde 1→2' 'pydantic 1→2'; do grep -q \"\$p\" <<<\"\$1\" || exit 1; done; grep -q PROPOSALS <<<\"\$1\"" _ "$out"
+(cd "$d" && git reset -q --hard HEAD~1); t "$d" fail T-001 >/dev/null; t "$d" start T-001 >/dev/null
+(cd "$d" && sed -i.bak 's/~1.1.0/~1.3.0/; s/"left-pad"/"lodash": "^4.17.21", "left-pad"/' package.json && sed -i.bak 's/rand = "0.8"/rand = "0.9"/; s/^version = "0.1.0"/version = "2.0.0"/' Cargo.toml && sed -i.bak 's/^version = "1.0.0"/version = "2.0.0"/' pyproject.toml && rm -f ./*.bak && git commit -qam "autopilot(T-001): minor bumps")
+check "minor bumps, a new dependency, the project version → accepted" bash -c "cd '$d' && bash '$TS' done T-001 >/dev/null"
+
 # a CRLF BACKLOG (Windows checkout) stays CRLF
 d="$(newrepo)"; sedi 's/$/\r/' "$d/.autopilot/BACKLOG.md"; (cd "$d" && git commit -qam crlf)
 t "$d" start T-001 >/dev/null
