@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 97
+next_id: 98
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -103,3 +103,4 @@ next_id: 97
 | T-094 | enhance | done | 1 | 루프가 돌지 않는데 in_progress 작업이 있으면 status.sh가 "idle"과 "Now:"만 보여 줌 → 이전 실행이 작업 중간에 끝났고 다음 실행이 끝내거나 되돌린다고 설명 | idle+진행 중 / running+진행 중 테스트 | 탐색 실행(/autopilot:status를 하위 폴더에서) | 2026-10-21 |
 | T-095 | fix | done | 1 | 레포의 커밋 훅(pre-commit 포매터·린터)에 대한 규칙 없음 → 훅이 고친 파일은 다시 스테이징해 커밋, 훅이 거부하면 검증 실패로 처리, --no-verify 등 우회 금지 | 규칙 검사 테스트, pre-commit 훅 있는 예제에서 실제 확인 | 심화 발굴 2단계 새 시나리오: pre-commit 훅이 있는 레포 | 2026-10-21 |
 | T-096 | test | done | 1 | eval 예제 hooks: fixture-<이름>.setup(git init 뒤 실행)으로 commit-msg 훅 설치, body= 기대값으로 모든 커밋 메시지가 훅 요구를 지켰는지(우회 없음) 채점 | 가짜 claude 테스트, 실제 실행 1회 | T-095 규칙을 eval로 계속 측정 | 2026-10-21 |
+| T-097 | enhance | done | 1 | runlock.sh start가 실행 산출물(STOP·RUN·.hook-state·driver-logs/·driver.lock·.task)을 .gitignore에 추가 — 지금은 Phase 0에서 모델이 손으로 해야 하고, 빠지면 git add -A가 RUN을 커밋 | 새 레포에서 runlock.sh start 후 .gitignore에 6줄, 다시 실행해도 중복 없음, 거절(exit 2) 시 .gitignore 변경 없음; test_runlock.sh 추가 검사 통과; SKILL.md Phase 0 문구 갱신 | 탐색 실행(2026-10-21, 빈 레포에서 runlock.sh start → .gitignore 없음) | 2026-10-21 |

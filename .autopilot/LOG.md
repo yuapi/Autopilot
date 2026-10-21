@@ -654,3 +654,8 @@
 ## 2026-10-21T03:43Z | - | release | skill 1.41.1
 - 1.41.1 (patch): eval 훅 픽스처(T-096). PR #229 → main, #230 → develop
 - tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요 (v1.11.0~v1.41.1)
+
+## 2026-10-21T09:24Z | T-097 | done | skill 1.41.1
+- 발굴: 큐가 비어 재발굴. 이슈 0·PR 0·scan.sh 0건. 빈 레포 탐색 실행에서 runlock.sh start 후 .gitignore가 없음을 확인 → T-097
+- 변경: runlock.sh(start에서 실행 산출물 6줄을 .gitignore에 추가, 중복 없음, 거절 시 변경 없음), SKILL.md Phase 0·Stop 훅 문단, tests/test_runlock.sh(+5), CHANGELOG
+- 검증: test_runlock 31 통과, validate PASS
