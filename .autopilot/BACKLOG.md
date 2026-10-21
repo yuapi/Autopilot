@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 109
+next_id: 110
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -115,3 +115,4 @@ next_id: 109
 | T-106 | security | done | 1 | "CONFIG는 사람이 정하고 Claude는 읽기만"이 강제되지 않음: task.sh done이 .autopilot/ 전체를 검사에서 빼서, 작업 커밋이 CONFIG를 integration: pr·merge: auto로 바꿔도 통과(이슈 본문이 유도할 수 있는 경로). done이 start 이후 커밋의 CONFIG.md 변경을 거절 | CONFIG를 바꾼 작업 커밋에서 done 거절·이유 표시, CONFIG를 안 건드리면 통과, 첫 커밋 없던 레포(start=none)는 오탐 없음; test_task 추가 검사; SKILL.md 문구 | 탐색 실행(2026-10-21, CONFIG 변경 커밋) | 2026-10-21 |
 | T-107 | fix | done | 1 | finalstop.sh가 심화 발굴 기록의 날짜를 안 봄: 예전 사이클의 기록(네 단계 이름만 있으면)이 이후 최종 정지를 영원히 통과시킴(이 레포의 2026-10-21 기록도 이후 작업 12개보다 오래됨). 가장 최근 날짜 기록에 네 단계가 모두 있고 그 시각이 마지막 작업 LOG 항목 이후여야 함 | 오래된 기록 → 거절(날짜·시각 쓰라는 안내), 마지막 작업 이후 UTC 시각 기록 → 통과, 날짜 없는 기록 → 거절; 템플릿·SKILL.md 문구; test_finalstop 갱신 | 탐색 실행(2026-10-21, finalstop 조건 점검) | 2026-10-21 |
 | T-108 | fix | done | 1 | log.sh가 BACKLOG를 확인하지 않음: task.sh done 전에 done 항목을 쓰거나 없는 작업(T-999)도 기록됨 → LOG와 BACKLOG 불일치. 작업 항목은 BACKLOG(또는 archive) 행이 있고 상태가 맞아야 함(done→done, failed→open·blocked, blocked→blocked) | in_progress 작업에 log.sh done → 거절·task.sh done 안내, 없는 ID → 거절, 맞는 상태 → 기록, BACKLOG 없는 레포·'-' 항목은 그대로; test_log 추가 검사 | 탐색 실행(2026-10-21, LOG·BACKLOG 순서) | 2026-10-21 |
+| T-109 | enhance | in_progress | 1 | 탐색 실행 규칙에 "처음 상태"가 없음: eval todo가 missing-db(데이터 파일 없을 때 list가 죽음)를 최근 4회 중 3회 놓침 — 모델의 시나리오가 add→list라 list가 파일 생성 후에만 돌았음. 1-A 탐색 실행에 "쓰기 명령보다 먼저 읽기 명령을 처음 상태(데이터·설정 파일 없음)에서" 추가 | eval todo 세션 3회에서 missing-db 발견률이 전(1/4)보다 높음, 다른 예제 점수 유지(--fixture all), 규칙 위반 0 | eval 관찰(2026-10-21, todo missing-db 반복 누락, 보존 실행의 시나리오 확인) | |
