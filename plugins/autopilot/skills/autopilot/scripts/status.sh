@@ -96,6 +96,12 @@ if m and m.group(1) != "auto" and cfg.get("integration") in ("branch", "pr"):
     refs = [subprocess.run(["git", "-C", root, "show-ref", "-q", "--verify", r + m.group(1)]).returncode for r in ("refs/heads/", "refs/remotes/origin/")]
     if all(refs):
         print(f"Warning: CONFIG base_branch: {m.group(1)} exists neither as a local branch nor on origin: tasks cannot start from it. Fix base_branch: in .autopilot/CONFIG.md (or git fetch origin).")
+m = re.search(r"^branch_prefix:[ \t]*([^#\r\n]*)", read("CONFIG.md"), re.M)
+bp = m.group(1).strip() if m else ""
+if bp and bp != "auto" and cfg.get("integration") in ("branch", "pr"):
+    import subprocess
+    if subprocess.run(["git", "check-ref-format", "--branch", bp + "T-1-x"], capture_output=True).returncode:
+        print(f"Warning: CONFIG branch_prefix: \"{bp}\" does not make a valid git branch name: every task branch would fail. Fix branch_prefix: in .autopilot/CONFIG.md (e.g. autopilot/).")
 if os.environ.get("CLAUDE_CODE_REMOTE") == "true" and cfg.get("integration", "local") == "local":
     print("Warning: this is a cloud session and integration is local: the loop's commits stay in this container and are lost when it is reclaimed. Set integration: branch (or pr) in .autopilot/CONFIG.md to push them.")
 

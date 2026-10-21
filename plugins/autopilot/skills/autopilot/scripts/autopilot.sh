@@ -141,6 +141,16 @@ case "$integration" in branch|pr)
   fi;;
 esac
 
+# CONFIG branch_prefix that git rejects as a branch name (a space, ~, ..): every task branch would fail
+prefix="$( { [ -f .autopilot/CONFIG.md ] && tr -d '\r' < .autopilot/CONFIG.md | sed -n 's/^branch_prefix:[[:space:]]*\([^#]*\).*/\1/p' | head -1 | sed 's/[[:space:]]*$//'; } || true)"
+case "$integration" in branch|pr)
+  if [ -n "$prefix" ] && [ "$prefix" != auto ] && ! git check-ref-format --branch "${prefix}T-1-x" >/dev/null 2>&1; then
+    echo "[driver] CONFIG branch_prefix: \"$prefix\" does not make a valid git branch name (no spaces, ~, ^, :, .. or ending in .lock)." >&2
+    echo "[driver] Fix branch_prefix: in .autopilot/CONFIG.md (e.g. autopilot/ or feature/), then run the driver again." >&2
+    exit 1
+  fi;;
+esac
+
 # Call the skill by name so the one installed for the account/project is used, not a repository path.
 PROMPT='Use the autopilot skill and follow its procedure in driver mode (AUTOPILOT_DRIVER=1 is set): do exactly one task, then exit. This is driver mode, not a task budget: do not run runlock.sh and do not write STOP unless the skill says so. Do not ask questions and do not start a second task.'
 

@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.46.0
+  version: 1.47.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.46.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.47.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -73,7 +73,7 @@ In session mode, also run `bash <skill folder>/scripts/runlock.sh touch` at the 
    - If `git config user.name` or `git config user.email` is empty, every commit would fail and the loop could only burn attempts. Write STOP with the reason and the fix (`git config user.name "…"` and `git config user.email …`), tell the person, and stop. Never set an identity yourself: the commits would carry a made-up author.
    - If `CLAUDE_CODE_REMOTE` is `true` (a cloud session) and the integration mode is `local`, the commits exist only in this container and are lost when it is reclaimed. Tell the person once, in one line at the start (a notice, not a question): set `integration: branch` or `pr` in `.autopilot/CONFIG.md` to keep them. Write it in the LOG and continue in `local` mode. Never change CONFIG yourself.
    - The Stop hook comes with this skill (see "The Stop hook" below); nothing needs installing. If an older version left a copy at `.claude/hooks/autopilot-stop.sh`, refresh it with `bash <skill folder>/scripts/hook.sh install` and commit what it changed.
-1. If the three core files are missing, create them from the templates (never create CONFIG). If the integration mode is not `local`, update the base branch as described in "Integration policy". If CONFIG names a `base_branch` that exists neither locally nor on origin after the fetch (a typo), no task can start from it: write STOP with the name and the fix (correct `base_branch:` or set it to `auto`), tell the person, and stop.
+1. If the three core files are missing, create them from the templates (never create CONFIG). If the integration mode is not `local`, update the base branch as described in "Integration policy". If CONFIG names a `base_branch` that exists neither locally nor on origin after the fetch (a typo), no task can start from it: write STOP with the name and the fix (correct `base_branch:` or set it to `auto`), tell the person, and stop. Do the same for a `branch_prefix` that git rejects as a branch name (`git check-ref-format --branch <prefix>T-1-x` fails: a space, `~`, `..`).
    Read the state. Keep the amount read constant even in long runs:
    - ROADMAP, CONFIG, PROPOSALS: all of it.
    - BACKLOG: the header, `open` and `in_progress` rows, and the 10 most recent completed rows. Find anything else with grep when needed.
@@ -348,7 +348,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30Z | T-042 | done | skill 1.46.0
+## 2026-10-01T14:30Z | T-042 | done | skill 1.47.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)

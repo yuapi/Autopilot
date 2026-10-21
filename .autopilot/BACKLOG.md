@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 102
+next_id: 103
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -108,3 +108,4 @@ next_id: 102
 | T-099 | enhance | done | 1 | scan.sh 큰 섹션: TODO 수백 개인 레포에서 모든 줄을 출력(2만 파일·400줄, 컨텍스트 약 2만 토큰)하고 규칙상 모두 작업/하지 않기로 해야 함. 섹션당 50줄(AUTOPILOT_SCAN_MAX, --all)로 자르고 남은 수와 폴더별 개수 표시, SKILL.md 1-B에 큰 섹션은 파일·폴더 단위로 묶어 사이클당 10개까지 | 400 TODO 레포에서 섹션 50줄 + "… 350 more" + 폴더별 개수; --all은 전부; 작은 레포 출력 불변; test_scan 추가 검사; eval --fixture all 전후 점수 | 탐색 실행(2026-10-21, 심화 3단계 성능 10배 입력) | 2026-10-21 |
 | T-100 | fix | done | 1 | CONFIG scope가 없는 경로(scope: nope/)여도 조용히 통과: 발굴은 아무것도 못 찾고 task.sh done은 모든 변경을 거절해 거짓 최종 정지로 갈 수 있음. status.sh 경고, 드라이버 사전 점검에서 고칠 방법과 함께 정지, SKILL.md Phase 0에 STOP 규칙 | scope: nope/에서 status.sh가 경고, 드라이버가 exit 1·claude 호출 없음, 있는 경로·.·auto는 경고 없음; test_status·test_driver 추가 검사 | 탐색 실행(2026-10-21, 잘못된 CONFIG 값) | 2026-10-21 |
 | T-101 | fix | done | 1 | CONFIG base_branch가 없는 브랜치(오타)여도 아무 스크립트도 확인 안 함: branch·pr 모드에서 기준 갱신·PR 대상이 깨짐. status.sh 경고, 드라이버 사전 점검 정지, SKILL.md Phase 0에 STOP 규칙 | pr·base_branch: nope에서 status.sh 경고·드라이버 exit 1(claude 호출 없음); 로컬 또는 origin에 있으면·auto·local 모드면 조용함; 테스트 추가 | 탐색 실행(2026-10-21, 잘못된 CONFIG 값 3) | 2026-10-21 |
+| T-102 | fix | done | 1 | CONFIG branch_prefix가 git이 거부하는 이름(공백·~·..)이어도 확인 안 함: branch·pr 모드의 모든 작업 브랜치 생성이 실패. status.sh 경고, 드라이버 사전 점검 정지, SKILL.md Phase 0 규칙 | branch_prefix: "my feature/"·feat~/ 에서 status 경고·드라이버 exit 1; feature/·auto·local 모드는 조용함; 테스트 추가 | 탐색 실행(2026-10-21, 잘못된 CONFIG 값 4) | 2026-10-21 |
