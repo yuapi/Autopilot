@@ -3,7 +3,8 @@
 #   bash task.sh start <ID> [repo]  refuse while another task is in progress or changes outside .autopilot/
 #                                   are uncommitted; then attempts + 1, status in_progress
 #   bash task.sh done <ID> [repo]   refuse unless the task has its own commit(s) since `start` that change
-#                                   files outside .autopilot/, name no other task and leave CONFIG.md alone;
+#                                   files outside .autopilot/, name no other task, leave CONFIG.md alone and
+#                                   add no generated files (__pycache__, *.pyc, node_modules, .DS_Store, …);
 #                                   then status done + date
 #   bash task.sh fail <ID> [repo]   status back to open (attempts kept), or blocked from the 3rd attempt
 #   bash task.sh drop <ID> [repo]   the task turned out unnecessary (cannot reproduce, already fixed):
@@ -53,6 +54,10 @@ if [ "$cmd" = done ]; then
       [ "$inside" = 1 ] || printf '%s ' "$f"; done)"
     [ -z "$outside" ] || { echo "[task] refused: changes outside scope ($scope) from .autopilot/CONFIG.md: $outside— roll them back or leave them to a person" >&2; exit 1; }
   fi
+  # generated files never go into a task commit (SKILL.md Phase 5): name the ones the task added
+  gen="$(git log --no-renames --diff-filter=A --format= --name-only "$range" -- . ':!.autopilot' | grep -v '^$' | sort -u \
+    | grep -E '(^|/)(__pycache__|\.pytest_cache|\.mypy_cache|\.ruff_cache|\.tox|node_modules|htmlcov|\.nyc_output|[^/]+\.egg-info)/|\.py[co]$|(^|/)(\.DS_Store|Thumbs\.db|\.coverage)$' | head -5 | tr '\n' ' ' || true)"
+  [ -z "$gen" ] || { echo "[task] refused: the commits since $id started add generated files: $gen— remove them from the commit and add them to .gitignore" >&2; exit 1; }
   others="$(git log --format=%s "$range" -- . ':!.autopilot' ':!.gitignore' | grep -oE 'T-[0-9]+' | grep -vx "$id" | sort -u | tr '\n' ' ' || true)"
   [ -z "$others" ] || { echo "[task] refused: commits since $id started also name $others— one task per commit. Roll back and redo them one at a time" >&2; exit 1; }
 fi

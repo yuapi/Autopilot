@@ -151,6 +151,16 @@ d="$(mktemp -d "$TMPROOT/t0.XXXX")"; (cd "$d" && git init -q && git config user.
 t "$d" start T-001 >/dev/null; (cd "$d" && echo a > a.txt && git add -A && git commit -qm "autopilot(T-001): first commit")
 check "first commit of a new repository may carry CONFIG" bash -c "cd '$d' && bash '$TS' done T-001 >/dev/null"
 
+# generated files added by a task are refused; ordinary files, dist/ and edits to tracked files pass
+d="$(newrepo)"; (cd "$d" && mkdir -p legacy && echo old > legacy/x.pyc && git add -f legacy/x.pyc && git commit -qm "legacy pyc" >/dev/null)
+t "$d" start T-001 >/dev/null
+(cd "$d" && echo q >> code.txt && mkdir -p src/__pycache__ node_modules/x && echo b > src/__pycache__/m.cpython-312.pyc && echo j > node_modules/x/i.js && touch .DS_Store && git add -A && git commit -qm "autopilot(T-001): with junk")
+out="$(t "$d" done T-001)"
+check "generated files added → refused, named" bash -c "grep -q 'add generated files: .DS_Store node_modules/x/i.js src/__pycache__/m.cpython-312.pyc' <<<\"\$1\" && grep -q '.gitignore' <<<\"\$1\"" _ "$out"
+(cd "$d" && git reset -q --hard HEAD~1); t "$d" fail T-001 >/dev/null; t "$d" start T-001 >/dev/null
+(cd "$d" && echo q >> code.txt && mkdir -p dist && echo b > dist/app.js && echo new > legacy/x.pyc && git add -A && git commit -qm "autopilot(T-001): clean")
+check "ordinary files, dist/ and an already tracked file → accepted" bash -c "cd '$d' && bash '$TS' done T-001 >/dev/null"
+
 # a CRLF BACKLOG (Windows checkout) stays CRLF
 d="$(newrepo)"; sedi 's/$/\r/' "$d/.autopilot/BACKLOG.md"; (cd "$d" && git commit -qam crlf)
 t "$d" start T-001 >/dev/null
