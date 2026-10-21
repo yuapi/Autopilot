@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 105
+next_id: 106
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -111,3 +111,4 @@ next_id: 105
 | T-102 | fix | done | 1 | CONFIG branch_prefix가 git이 거부하는 이름(공백·~·..)이어도 확인 안 함: branch·pr 모드의 모든 작업 브랜치 생성이 실패. status.sh 경고, 드라이버 사전 점검 정지, SKILL.md Phase 0 규칙 | branch_prefix: "my feature/"·feat~/ 에서 status 경고·드라이버 exit 1; feature/·auto·local 모드는 조용함; 테스트 추가 | 탐색 실행(2026-10-21, 잘못된 CONFIG 값 4) | 2026-10-21 |
 | T-103 | enhance | done | 1 | Stop 훅이 진행 없는 차단 횟수를 모델에게 알리지 않음: 백그라운드 명령(eval)을 기다리며 턴을 끝내면 3번째에 조용히 STOP(직접 겪음). 진행 없는 차단부터 차단 이유에 "N/LIMIT"과 포그라운드로 기다리라는 안내 추가 | 진행 없는 두 번째 차단의 reason에 "1 of 3"과 foreground 안내, 진행이 있으면 안내 없음, JSON 유효; test_hook 추가 검사 | 직접 겪음(2026-10-21, T-099 eval 대기 중 연속 차단) | 2026-10-21 |
 | T-104 | docs | done | 1 | README 2종에 AUTOPILOT_RUN_STALE_MIN·AUTOPILOT_SCAN_MAX가 없고, 드라이버 사전 점검 목록에 새 검사(없는 scope·base_branch, 잘못된 branch_prefix)가 빠짐 | README.md·README.ko.md에 두 변수와 세 검사가 있음, validate PASS | 심화 발굴(문서 정확성: 환경 변수 대조) | 2026-10-21 |
+| T-105 | fix | done | 1 | task.sh done의 scope 검사가 rename을 새 경로로만 봄: scope 밖 파일을 scope 안으로 git mv하면(밖의 파일 삭제) 통과. --no-renames로 양쪽 경로를 다 검사 | scope: pkg에서 other/a.py → pkg/a.py 이동 커밋을 done이 거절하고 other/a.py를 이름으로 댐; scope 안 rename은 통과; test_task 추가 검사 | 탐색 실행(2026-10-21, scope 경계 rename) | 2026-10-21 |
