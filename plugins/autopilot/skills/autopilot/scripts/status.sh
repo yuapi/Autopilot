@@ -25,6 +25,7 @@ archived = row.findall(read("BACKLOG.archive.md"))
 count = lambda rs, st: sum(1 for r in rs if r[2] == st)
 
 print(f"autopilot status — {root}")
+running = False
 stop = read("STOP").strip()
 if stop:
     print(f"Run: stopped — {stop.splitlines()[0]}")
@@ -37,6 +38,7 @@ elif os.path.exists(os.path.join(A, "RUN")):
     if bud:
         note += f", {(re.findall(r'^done:\s*(\d+)', run, re.M) or ['0'])[0]}/{bud[0]} tasks of its budget done"
     print(f"Run: running (session mode, session {sess}, last active {idle} min ago{note})")
+    running = True
 else:
     lock = os.path.join(A, "driver.lock")
     pid = read("driver.lock").strip()
@@ -48,6 +50,7 @@ else:
     if alive:
         mins = int((time.time() - os.path.getmtime(lock)) // 60)
         print(f"Run: running (driver, pid {pid}, started {mins} min ago)")
+        running = True
     elif os.path.exists(lock):
         print(f"Run: idle (a stale driver.lock for pid {pid or '?'} is left; the next driver run ignores it)")
     else:
@@ -91,6 +94,8 @@ if cur:
         mins = int((time.time() - os.path.getmtime(marker)) // 60)
         since = f", started {mins} min ago"
     print(f"Now: {cur[0][0]} [{cur[0][1]}] {cur[0][4][:70]} (attempt {cur[0][3]}{since})")
+    if not running:
+        print(f"  No loop is running: the last run ended in the middle of {cur[0][0]}. The next run finishes it or rolls it back.")
 
 log = read("LOG.md")
 heads = re.findall(r"^## (\S+) \| ([^|]*?) \| (\w+) \|", log, re.M)
