@@ -836,3 +836,7 @@
 ## 2026-10-21T12:24Z | - | release | skill 1.54.4
 - 1.54.4 (patch): 의존성 메이저 상승 거절(T-115). PR #304 → main, #305 → develop
 - tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-10-21T12:27Z | T-116 | done | skill 1.54.4
+- 변경: README.md·README.ko.md "How it works"에 "규칙은 적어만 두지 않고 검사한다" 항목(task.sh done·log.sh·finalstop.sh·훅이 거절하는 것), CHANGELOG
+- 검증: 항목마다 해당 스크립트 테스트가 있는지 대조(test_task·test_log·test_finalstop·test_hook), validate PASS
