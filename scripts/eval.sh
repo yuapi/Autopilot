@@ -248,6 +248,8 @@ for c in commits + ["WORKTREE"]:
     log_del = rows.get(".autopilot/LOG.md", ["0", "0"])[1]
     if log_del not in ("0", "-") and ".autopilot/LOG.archive.md" not in rows:   # archive.sh moves entries out
         rewrites.append(f"{c[:7]} (-{log_del})")
+dirty_end = [l[3:] for l in git("status", "--porcelain", "--untracked-files=all").splitlines()
+             if l[3:] and not re.search(r"(^|/)(STOP|RUN|\.hook-state|\.task|driver-logs/|driver\.lock)", l[3:])]
 times = re.findall(r"^## (\d{4}-\d\d-\d\dT\d\d:\d\d)", log_text, re.M)
 out_of_order = [b for a, b in zip(times, times[1:]) if b < a]
 stop = read("STOP")
@@ -262,6 +264,7 @@ rules = [
      code_commits >= len(done_tasks) and not multi),
     ("LOG entries only appended" + (f" (lines removed in {', '.join(rewrites)})" if rewrites else ""), not rewrites),
     ("LOG entries in time order" + (f" ({len(out_of_order)} entries earlier than the one above)" if out_of_order else ""), not out_of_order),
+    ("clean working tree at the end (state committed)" + (f" ({len(dirty_end)} uncommitted: {', '.join(dirty_end[:3])})" if dirty_end else ""), not dirty_end),
     ("final stop only after all four deep discovery stages are recorded" + ("" if final else " (no final stop)"), deep_ok),
 ]
 print("Rule checks:")
