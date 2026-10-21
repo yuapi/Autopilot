@@ -751,3 +751,7 @@
 - 발굴: finalstop 조건 점검 탐색 실행. 심화 발굴 기록의 날짜를 안 봐서 예전 사이클 기록이 이후 최종 정지를 계속 통과시킴(이 레포의 2026-10-21 기록도 이후 작업 12개보다 오래됨)
 - 변경: finalstop.sh(가장 최근 날짜 기록에 네 단계 모두, 마지막 작업 LOG 항목보다 오래되면 거절, 작업이 있는데 날짜 없으면 거절), assets/ROADMAP.md·SKILL.md(기록마다 UTC 시각), tests/test_finalstop.sh(+6), CHANGELOG
 - 검증: test_finalstop 22 통과, validate PASS. eval --fixture all 전(T-099: 7개 100%) → 후 hooks·kv·mono·stats·watch 100%, todo 10/11, wordcount 8/9. 다시 돌려 todo 10/11(missing-db, 1.36 기록과 같음), wordcount는 develop·브랜치 동시 실행 둘 다 9/9 → 변동으로 판단. 규칙 위반 0, 약 $1.9
+
+## 2026-10-21T10:50Z | - | release | skill 1.50.0
+- 1.50.0 (minor): 이번 사이클의 날짜 있는 심화 발굴 기록 요구(T-107). PR #271 → main, #272 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
