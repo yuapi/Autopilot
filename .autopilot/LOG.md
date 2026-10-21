@@ -737,3 +737,8 @@
 ## 2026-10-21T10:29Z | - | release | skill 1.48.1
 - 1.48.1 (patch): scope 검사에서 rename 양쪽 경로(T-105). PR #263 → main, #264 → develop
 - tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-10-21T10:31Z | T-106 | done | skill 1.48.1
+- 발굴: CONFIG 변경 커밋 탐색 실행. 작업 커밋이 CONFIG를 integration: pr·merge: auto로 바꿔도 task.sh done 통과(규칙만 있고 강제 없음, 이슈 본문 주입 경로)
+- 변경: task.sh(start 이후 커밋의 .autopilot/CONFIG.md 변경 거절, 첫 커밋 이전 start=none은 제외), SKILL.md 통합 정책 문구, tests/test_task.sh(+4), CHANGELOG
+- 검증: test_task 67 통과, validate PASS
