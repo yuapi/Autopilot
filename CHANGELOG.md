@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.44.0 — 2026-10-21
 - `scan.sh` prints at most 50 lines per section (`AUTOPILOT_SCAN_MAX`, `--all` for every line), then the count left and the hits per folder; SKILL.md 1-B groups such a section by file or folder, at most 10 tasks per cycle, instead of one task per line (400 TODOs used to mean 400 tasks and about 20k tokens of scan output)
 
 ## 1.43.0 — 2026-10-21
