@@ -115,4 +115,11 @@ check "dead driver.lock → stale lock noted" bash -c "bash '$ST' '$d' | grep -q
 rm -f "$d/.autopilot/driver.lock"
 check "no lock → idle" bash -c "bash '$ST' '$d' | grep -q '^Run: idle (no RUN or STOP)'"
 
+# a task in progress with no loop running is explained
+d="$(mktemp -d "$TMPROOT/int.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
+printf '| T-003 | fix | in_progress | 1 | half done | t | s | |\n' > "$d/.autopilot/BACKLOG.md"
+check "idle + task in progress → explained" bash -c "bash '$ST' '$d' | grep -q 'the last run ended in the middle of T-003'"
+printf 'session: x\n' > "$d/.autopilot/RUN"
+check_not "running + task in progress → no such note" bash -c "bash '$ST' '$d' | grep -q 'ended in the middle'"
+
 finish

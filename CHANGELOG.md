@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- status.sh explains a task left in progress while no loop runs: the last run ended in the middle of it, and the next run finishes or rolls it back
 
 ## 1.39.1 — 2026-10-21
 - `release.sh --catch-up` builds the version → commit map once instead of rescanning every commit for every version: 44 missing versions took 49 s in a dry run, now 13 s with the same result
