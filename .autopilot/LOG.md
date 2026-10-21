@@ -840,3 +840,9 @@
 ## 2026-10-21T12:27Z | T-116 | done | skill 1.54.4
 - 변경: README.md·README.ko.md "How it works"에 "규칙은 적어만 두지 않고 검사한다" 항목(task.sh done·log.sh·finalstop.sh·훅이 거절하는 것), CHANGELOG
 - 검증: 항목마다 해당 스크립트 테스트가 있는지 대조(test_task·test_log·test_finalstop·test_hook), validate PASS
+
+## 2026-10-21T12:35Z | T-117 | done | skill 1.54.4
+- 발굴: eval 범위 점검. 1-F(제안)를 재는 예제가 없음
+- 변경: tests/eval/fixture-api(geo.py: parse_point None→ValueError TODO, distance_km b[0] 결함, test_geo.py, README), fixture-api.expected, scripts/eval.sh(proposal=·nodiff= 기대값), tests/test_eval.sh(+4), README 2종 예제 목록, CHANGELOG
+- 검증: test_eval 106 통과, validate PASS. 실제 eval api 세션 4회: distance·api-kept 4/4, proposal 1/4 — 보존 실행에서 Not doing에 "PROPOSALS 참고"라고만 쓰고 제안 행이 없음
+- 후속: T-118 추가(제안이 Not doing으로 사라지는 문제)
