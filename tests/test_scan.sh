@@ -73,4 +73,18 @@ check "the marker in file 3000 is found" grep -q "f2999.py:2:# TODO: big" <<<"$o
 e="$(mktemp -d "$TMPROOT/empty.XXXX")"; git -C "$e" init -q; echo "# TODO: untracked-but-ignored" > "$e/ign.py"; echo "ign.py" > "$e/.gitignore"
 check_not "an empty git repository does not fall back to scanning ignored files" grep -q "untracked-but-ignored" <<<"$(bash "$SC" "$e")"
 
+# a large section is cut off with the count left and the hits per folder; --all prints every line
+d="$(mktemp -d "$TMPROOT/big.XXXX")"; git -C "$d" init -q
+mkdir -p "$d/src/a" "$d/src/b" "$d/lib"
+for i in $(seq 1 30); do echo "# TODO a$i" > "$d/src/a/f$i.py"; echo "# TODO b$i" > "$d/src/b/f$i.py"; done
+echo "# FIXME" > "$d/lib/x.py"
+out="$(bash "$SC" "$d")"
+check "a section prints at most 50 lines" test "$(grep -c ':1:# \(TODO\|FIXME\)' <<<"$out")" -eq 50
+check "the cut-off says how many are left" grep -q '^… 11 more line(s) (61 in total)' <<<"$out"
+check "hits per folder, at the deepest level that fits" grep -qx '  src/a/: 30' <<<"$out"
+check "a folder with one hit is listed too" grep -qx '  lib/: 1' <<<"$out"
+check "--all prints every line" test "$(bash "$SC" --all "$d" | grep -c ':1:# ')" -eq 61
+check "AUTOPILOT_SCAN_MAX changes the limit" bash -c "AUTOPILOT_SCAN_MAX=5 bash '$SC' '$d' | grep -q '^… 56 more line(s)'"
+check_not "AUTOPILOT_SCAN_MAX=0 is refused" bash -c "AUTOPILOT_SCAN_MAX=0 bash '$SC' '$d'"
+
 finish
