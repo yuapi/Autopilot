@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.51.0
+  version: 1.52.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.51.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.52.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -133,6 +133,7 @@ Findings from 5 and 6 become tasks with their evidence (command and output summa
 
 - Targets: example commands in the README and docs, the CLI `--help` and every subcommand, short usage examples of public functions for a library, the main endpoints of a server started locally.
 - Inputs: one normal input, then one each of the edge inputs (empty value, very large value, malformed input, missing file, Unicode or spaces in paths, a path without permission).
+- First run: before any command that writes data or settings, run the read-only commands (list, show, status, export, …) on a fresh copy where nothing has been created yet: no data file, no config, no cache. That is a new user's first command, and a run that starts with a write never sees it.
 - Observe: exit code, exposed stack traces, whether error messages give the cause and a fix, whether results match the docs, anything noticeably slow.
 - Safety: write only in a temporary directory and put a timeout (60 seconds by default) on every command. Always stop processes you started. Never run anything that touches the external network, payments, email, real accounts or production data. If you cannot run it (does not build, needs secrets), write that under "Observations" and read the code instead.
 - For a reproducible defect, the fix task's completion criteria include "add a regression test for this input".
@@ -348,7 +349,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30Z | T-042 | done | skill 1.51.0
+## 2026-10-01T14:30Z | T-042 | done | skill 1.52.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)

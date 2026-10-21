@@ -760,3 +760,13 @@
 - 발굴: LOG·BACKLOG 순서 탐색 실행. in_progress 작업의 done 항목, 없는 ID(T-999)도 log.sh가 기록
 - 변경: log.sh(작업 항목은 BACKLOG·archive 행과 상태 일치 필요, 어긴 경우 할 task.sh 단계 안내, BACKLOG 없는 레포와 '-' 항목은 제외, CRLF 허용), SKILL.md LOG 형식, tests/test_log.sh(+11), CHANGELOG
 - 검증: test_log 44 통과, validate PASS. 실제 eval 세션 2작업: todo 10/11(놓친 항목이 매번 다름), hooks 8/8, 규칙 검사 전부 ok — 실제 세션이 새 순서 검사와 충돌 없음
+
+## 2026-10-21T10:58Z | - | release | skill 1.51.0
+- 1.51.0 (minor): BACKLOG과 어긋나는 LOG 작업 항목 거절(T-108). PR #275 → main, #276 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-10-21T11:10Z | T-109 | done | skill 1.51.0
+- 발굴: eval 관찰. todo가 missing-db를 최근 4회 중 3회 놓침. 보존 실행의 ROADMAP을 보니 시나리오가 add→list라 list가 데이터 파일 생성 뒤에만 실행됨
+- 변경: SKILL.md 1-A 탐색 실행에 "처음 상태" 규칙(쓰기 전에 읽기 명령을 데이터·설정·캐시 없는 상태에서), CHANGELOG
+- 검증: validate PASS. eval todo 세션 전 missing-db 1/4 → 후 3/3(11/11 세 번). --fixture all: hooks·kv·mono·stats·todo·watch 100%, wordcount 8/9(harness-first — 변경 전에도 반복 누락, T-110으로 큐), 규칙 위반 0, 약 $1.9
+- 후속: T-110 추가(wordcount harness-first 반복 누락 조사)
