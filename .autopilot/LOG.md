@@ -663,3 +663,8 @@
 ## 2026-10-21T09:27Z | - | release | skill 1.42.0
 - 1.42.0 (minor): runlock.sh start가 .gitignore 처리(T-097). PR #233 → main, #234 → develop
 - tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-10-21T09:32Z | T-098 | done | skill 1.42.0
+- 발굴: 잘못된 CONFIG 탐색 실행. integration: prr에서 workbranch.sh가 master에 머물고 status.sh는 경고 없음 → T-098
+- 변경: workbranch.sh(모르는 integration→local, local_branch→auto, 경고), status.sh(키별 허용값 경고, 클라우드 경고 판단도 local로), autopilot.sh(기존 경고에 "local로 취급" 추가), SKILL.md 상태 파일 표, 테스트(workbranch +4, status +4, driver 1 수정), CHANGELOG
+- 검증: validate PASS
