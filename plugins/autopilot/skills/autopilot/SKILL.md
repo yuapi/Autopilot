@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.40.0
+  version: 1.41.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.40.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.41.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -298,7 +298,7 @@ Claim it with `bash <skill folder>/scripts/task.sh start <ID>`: it refuses while
 ### Phase 5 — record
 
 On success:
-1. Commit: in the repository's commit convention (CONTRIBUTING, CLAUDE.md, …) if it has one, else `autopilot(<task ID>): <one-line summary>`. For issue-sourced tasks put `Refs #N` in the body. If the integration mode is not `local`, commit on the task branch. **Do not push yet.**
+1. Commit: in the repository's commit convention (CONTRIBUTING, CLAUDE.md, …) if it has one, else `autopilot(<task ID>): <one-line summary>`. For issue-sourced tasks put `Refs #N` in the body. The repository's commit hooks (pre-commit formatters, linters, commit-msg checks) are part of verification: if a hook rewrote files, stage them and commit again; if it rejects the commit, fix the cause or treat it as a Phase 4 failure. Never bypass hooks (`--no-verify`, `-n`, disabling `core.hooksPath`). If the integration mode is not `local`, commit on the task branch. **Do not push yet.**
 2. Run `bash <skill folder>/scripts/task.sh done <ID>`. It sets `done` with the date only if the task has its own commit since `start` that changes files outside `.autopilot/` (and, with CONFIG `scope`, only inside it) and names no other task. If it refuses, fix the cause instead of editing the row by hand: commit the change, or, when the commit also covers another task, undo that unpushed commit with `git reset --soft HEAD~1` (the changes stay) and commit each task on its own.
    - Only after `done` accepts, publish as described in "Integration policy" (push, PR, merge). Publishing first would push or merge a commit the check then refuses.
 3. Add follow-up tasks found during implementation to the BACKLOG.
@@ -348,7 +348,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30Z | T-042 | done | skill 1.40.0
+## 2026-10-01T14:30Z | T-042 | done | skill 1.41.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
@@ -392,6 +392,7 @@ It also refreshes such a copy whenever it differs from this skill's version. `ho
 - Do more than one task per call in driver mode
 - Commit unverified work
 - `git push` the integration policy does not allow, and never `git reset --hard` or anything forced
+- Bypass the repository's commit hooks (`--no-verify`, `-n`, `core.hooksPath`)
 - Delete things outside `.autopilot/` (except under the cleanup rules)
 - Upgrade a dependency's major version
 - Change or remove an existing public interface (except within an adopted proposal)

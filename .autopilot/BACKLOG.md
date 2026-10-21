@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 95
+next_id: 96
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -101,3 +101,4 @@ next_id: 95
 | T-092 | fix | done | 1 | local 모드에서 .autopilot/ 상태를 커밋하라는 규칙이 없음: 드라이버 eval 3회 중 1회는 .autopilot/가 끝까지 untracked, 나머지도 마지막 상태가 남을 수 있음 → 매 작업 끝에 .autopilot/만 커밋(T-091의 STOP 전용 규칙을 일반화), eval 규칙 검사에 "끝난 뒤 작업 트리 깨끗" 추가 | 규칙 검사·eval 검사 테스트, 실제 드라이버·세션 eval | 남겨 둔 드라이버 eval 실행 점검 | 2026-10-21 |
 | T-093 | perf | done | 1 | release.sh --catch-up가 버전마다 plugin.json을 바꾼 모든 커밋을 다시 보며 커밋마다 Python 실행(버전×커밋): 44개 버전 dry-run 48초 → 한 번 훑어 버전→첫 커밋 표 | 같은 매핑, 시간 단축, 기존 테스트 통과 | 사용자가 로컬에서 돌릴 catch-up(태그 44개 대기) 점검 | 2026-10-21 |
 | T-094 | enhance | done | 1 | 루프가 돌지 않는데 in_progress 작업이 있으면 status.sh가 "idle"과 "Now:"만 보여 줌 → 이전 실행이 작업 중간에 끝났고 다음 실행이 끝내거나 되돌린다고 설명 | idle+진행 중 / running+진행 중 테스트 | 탐색 실행(/autopilot:status를 하위 폴더에서) | 2026-10-21 |
+| T-095 | fix | done | 1 | 레포의 커밋 훅(pre-commit 포매터·린터)에 대한 규칙 없음 → 훅이 고친 파일은 다시 스테이징해 커밋, 훅이 거부하면 검증 실패로 처리, --no-verify 등 우회 금지 | 규칙 검사 테스트, pre-commit 훅 있는 예제에서 실제 확인 | 심화 발굴 2단계 새 시나리오: pre-commit 훅이 있는 레포 | 2026-10-21 |
