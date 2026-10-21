@@ -783,3 +783,9 @@
 ## 2026-10-21T11:35Z | - | release | skill 1.53.0
 - 1.53.0 (minor): 첫 fix가 테스트 러너와 자기 테스트를 가져와도 됨, eval first=(T-110). PR #283 → main, #284 → develop
 - tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-10-21T11:35Z | - | retro | skill 1.53.0
+- 범위: T-101~T-110, 10건 done·0 failed·0 blocked(성공률 100%). 유형: fix 5, enhance 3, security 1, docs 1. 출처: 탐색 실행 6, eval 관찰 2, 직접 겪음 1, 심화 발굴 1
+- 실패 원인: 없음. 막힌 것은 매 릴리스의 태그·Release(세션 정책)뿐
+- 관찰: 결함 대부분이 "규칙은 있는데 스크립트가 강제 안 함"(T-105~T-108)과 "잘못된 설정"(T-101, T-102)에서 나옴. eval 반복 누락 2건(todo missing-db, wordcount harness-first)은 보존 실행으로 원인을 찾아 둘 다 3/3으로 올림
+- 배운 것: 설정 규칙 확장, "규칙 강제 확인"·"반복 누락은 보존 실행으로" 두 줄 추가(16줄). last_retro 갱신
