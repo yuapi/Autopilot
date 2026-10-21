@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- The Stop hook says when its stall count is running ("Stop 1 of 3 without a change to the LOG or commits") and to wait for a background command in the foreground: a turn ended while an eval ran counted as no progress and silently ended the run at the third stop
 
 ## 1.47.0 — 2026-10-21
 - A CONFIG `branch_prefix` that git rejects as a branch name (a space, `~`, `..`) in `branch`/`pr` mode: `status.sh` warns, the driver stops before the first run with the fix, and SKILL.md Phase 0 writes STOP with it

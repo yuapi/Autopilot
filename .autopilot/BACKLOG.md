@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 103
+next_id: 105
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -109,3 +109,5 @@ next_id: 103
 | T-100 | fix | done | 1 | CONFIG scope가 없는 경로(scope: nope/)여도 조용히 통과: 발굴은 아무것도 못 찾고 task.sh done은 모든 변경을 거절해 거짓 최종 정지로 갈 수 있음. status.sh 경고, 드라이버 사전 점검에서 고칠 방법과 함께 정지, SKILL.md Phase 0에 STOP 규칙 | scope: nope/에서 status.sh가 경고, 드라이버가 exit 1·claude 호출 없음, 있는 경로·.·auto는 경고 없음; test_status·test_driver 추가 검사 | 탐색 실행(2026-10-21, 잘못된 CONFIG 값) | 2026-10-21 |
 | T-101 | fix | done | 1 | CONFIG base_branch가 없는 브랜치(오타)여도 아무 스크립트도 확인 안 함: branch·pr 모드에서 기준 갱신·PR 대상이 깨짐. status.sh 경고, 드라이버 사전 점검 정지, SKILL.md Phase 0에 STOP 규칙 | pr·base_branch: nope에서 status.sh 경고·드라이버 exit 1(claude 호출 없음); 로컬 또는 origin에 있으면·auto·local 모드면 조용함; 테스트 추가 | 탐색 실행(2026-10-21, 잘못된 CONFIG 값 3) | 2026-10-21 |
 | T-102 | fix | done | 1 | CONFIG branch_prefix가 git이 거부하는 이름(공백·~·..)이어도 확인 안 함: branch·pr 모드의 모든 작업 브랜치 생성이 실패. status.sh 경고, 드라이버 사전 점검 정지, SKILL.md Phase 0 규칙 | branch_prefix: "my feature/"·feat~/ 에서 status 경고·드라이버 exit 1; feature/·auto·local 모드는 조용함; 테스트 추가 | 탐색 실행(2026-10-21, 잘못된 CONFIG 값 4) | 2026-10-21 |
+| T-103 | enhance | done | 1 | Stop 훅이 진행 없는 차단 횟수를 모델에게 알리지 않음: 백그라운드 명령(eval)을 기다리며 턴을 끝내면 3번째에 조용히 STOP(직접 겪음). 진행 없는 차단부터 차단 이유에 "N/LIMIT"과 포그라운드로 기다리라는 안내 추가 | 진행 없는 두 번째 차단의 reason에 "1 of 3"과 foreground 안내, 진행이 있으면 안내 없음, JSON 유효; test_hook 추가 검사 | 직접 겪음(2026-10-21, T-099 eval 대기 중 연속 차단) | 2026-10-21 |
+| T-104 | docs | open | 0 | README 2종에 AUTOPILOT_RUN_STALE_MIN·AUTOPILOT_SCAN_MAX가 없고, 드라이버 사전 점검 목록에 새 검사(없는 scope·base_branch, 잘못된 branch_prefix)가 빠짐 | README.md·README.ko.md에 두 변수와 세 검사가 있음, validate PASS | 심화 발굴(문서 정확성: 환경 변수 대조) | |
