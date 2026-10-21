@@ -4,7 +4,8 @@
 #   in RUN, matched against the session_id Claude Code passes on stdin). Other sessions are never blocked.
 # - If .autopilot/STOP exists, removes RUN and lets the session end.
 # - After AUTOPILOT_STALL_LIMIT (default 3) consecutive blocks with no change to the LOG
-#   or commits, writes STOP and lets the session end (no endless blocking without progress).
+#   or commits, writes STOP and lets the session end (no endless blocking without progress). From the
+#   first block without progress, the reason says how many are left.
 # - The skill's frontmatter hook and an older repository copy may both run for the same stop. The
 #   transcript size tells them apart: same size = same stop, so it is counted once.
 # Release: create .autopilot/STOP, delete .autopilot/RUN, or remove this hook from settings.json
@@ -47,7 +48,11 @@ if [ "$n" -ge "$limit" ]; then
 fi
 printf '%s %s%s\n' "$sig" "$n" "${tsz:+ $tsz}" > "$A/.hook-state"
 
-cat << 'JSON'
-{"decision":"block","reason":"autopilot session mode. Re-read the .autopilot/ state files and do the next task. If the queue is empty, start with rediscovery (including the product axis). If you believe no substantive work is left, run the skill's scripts/finalstop.sh with the STOP summary: it refuses and lists what is missing until the final stop conditions hold. Go straight on, no summary or report."}
-JSON
+reason="autopilot session mode. Re-read the .autopilot/ state files and do the next task. If the queue is empty, start with rediscovery (including the product axis). If you believe no substantive work is left, run the skill's scripts/finalstop.sh with the STOP summary: it refuses and lists what is missing until the final stop conditions hold. Go straight on, no summary or report."
+# Say when the stall count is running: a turn ended while waiting on a background command (an eval,
+# a long build) counts as no progress, and at the limit the run ends
+if [ "$n" -gt 0 ]; then
+  reason="$reason Stop $n of $limit without a change to the LOG or commits: at $limit the run ends with STOP. If a background command is still running, wait for it in the foreground instead of ending the turn."
+fi
+printf '{"decision":"block","reason":"%s"}\n' "$reason"
 exit 0
