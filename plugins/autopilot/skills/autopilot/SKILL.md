@@ -305,7 +305,8 @@ On success:
 4. Append to the LOG with `scripts/log.sh` (see "LOG format").
    Never commit generated files (`__pycache__`, build output, coverage, logs). If the task created them, add them to `.gitignore` instead; if they were already tracked, queue a `cleanup` task rather than deleting them in this one.
 5. If the integration mode is `pr` and `release: auto`, check the "Release" conditions below.
-6. **Driver mode**: exit. **Session mode**: drop what you remember about the task and go back to Phase 0. No summary, no report, no "next I will …". Go straight to the next task.
+6. If `.autopilot/STOP` exists now (the task budget was used, or a person stopped the loop), the state written after the task's commit (the `done` row, the LOG entry) would be left uncommitted: commit `.autopilot/` alone (message `autopilot: record state` or the repository's convention; publish it like a task in `branch`/`pr` modes) and end.
+7. **Driver mode**: exit. **Session mode**: drop what you remember about the task and go back to Phase 0. No summary, no report, no "next I will …". Go straight to the next task.
 
 ## Integration policy
 
