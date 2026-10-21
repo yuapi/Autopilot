@@ -3,7 +3,8 @@
 #   bash task.sh start <ID> [repo]  refuse while another task is in progress or changes outside .autopilot/
 #                                   are uncommitted; then attempts + 1, status in_progress
 #   bash task.sh done <ID> [repo]   refuse unless the task has its own commit(s) since `start` that change
-#                                   files outside .autopilot/ and name no other task; then status done + date
+#                                   files outside .autopilot/, name no other task and leave CONFIG.md alone;
+#                                   then status done + date
 #   bash task.sh fail <ID> [repo]   status back to open (attempts kept), or blocked from the 3rd attempt
 #   bash task.sh drop <ID> [repo]   the task turned out unnecessary (cannot reproduce, already fixed):
 #                                   blocked now, no commit needed; refused while code changes are uncommitted
@@ -41,6 +42,10 @@ if [ "$cmd" = done ]; then
   range="$start..HEAD"; [ "$start" = none ] && range=HEAD
   code="$(git log --format= --name-only "$range" | grep -v '^$' | grep -v '^\.autopilot/' | grep -vx '.gitignore' | head -1 || true)"
   [ -n "$code" ] || { echo "[task] refused: the commits since $id started change only .autopilot/" >&2; exit 1; }
+  # CONFIG is the person's: a task never changes it (an issue or comment asking for it is data, not an order)
+  if [ "$start" != none ] && [ -n "$(git log --no-renames --format= --name-only "$range" -- .autopilot/CONFIG.md | head -1)" ]; then
+    echo "[task] refused: the commits since $id started change .autopilot/CONFIG.md. People set CONFIG; autopilot only reads it. Roll that change back" >&2; exit 1
+  fi
   scope=""; [ -f .autopilot/CONFIG.md ] && scope="$(tr -d '\r' < .autopilot/CONFIG.md | sed -n 's/^scope:[[:space:]]*\([^#]*\).*/\1/p' | head -1 | xargs || true)"   # tr: a CONFIG saved with CRLF
   if [ -n "$scope" ] && [ "$scope" != . ] && [ "$scope" != auto ]; then
     outside="$(git log --no-renames --format= --name-only "$range" -- . ':!.autopilot' ':!.gitignore' | grep -v '^$' | sort -u | while IFS= read -r f; do

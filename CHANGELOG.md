@@ -7,6 +7,9 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.49.0 — 2026-10-21
+- `task.sh done` refuses a task whose commits change `.autopilot/CONFIG.md`: "people set CONFIG, autopilot only reads it" was a rule only, and a task commit switching to `integration: pr` with `merge: auto` passed
+
 ## 1.48.1 — 2026-10-21
 - `task.sh done` checks both paths of a rename against CONFIG `scope`: moving a file from outside the scope into it (which deletes it outside) used to pass
 
