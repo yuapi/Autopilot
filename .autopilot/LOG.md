@@ -591,3 +591,17 @@
 - 범위: T-079~T-088 (10건). done 10 / failed 0 / blocked 0. 유형: fix 4, enhance 3, test 2, feature 1(T-075 이전 포함 시 T-080 등). 출처: 품질 점검(도움말·오류·관찰성) 4, 처음 쓰는 환경 시나리오 3, 실제 실행 2, 회고 후속 1
 - 실패 원인 없음. eval: 6개 예제(세션·드라이버) 모두 100%
 - "배운 것"에 1줄 추가(처음 쓰는 환경은 미리 확인하고 STOP)
+
+## 2026-10-20T17:25Z | - | release | skill 1.36.0
+- 1.36.0 릴리즈: release/1.36.0 → main, main → develop 역병합. 태그 대기: v1.36.0 (403, 누적 v1.11.0~v1.36.0)
+
+## 2026-10-20T17:27Z | T-089 | done | skill 1.36.0
+- 변경: README 2종(드라이버 종료 조건·glab·권한 모드, 상태 화면, 최종 정지 조건 (d), eval 설명), CHANGELOG
+- 검증: validate PASS
+
+## 2026-10-21T02:43Z | - | discover | skill 1.36.0
+- eval --mode session --iterations 2 --model claude-haiku-5-5(todo): 10/11, 148초, $0.04, 규칙 검사 전부 ok. 놓친 것: TODO 마커(마감일)를 작업 대신 제안으로 보냄 — scan.sh 줄은 작업이나 "하지 않기로 한 것"이어야 하나, 기능 추가를 방향 선택으로 판단. 한 번뿐이라 규칙 변경 근거로는 부족, 관찰로만 남김
+
+## 2026-10-21T02:53Z | T-090 | done | skill 1.36.0
+- 변경: SKILL.md 발굴 완료 조건(scan 줄은 1-F가 요구할 때만 제안으로 처리, 추가 요청 마커는 feature 작업), tests/test_skill_rules.sh(+1), CHANGELOG
+- 검증: validate PASS. Haiku 세션 eval 전 10/11(TODO를 제안으로) → 후 2회 11/11·10/11(TODO는 둘 다 작업, 놓친 것은 remove 1건). --fixture all 세션 1작업: kv 11/11, mono 8/8, stats 8/9, todo 10/11, watch 8/8, wordcount 9/9, 규칙 위반 0. todo를 2번 다시 돌려 둘 다 11/11 → 놓친 것은 변동으로 판단

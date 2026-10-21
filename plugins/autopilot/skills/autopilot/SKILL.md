@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.36.0
+  version: 1.37.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.36.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.37.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -143,7 +143,7 @@ Check this before leaving Phase 1. If anything is missing, discovery is not fini
 - The ROADMAP feature map has a row per feature (no template placeholder left).
 - "Observations" records at least one command you actually ran and what it did, or why nothing could be run.
 - "Scenarios" has three scenarios with where each got stuck (or "no friction").
-- Every `scan.sh` line is a BACKLOG task (a code marker becomes a `todo` task, or a `feature` task if it describes a feature) or has a one-line reason under "Not doing". Writing it only under "Missing" or "Weak" does not count.
+- Every `scan.sh` line is a BACKLOG task (a code marker becomes a `todo` task, or a `feature` task if it describes a feature) or has a one-line reason under "Not doing". Writing it only under "Missing" or "Weak" does not count, and neither does a proposal unless 1-F requires one (it would change or remove an existing interface). A marker asking for something new, such as an option or a command, is a `feature` task: interfaces may grow.
 - `last_scan` is today.
 
 #### 1-B. Discovery sources
@@ -347,7 +347,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30Z | T-042 | done | skill 1.36.0
+## 2026-10-01T14:30Z | T-042 | done | skill 1.37.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
