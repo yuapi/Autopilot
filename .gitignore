@@ -8,3 +8,4 @@ dist/
 .autopilot/.hook-state
 __pycache__/
 .autopilot/.task
+.autopilot/STOP.refused

@@ -15,6 +15,9 @@ case "${FAKE_MODE:-ok}" in
   fail) exit 1;;
   stop2) [ "$n" -ge 2 ] && echo "final stop" > .autopilot/STOP; exit 0;;
   idle) exit 0;;
+  handfinal) printf '\n## 2026-01-01T00:00 | T-%03d | done | skill 0\n' "$n" >> .autopilot/LOG.md
+             if [ "$n" -eq 1 ]; then printf 'Final stop: nothing left\n' > .autopilot/STOP
+             else printf 'Final stop: nothing left\n(checked by finalstop.sh)\n' > .autopilot/STOP; fi; exit 0;;
   cost) printf '\n## 2026-01-01T00:00 | T-%03d | done | skill 0\n' "$n" >> .autopilot/LOG.md
         echo '{"type":"result","result":"did one task","num_turns":4,"total_cost_usd":0.3}'; exit 0;;
   *) printf '\n## 2026-01-01T00:00 | T-%03d | done | skill 0\n' "$n" >> .autopilot/LOG.md; exit 0;;
@@ -190,6 +193,15 @@ check "no git identity → says why and how to fix" bash -c "grep -q 'no user.na
 check "no git identity → claude not called" test ! -e "$d/.autopilot/calls"
 check "the driver does not set an identity itself" test -z "$(git -C "$d" config --local user.email)"
 check "SKILL.md: Phase 0 stops without a git identity and never sets one" grep -q "Never set an identity yourself" "$REPO/$SKILL_REL/SKILL.md"
+
+# a final stop finalstop.sh did not write is moved aside and the driver runs again; a checked one stops it
+d="$(newrepo)"
+out="$(FAKE_MODE=handfinal drive "$d" 5 2>&1)"; rc=$?
+check "hand-written final stop → not obeyed (a second run follows)" test "$(calls "$d")" -eq 2
+check "hand-written final stop → moved to STOP.refused" grep -q "Final stop: nothing left" "$d/.autopilot/STOP.refused"
+check "hand-written final stop → says why" grep -q "not written by finalstop.sh" <<<"$out"
+check "checked final stop → driver stops (exit 0)" bash -c "test $rc -eq 0 && grep -q 'checked by finalstop.sh' '$d/.autopilot/STOP'"
+check "STOP.refused is ignored by git" grep -qxF .autopilot/STOP.refused "$d/.gitignore"
 
 # CONFIG base_branch naming a branch that does not exist: in pr mode no task could start, so the driver stops
 d="$(newrepo)"; git -C "$d" remote add origin https://example.invalid/x.git

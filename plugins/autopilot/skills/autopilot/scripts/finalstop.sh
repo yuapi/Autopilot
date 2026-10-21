@@ -68,7 +68,7 @@ if [ -n "$problems" ]; then
   echo "[finalstop] Keep going: run the missing deep discovery stages or finish the queued tasks." >&2
   exit 1
 fi
-printf '%s\n' "$summary" > .autopilot/STOP
+printf '%s\n%s\n' "$summary" "(checked by finalstop.sh)" > .autopilot/STOP   # the hook and the driver refuse a final stop without it
 rm -f .autopilot/RUN .autopilot/.hook-state
 printf '%s\n' "- $(printf '%s' "$summary" | head -1)" | bash "$here/log.sh" - stop "$root" >/dev/null
 echo "[finalstop] wrote .autopilot/STOP and removed RUN. Commit .autopilot/ if the integration mode commits state."
