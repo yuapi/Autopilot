@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.51.0 — 2026-10-21
 - `log.sh` refuses a task entry that disagrees with the BACKLOG (a `done` entry before `task.sh done`, an ID with no row), so the LOG and the BACKLOG cannot drift apart
 
 ## 1.50.0 — 2026-10-21
