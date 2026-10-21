@@ -789,3 +789,9 @@
 - 실패 원인: 없음. 막힌 것은 매 릴리스의 태그·Release(세션 정책)뿐
 - 관찰: 결함 대부분이 "규칙은 있는데 스크립트가 강제 안 함"(T-105~T-108)과 "잘못된 설정"(T-101, T-102)에서 나옴. eval 반복 누락 2건(todo missing-db, wordcount harness-first)은 보존 실행으로 원인을 찾아 둘 다 3/3으로 올림
 - 배운 것: 설정 규칙 확장, "규칙 강제 확인"·"반복 누락은 보존 실행으로" 두 줄 추가, eval 예제 줄은 합침(15줄). last_retro 갱신
+
+## 2026-10-21T11:41Z | T-111 | done | skill 1.53.0
+- 발굴: 회고의 새 배운 것("사람만/항상/먼저 규칙이 스크립트에서 거절되는지") 적용. "최종 정지 STOP을 손으로 쓰지 않는다"가 강제되지 않아 finalstop.sh 검사를 통째로 건너뛸 수 있었음
+- 변경: finalstop.sh(STOP에 "(checked by finalstop.sh)" 표시), assets/autopilot-stop.sh·.claude/hooks 사본(표시 없는 Final stop/최종 정지 → STOP.refused로 옮기고 계속 막음), autopilot.sh(같은 처리 후 다음 실행), runlock.sh·드라이버 .gitignore에 STOP.refused, SKILL.md, 테스트(hook +10, driver +5, finalstop +1), CHANGELOG
+- 순서: 구현을 task.sh start보다 먼저 해 버림 → 변경을 stash하고 행 추가·start 후 되돌려 순서를 바로잡음
+- 검증: hook 45·driver 97·finalstop 23·runlock 31 통과, validate PASS. 실제 eval: 세션 todo 예산 정지 정상 종료(RUN 제거), 드라이버 stats 2작업 규칙 검사 ok
