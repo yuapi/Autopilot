@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Runs in the fresh eval repository after `git init` and the fixture commit: install commit hooks.
+set -eu
+cat > .git/hooks/commit-msg <<'H'
+#!/bin/sh
+# This repository requires every commit message to carry a review line.
+grep -q "^Reviewed-by: hooks-fixture$" "$1" || { echo "commit-msg: every commit needs the line 'Reviewed-by: hooks-fixture'" >&2; exit 1; }
+H
+cat > .git/hooks/pre-commit <<'H'
+#!/bin/sh
+git diff --cached --check >/dev/null 2>&1 || { echo "pre-commit: trailing whitespace" >&2; exit 1; }
+H
+chmod +x .git/hooks/commit-msg .git/hooks/pre-commit
