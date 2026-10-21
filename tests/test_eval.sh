@@ -53,6 +53,8 @@ mkdir -p .autopilot
   echo "| T-001 | ${FIRST_TYPE:-test} | done | 1 | set up node --test with a smoke test | npm test passes | no tests | |"
   echo "| T-002 | fix | open | 0 | empty input prints 1 instead of 0 | test for empty input | using it | |"
 } > .autopilot/BACKLOG.md
+if [ "${FIRST_TYPE:-test}" = test ]; then mkdir -p tests && echo "// smoke" > tests/smoke.test.js; else echo "// fixed" >> wc.js; fi
+git add -A >/dev/null 2>&1; git commit -qm "autopilot(T-001): first task" >/dev/null 2>&1
 SH
 chmod +x "$FAKE2"
 check "--fixture list shows both fixtures" bash -c "bash '$EV' --fixture list | grep -qx wordcount && bash '$EV' --fixture list | grep -qx todo"
@@ -60,7 +62,7 @@ out="$(CLAUDE_BIN="$FAKE2" bash "$EV" --fixture wordcount 2>&1)"; rc=$?
 check "wordcount: harness first → 3/3" grep -q "Score: 3/3" <<<"$out"
 check "wordcount: copies the right fixture" grep -q "fixture wordcount" <<<"$out"
 out="$(FIRST_TYPE=fix CLAUDE_BIN="$FAKE2" bash "$EV" --fixture wordcount 2>&1)"
-check "wordcount: fixing first instead of the harness is graded as a miss" grep -q "MISSED  harness-first" <<<"$out"
+check "wordcount: a first fix with no test is graded as a miss" grep -q "MISSED  harness-first" <<<"$out"
 check_not "an unknown fixture is refused" bash "$EV" --fixture nope
 
 # --iterations: later runs are graded too
@@ -247,6 +249,21 @@ check "mono: 2/2" grep -q "Score: 2/2" <<<"$out"
 out="$(FAKE_TOUCH_B=1 CLAUDE_BIN="$FAKE5" bash "$EV" --fixture mono 2>&1)"
 check "mono: a commit touching pkg/b → missed, file named" grep -q "MISSED  scope .*changed: pkg/b/clamp.py" <<<"$out"
 check "mono fixture ships its CONFIG scope" grep -q "^scope: pkg/a" "$REPO/tests/eval/fixture-mono/.autopilot/CONFIG.md"
+
+# wordcount fixture: first= passes when the first task's commit brings a test, and names the files when not
+FAKE7="$TMPROOT/fake-claude-7"
+cat > "$FAKE7" <<'SH'
+#!/usr/bin/env bash
+{ echo "| ID | Type | Status | Attempts | Task | Done when | Source | Completed |"; echo "|---|---|---|---|---|---|---|---|"
+  echo "| T-001 | fix | done | 1 | empty input counts as 1 word | node --test passes | run | |"; } > .autopilot/BACKLOG.md
+echo "// fixed" >> wc.js; [ -n "${FAKE_NO_TEST:-}" ] || { mkdir -p tests && echo "// t" > tests/wc.test.js; }
+git add -A >/dev/null 2>&1; git commit -qm "autopilot(T-001): fix empty input" >/dev/null 2>&1
+SH
+chmod +x "$FAKE7"
+out="$(CLAUDE_BIN="$FAKE7" bash "$EV" --fixture wordcount 2>&1)"
+check "wordcount: a first fix that brings its test → harness-first found" grep -q "found   harness-first" <<<"$out"
+out="$(FAKE_NO_TEST=1 CLAUDE_BIN="$FAKE7" bash "$EV" --fixture wordcount 2>&1)"
+check "wordcount: a first fix with no test → missed, files named" grep -q "MISSED  harness-first .*first task changed: wc.js" <<<"$out"
 
 # cost and turns from the JSON result claude prints
 FAKE6="$TMPROOT/fake-claude-6"
