@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- With no way to verify, the first task may also be a fix that sets up the test runner itself (its regression test failing first, then passing) instead of a separate `test` task; a fix committed with no test is still refused by the rule. The eval grades it with a new `first=` expectation (the first task's commits must add a test file)
 
 ## 1.52.0 — 2026-10-21
 - Exploratory runs start with the read-only commands on a fresh state (no data file, config or cache yet), before any write: a scenario that began with `add` never saw `list` crash on a new user's first run

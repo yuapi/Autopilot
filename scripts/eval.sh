@@ -14,8 +14,10 @@
 # grades the first completed task's type; one starting with commit= must match every commit subject;
 # one starting with nofile= must match no file any commit changed (for CONFIG scope); one starting with
 # roadmap= is matched against the ROADMAP the run wrote (e.g. the recorded baseline commands); one starting
-# with body= must match every commit's full message. tests/eval/fixture-<name>.setup, if present, runs
-# in the new repository after the fixture commit (for what files cannot carry, such as git hooks).
+# with body= must match every commit's full message; one starting with first= must match a file the first
+# completed task's commits changed (e.g. a test file: the first task sets up a way to verify).
+# tests/eval/fixture-<name>.setup, if present, runs in the new repository after the fixture commit
+# (for what files cannot carry, such as git hooks).
 # Needs the claude CLI and spends real model usage (one driver run). Not part of validate.sh.
 # Rule checks (one commit per task, LOG only appended, deep discovery before a final stop) are reported
 # separately; any broken rule fails the eval whatever the score.
@@ -191,6 +193,16 @@ for ident, what, rx in items:
             what = what.strip() + f" (e.g. {bad[0]!r})"
     elif rx.startswith("type="):
         hit = bool(completed) and completed[0] == rx[5:]
+    elif rx.startswith("first="):
+        # files changed by the first completed task's own commits (named by its ID; else the first commit
+        # that changes anything outside .autopilot/)
+        def files(c): return [f for f in git("show", "--name-only", "--format=", c).split() if not f.startswith(".autopilot/") and f != ".gitignore"]
+        own = [c for c in commits if completed and re.search(rf"\b{re.escape(completed[0])}\b", git("show", "-s", "--format=%B", c))]
+        own = [c for c in own if files(c)] or [c for c in commits if files(c)][:1]
+        changed = sorted({f for c in own for f in files(c)})
+        hit = any(re.search(rx[6:], f) for f in changed)
+        if not hit and changed:
+            what = what.strip() + f" (first task changed: {', '.join(changed[:3])})"
     else:
         hit = re.search(rx, text, re.I)
     found += bool(hit)
