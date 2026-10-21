@@ -7,6 +7,9 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.48.1 — 2026-10-21
+- `task.sh done` checks both paths of a rename against CONFIG `scope`: moving a file from outside the scope into it (which deletes it outside) used to pass
+
 ## 1.48.0 — 2026-10-21
 - README (EN/KO): `AUTOPILOT_RUN_STALE_MIN`, `AUTOPILOT_SCAN_MAX` and `scan.sh --all`, the driver's CONFIG preflight checks, and the hook's stall notice
 - The Stop hook says when its stall count is running ("Stop 1 of 3 without a change to the LOG or commits") and to wait for a background command in the foreground: a turn ended while an eval ran counted as no progress and silently ended the run at the third stop

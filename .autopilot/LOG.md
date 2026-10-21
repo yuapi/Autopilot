@@ -724,3 +724,12 @@
 ## 2026-10-21T10:18Z | T-104 | done | skill 1.47.0
 - 변경: README.md·README.ko.md(AUTOPILOT_RUN_STALE_MIN, AUTOPILOT_SCAN_MAX·--all, 드라이버 CONFIG 사전 점검 3종, 훅의 남은 횟수 안내), CHANGELOG
 - 검증: 스크립트가 읽는 AUTOPILOT_* 변수를 README와 대조(사용자용은 전부 문서화, EVAL_*·DRIVER는 개발·내부용), validate PASS
+
+## 2026-10-21T10:22Z | - | release | skill 1.48.0
+- 1.48.0 (minor): 훅의 남은 횟수 안내(T-103), README 설정·사전 점검 문서(T-104). PR #259 → main, #260 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-10-21T10:25Z | T-105 | done | skill 1.48.0
+- 발굴: scope 경계 탐색 실행. scope: pkg에서 other/a.py를 pkg/로 git mv한 커밋을 task.sh done이 통과시킴(rename 검출로 새 경로만 보임)
+- 변경: task.sh(scope 검사에 --no-renames), tests/test_task.sh(+2: 밖→안 이동 거절·옛 경로 이름, 안에서 rename 통과), CHANGELOG
+- 검증: 새 테스트가 수정 전 코드에서 실패(62/63), 수정 후 63 통과, validate PASS
