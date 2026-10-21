@@ -130,6 +130,17 @@ case "$integration" in
   *) echo "[driver] unknown integration value in .autopilot/CONFIG.md: $integration (expected local, branch or pr); autopilot treats it as local." >&2 ;;
 esac
 
+# CONFIG base_branch naming a branch that exists neither here nor on origin (a typo): in branch/pr mode
+# every task starts from it and every PR targets it. Say so and stop.
+base="$(cfg_value base_branch || true)"
+case "$integration" in branch|pr)
+  if [ -n "$base" ] && [ "$base" != auto ] && ! git show-ref -q --verify "refs/heads/$base" && ! git show-ref -q --verify "refs/remotes/origin/$base"; then
+    echo "[driver] CONFIG base_branch: $base exists neither as a local branch nor on origin." >&2
+    echo "[driver] Fix base_branch: in .autopilot/CONFIG.md (or set it to auto), or git fetch origin if it is new, then run the driver again." >&2
+    exit 1
+  fi;;
+esac
+
 # Call the skill by name so the one installed for the account/project is used, not a repository path.
 PROMPT='Use the autopilot skill and follow its procedure in driver mode (AUTOPILOT_DRIVER=1 is set): do exactly one task, then exit. This is driver mode, not a task budget: do not run runlock.sh and do not write STOP unless the skill says so. Do not ask questions and do not start a second task.'
 

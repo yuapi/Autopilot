@@ -90,6 +90,12 @@ m = re.search(r"^scope:[ \t]*([^#\r\n]*)", read("CONFIG.md"), re.M)
 for sp in (m.group(1).split() if m else []):
     if sp not in (".", "auto") and not os.path.exists(os.path.join(root, sp)):
         print(f"Warning: CONFIG scope names {sp}, which does not exist here: discovery finds nothing there and every change is refused. Fix scope: in .autopilot/CONFIG.md.")
+m = re.search(r"^base_branch:[ \t]*([^\s#]+)", read("CONFIG.md"), re.M)
+if m and m.group(1) != "auto" and cfg.get("integration") in ("branch", "pr"):
+    import subprocess
+    refs = [subprocess.run(["git", "-C", root, "show-ref", "-q", "--verify", r + m.group(1)]).returncode for r in ("refs/heads/", "refs/remotes/origin/")]
+    if all(refs):
+        print(f"Warning: CONFIG base_branch: {m.group(1)} exists neither as a local branch nor on origin: tasks cannot start from it. Fix base_branch: in .autopilot/CONFIG.md (or git fetch origin).")
 if os.environ.get("CLAUDE_CODE_REMOTE") == "true" and cfg.get("integration", "local") == "local":
     print("Warning: this is a cloud session and integration is local: the loop's commits stay in this container and are lost when it is reclaimed. Set integration: branch (or pr) in .autopilot/CONFIG.md to push them.")
 
