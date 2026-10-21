@@ -804,3 +804,7 @@
 - 발굴: 배운 것 적용(규칙 강제 확인). __pycache__/*.pyc·.DS_Store를 추가한 작업 커밋이 task.sh done 통과
 - 변경: task.sh(start 이후 커밋이 추가한 잘 알려진 생성 파일 거절·이름 표시, dist/·build/와 이미 추적 중인 파일은 제외), SKILL.md Phase 5, tests/test_task.sh(+2), CHANGELOG
 - 검증: test_task 69 통과, validate PASS. 실제 eval 세션 2작업: todo 11/11, stats 9/9, 실패 0 — 두 실행 모두 모델이 __pycache__/를 .gitignore에 넣어 거절에 걸리지 않음(추적된 생성 파일 0)
+
+## 2026-10-21T11:55Z | - | release | skill 1.54.1
+- 1.54.1 (patch): 생성 파일을 추가하는 작업 커밋 거절(T-112). PR #292 → main, #293 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
