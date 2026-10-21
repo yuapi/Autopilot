@@ -622,3 +622,8 @@
 
 ## 2026-10-21T03:11Z | - | release | skill 1.39.0
 - 1.39.0 릴리즈: release/1.39.0 → main, main → develop 역병합. 태그 대기: v1.39.0 (403, 누적 v1.11.0~v1.39.0)
+
+## 2026-10-21T03:19Z | T-093 | done | skill 1.39.0
+- 발굴: 예산 정지 후 재개 실제 확인(/autopilot:run 1 두 번: STOP을 LOG로 옮기고 T-002 하나, 트리 깨끗). 열린 이슈 0. catch-up이 버전×커밋으로 느린 것 발견
+- 변경: scripts/release.sh(버전→첫 커밋 표를 한 번 만듦), CHANGELOG
+- 검증: test_release·validate PASS. origin/main 작업 트리에서 dry-run 49초 → 13초, 출력 동일(diff)
