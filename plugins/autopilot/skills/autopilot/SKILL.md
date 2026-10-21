@@ -85,7 +85,7 @@ In session mode, also run `bash <skill folder>/scripts/runlock.sh touch` at the 
    - Search order: commands recorded under ROADMAP "Maintenance status" (reuse them) → repository docs (`CLAUDE.md`, `CONTRIBUTING.md`, the development section of the README) → task runners (`Makefile`, `justfile`, `Taskfile.yml`, `package.json` scripts) → ecosystem config (`pyproject.toml`/`tox.ini`/`noxfile.py`, `go.mod` → `go test ./...` and `go vet ./...`, `Cargo.toml` → `cargo test` and `cargo clippy`, `build.gradle`/`pom.xml`, `Gemfile`, `composer.json`, `*.sln`/`*.csproj` → `dotnet test`, `deno.json`, `mix.exs`) → CI config (the run steps in `.github/workflows` and similar). For mostly-shell repositories, `bash -n` and `shellcheck` if installed.
    - Write the commands found and how long they take under ROADMAP "Maintenance status". Later tasks reuse them instead of searching again.
    - Run failing tests once more. If the result changes, record the test as flaky in the ROADMAP and leave it out of the Phase 4 comparison. A flaky test is itself a `fix` candidate.
-   - **If there is no way to verify at all**, queue a `test` task that sets up the ecosystem's standard test runner with one smoke test, and **do it before any other task, `fix` included**: without it no other task can be verified, so a fix done first is an unverified commit. It does not count against the per-cycle `test` limit. Put the defects you found into the BACKLOG as usual; the first fix after the harness adds its regression test to it.
+   - **If there is no way to verify at all**, no task may be committed without a test. Either queue a `test` task that sets up the ecosystem's standard test runner with one smoke test and **do it before any other task, `fix` included**, or let the first task be a fix that sets up that runner itself: write its regression test first, show it failing, make the fix, show it passing, and record both counts in the LOG. A fix committed with no test is an unverified commit either way. The harness task does not count against the per-cycle `test` limit. Put the defects you found into the BACKLOG as usual; later fixes add their regression tests to the same runner.
 
 ### Phase 0.5 — retrospective (every 10 tasks)
 
@@ -266,7 +266,7 @@ Pick one `open` task from the BACKLOG. Priority:
 fix > security > feature (in progress) > enhance > feature (new) > perf > todo > test > cleanup > lint > docs > refactor
 ```
 
-Exception: while the repository has no way to verify (Phase 0 baseline), the task that sets up the test harness comes first of all.
+Exception: while the repository has no way to verify (Phase 0 baseline), the first task is the one that sets up the test harness (a `test` task, or a fix that brings the runner and its own failing-then-passing test).
 
 Finish features in progress (a `features/<slug>.md` with stages left) before starting new ones. This prevents starting things and never finishing them.
 
