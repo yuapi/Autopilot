@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.53.0 — 2026-10-21
 - With no way to verify, the first task may also be a fix that sets up the test runner itself (its regression test failing first, then passing) instead of a separate `test` task; a fix committed with no test is still refused by the rule. The eval grades it with a new `first=` expectation (the first task's commits must add a test file)
 
 ## 1.52.0 — 2026-10-21
