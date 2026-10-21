@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- `task.sh done` checks both paths of a rename against CONFIG `scope`: moving a file from outside the scope into it (which deletes it outside) used to pass
 
 ## 1.48.0 — 2026-10-21
 - README (EN/KO): `AUTOPILOT_RUN_STALE_MIN`, `AUTOPILOT_SCAN_MAX` and `scan.sh --all`, the driver's CONFIG preflight checks, and the hook's stall notice
