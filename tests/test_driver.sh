@@ -129,7 +129,7 @@ out="$(FAKE_MODE=ok drive_gh "$d" 1 2>&1)"
 check "branch mode without origin → warns" grep -q "needs a remote named origin" <<<"$out"
 d="$(newrepo)"; cfg "$d" prr
 out="$(FAKE_MODE=ok drive_gh "$d" 1 2>&1)"
-check "unknown integration value → warns" grep -q "unknown integration value" <<<"$out"
+check "unknown integration value → warns" grep -q "unknown integration value.*treats it as local" <<<"$out"
 d="$(newrepo)"
 out="$(FAKE_MODE=ok drive_gh "$d" 1 2>&1)"
 check_not "local mode (no CONFIG) → no integration message" grep -q "integration" <<<"$out"

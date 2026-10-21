@@ -80,6 +80,12 @@ if os.path.exists(hook):
 
 cfg = dict(re.findall(r"^(integration|merge|release|language|scope):\s*([^\s#]+)", read("CONFIG.md"), re.M))
 print("Integration: " + (", ".join(f"{k}={v}" for k, v in cfg.items()) if cfg else "local (no CONFIG)"))
+allowed = {"integration": ("local", "branch", "pr"), "merge": ("off", "auto"), "release": ("off", "auto"), "local_branch": ("auto", "current")}
+for k, v in re.findall(r"^(integration|merge|release|local_branch):\s*([^\s#]+)", read("CONFIG.md"), re.M):
+    if v not in allowed[k]:
+        safe = allowed[k][0]
+        print(f"Warning: CONFIG {k}: {v} is not one of {' | '.join(allowed[k])}; autopilot treats it as {safe}. Fix .autopilot/CONFIG.md.")
+        if k == "integration": cfg[k] = safe
 if os.environ.get("CLAUDE_CODE_REMOTE") == "true" and cfg.get("integration", "local") == "local":
     print("Warning: this is a cloud session and integration is local: the loop's commits stay in this container and are lost when it is reclaimed. Set integration: branch (or pr) in .autopilot/CONFIG.md to push them.")
 
