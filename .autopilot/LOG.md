@@ -612,3 +612,6 @@
 ## 2026-10-21T03:00Z | T-091 | done | skill 1.37.0
 - 변경: SKILL.md Phase 5 6단계(STOP이 생겼으면 .autopilot/만 커밋하고 끝냄, 기존 6단계는 7로), tests/test_skill_rules.sh(+1), CHANGELOG
 - 검증: validate PASS. 실제 claude -p "/autopilot:run 1"(todo): 끝난 뒤 작업 트리 깨끗, 마지막 커밋 "autopilot: record state"
+
+## 2026-10-21T03:04Z | - | release | skill 1.38.0
+- 1.38.0 릴리즈: release/1.38.0 → main, main → develop 역병합. 태그 대기: v1.38.0 (403, 누적 v1.11.0~v1.38.0)
