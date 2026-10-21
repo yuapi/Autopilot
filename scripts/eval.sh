@@ -13,7 +13,9 @@
 # same options and prints one summary (exit 1 if any fails). An expectation regex starting with type=
 # grades the first completed task's type; one starting with commit= must match every commit subject;
 # one starting with nofile= must match no file any commit changed (for CONFIG scope); one starting with
-# roadmap= is matched against the ROADMAP the run wrote (e.g. the recorded baseline commands).
+# roadmap= is matched against the ROADMAP the run wrote (e.g. the recorded baseline commands); one starting
+# with body= must match every commit's full message. tests/eval/fixture-<name>.setup, if present, runs
+# in the new repository after the fixture commit (for what files cannot carry, such as git hooks).
 # Needs the claude CLI and spends real model usage (one driver run). Not part of validate.sh.
 # Rule checks (one commit per task, LOG only appended, deep discovery before a final stop) are reported
 # separately; any broken rule fails the eval whatever the score.
@@ -90,6 +92,9 @@ else
   rm -rf "$work/__pycache__" "$work/node_modules"   # left behind when someone ran the fixture in place
   (cd "$work" && git init -q -b main && git config user.email eval@example.invalid && git config user.name eval \
     && git add -A && git commit -qm "fixture")
+  # optional per-fixture setup that cannot live in the copied files (e.g. git hooks)
+  SETUP="$REPO/tests/eval/fixture-$fixture.setup"
+  [ ! -f "$SETUP" ] || (cd "$work" && bash "$SETUP") || { echo "[eval] $SETUP failed" >&2; exit 1; }
 
   tasks_logged() {  # prints a number even before the LOG exists
     [ -f "$work/.autopilot/LOG.md" ] || { echo 0; return; }
@@ -163,7 +168,13 @@ commits = git("rev-list", "--reverse", "HEAD").split()[1:]   # everything after 
 subjects = [git("show", "-s", "--format=%s", c).strip() for c in commits]
 for ident, what, rx in items:
     rx = rx.strip()
-    if rx.startswith("roadmap="):
+    if rx.startswith("body="):
+        bodies = [git("show", "-s", "--format=%B", c) for c in commits]
+        bad = [b.splitlines()[0] for b in bodies if not re.search(rx[5:], b)]
+        hit = bool(bodies) and not bad
+        if bad:
+            what = what.strip() + f" (e.g. {bad[0]!r})"
+    elif rx.startswith("roadmap="):
         try: roadmap = open(os.path.join(work, ".autopilot", "ROADMAP.md"), encoding="utf-8").read()
         except FileNotFoundError: roadmap = ""
         hit = re.search(rx[8:], roadmap, re.I)

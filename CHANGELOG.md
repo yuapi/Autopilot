@@ -7,6 +7,9 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.41.1 — 2026-10-21
+- Seventh eval fixture `hooks`: commit-msg and pre-commit hooks installed by a new `fixture-<name>.setup` script; new `body=` expectations check every commit message, so a bypassed hook shows up
+
 ## 1.41.0 — 2026-10-21
 - Repository commit hooks count as verification: files a hook rewrote are staged and committed again, a rejected commit is fixed or treated as a failure, and hooks are never bypassed (`--no-verify`, `core.hooksPath`)
 
