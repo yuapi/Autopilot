@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- Every task ends by committing `.autopilot/` alone, in every mode (generalizes the rule for runs that stop). In `local` mode nothing said to commit the state: one driver eval run left `.autopilot/` untracked to the end. New eval rule check: the working tree is clean at the end
 
 ## 1.38.0 — 2026-10-21
 - When the loop ends on a task budget or a person's STOP, Phase 5 commits the state written after the last task's commit (`done` row, LOG entry); it was left uncommitted, which Stop hooks that check for a clean tree reported

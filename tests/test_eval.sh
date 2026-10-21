@@ -283,4 +283,10 @@ out="$(FAKE_BASELINE='Tests: npm test' CLAUDE_BIN="$FAKE7" bash "$EV" --fixture 
 check "watch: only npm test recorded → missed" grep -q "MISSED  one-shot" <<<"$out"
 check "watch fixture's npm test is watch mode" grep -q '"test": "node --test --watch"' "$REPO/tests/eval/fixture-watch/package.json"
 
+# rule check: the working tree is clean at the end (run artifacts aside)
+d="$(mkrun)"; task "$d" T-001 10:00
+check "clean tree → ok" grep -q "ok      clean working tree at the end" <<<"$(grade "$d")"
+echo "- left over" >> "$d/.autopilot/LOG.md"; touch "$d/.autopilot/STOP"
+check "uncommitted LOG → BROKEN, file named (STOP ignored)" grep -q "BROKEN  clean working tree at the end (state committed) (1 uncommitted: .autopilot/LOG.md)" <<<"$(grade "$d")"
+
 finish

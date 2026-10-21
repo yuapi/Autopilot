@@ -98,6 +98,6 @@ check "Phase 4 treats a timeout as worse than the baseline" grep -q "A timeout c
 
 check "a scan.sh line is not settled by a proposal unless 1-F requires it" grep -q "neither does a proposal unless 1-F requires one" "$SKILL"
 
-check "Phase 5 commits the leftover state when STOP appears" grep -q "commit \`.autopilot/\` alone" "$SKILL"
+check "Phase 5 commits .autopilot/ at the end of every task" grep -q "Commit \`.autopilot/\` alone, in every mode" "$SKILL"
 
 finish
