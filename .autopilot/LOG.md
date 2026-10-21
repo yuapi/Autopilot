@@ -601,3 +601,7 @@
 
 ## 2026-10-21T02:43Z | - | discover | skill 1.36.0
 - eval --mode session --iterations 2 --model claude-haiku-5-5(todo): 10/11, 148초, $0.04, 규칙 검사 전부 ok. 놓친 것: TODO 마커(마감일)를 작업 대신 제안으로 보냄 — scan.sh 줄은 작업이나 "하지 않기로 한 것"이어야 하나, 기능 추가를 방향 선택으로 판단. 한 번뿐이라 규칙 변경 근거로는 부족, 관찰로만 남김
+
+## 2026-10-21T02:53Z | T-090 | done | skill 1.36.0
+- 변경: SKILL.md 발굴 완료 조건(scan 줄은 1-F가 요구할 때만 제안으로 처리, 추가 요청 마커는 feature 작업), tests/test_skill_rules.sh(+1), CHANGELOG
+- 검증: validate PASS. Haiku 세션 eval 전 10/11(TODO를 제안으로) → 후 2회 11/11·10/11(TODO는 둘 다 작업, 놓친 것은 remove 1건). --fixture all 세션 1작업: kv 11/11, mono 8/8, stats 8/9, todo 10/11, watch 8/8, wordcount 9/9, 규칙 위반 0. todo를 2번 다시 돌려 둘 다 11/11 → 놓친 것은 변동으로 판단
