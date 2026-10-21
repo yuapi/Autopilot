@@ -650,3 +650,12 @@
 ## 2026-10-21T03:39Z | T-096 | done | skill 1.41.0
 - 변경: tests/eval/fixture-hooks(todo 사본)·.setup(commit-msg·pre-commit 훅 설치)·.expected, scripts/eval.sh(.setup 실행, body= 기대값), tests/test_eval.sh(+3), README 2종, CHANGELOG
 - 검증: validate PASS. 실제 eval --fixture hooks --mode session --iterations 2: 8/8, 커밋 5개 모두 훅 통과, 규칙 검사 전부 ok
+
+## 2026-10-21T03:43Z | - | release | skill 1.41.1
+- 1.41.1 (patch): eval 훅 픽스처(T-096). PR #229 → main, #230 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요 (v1.11.0~v1.41.1)
+
+## 2026-10-21T09:24Z | T-097 | done | skill 1.41.1
+- 발굴: 큐가 비어 재발굴. 이슈 0·PR 0·scan.sh 0건. 빈 레포 탐색 실행에서 runlock.sh start 후 .gitignore가 없음을 확인 → T-097
+- 변경: runlock.sh(start에서 실행 산출물 6줄을 .gitignore에 추가, 중복 없음, 거절 시 변경 없음), SKILL.md Phase 0·Stop 훅 문단, tests/test_runlock.sh(+5), CHANGELOG
+- 검증: test_runlock 31 통과, validate PASS

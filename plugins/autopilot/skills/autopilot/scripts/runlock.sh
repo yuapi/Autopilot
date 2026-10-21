@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Session-mode run marker (.autopilot/RUN) that knows which session owns it.
 #   bash runlock.sh start [--tasks N] [repo]   claim RUN for this session; exit 2 if another live loop owns it.
+#                                  Also adds the run artifacts (STOP, RUN, .hook-state, …) to .gitignore.
 #                                  --tasks N: stop after N completed tasks (task.sh done writes STOP)
 #   bash runlock.sh touch [repo]   record activity (run at the start of every task)
 #   bash runlock.sh owner [repo]   print the owning session ID (empty if none or unknown)
@@ -33,6 +34,12 @@ stale_min="${AUTOPILOT_RUN_STALE_MIN:-120}"
 owner() { [ -f "$RUN" ] && sed -n 's/^session:[[:space:]]*//p' "$RUN" | head -1 || true; }
 age_min() { "$PY" -c 'import os,sys,time; print(int((time.time()-os.path.getmtime(sys.argv[1]))//60))' "$RUN"; }
 write() { mkdir -p .autopilot; printf 'session: %s\nstarted: %s\n' "$me" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$RUN"; set_budget; }
+ignore_artifacts() {  # keep run artifacts out of commits, as the driver does (a refusal changes nothing)
+  if [ -s .gitignore ] && [ -n "$(tail -c1 .gitignore)" ]; then echo >> .gitignore; fi
+  for ig in .autopilot/STOP .autopilot/RUN .autopilot/.hook-state .autopilot/driver-logs/ .autopilot/driver.lock .autopilot/.task; do
+    grep -qsxF "$ig" .gitignore || printf '%s\n' "$ig" >> .gitignore
+  done
+}
 set_budget() {  # task budget lines (tasks: N, done: 0); without --tasks an existing budget is kept
   [ -n "$budget" ] || return 0
   grep -v '^tasks:\|^done:' "$RUN" > "$RUN.tmp" || true
@@ -56,9 +63,9 @@ case "$cmd" in
         echo "[runlock] Let it finish, or create .autopilot/STOP to stop it. A marker idle for $stale_min min is taken over." >&2
         exit 2
       fi
-      if [ "$o" = "$me" ]; then set_budget; touch "$RUN"; exit 0; fi
+      if [ "$o" = "$me" ]; then ignore_artifacts; set_budget; touch "$RUN"; exit 0; fi
     fi
-    write ;;
+    ignore_artifacts; write ;;
   touch)
     [ -f "$RUN" ] || exit 0
     o="$(owner)"

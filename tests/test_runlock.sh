@@ -57,4 +57,16 @@ check "stop with no loop running says so" grep -q "No loop was running" <<<"$out
 d="$(mktemp -d "$TMPROOT/x.XXXX")"; git -C "$d" init -q
 check "stop without .autopilot does nothing" bash -c "CLAUDE_CODE_SESSION_ID=A bash '$RL' stop '$d' | grep -q 'has not run' && test ! -e '$d/.autopilot'"
 
+# .gitignore: start adds the run artifacts once, keeps existing lines, and a refusal changes nothing
+d="$(newrepo)"; printf 'node_modules/' > "$d/.gitignore"
+as A start "$d" >/dev/null
+check "start adds the run artifacts to .gitignore" bash -c "for l in .autopilot/STOP .autopilot/RUN .autopilot/.hook-state .autopilot/driver-logs/ .autopilot/driver.lock .autopilot/.task; do grep -qxF \"\$l\" '$d/.gitignore' || exit 1; done"
+check "start keeps an existing last line without a newline" grep -qx "node_modules/" "$d/.gitignore"
+as A start "$d" >/dev/null
+check "starting again adds no duplicates" test "$(grep -c '^.autopilot/RUN$' "$d/.gitignore")" -eq 1
+check "RUN is not shown as untracked" test -z "$(git -C "$d" status --porcelain -- .autopilot)"
+sed -i '/^.autopilot\/STOP$/d' "$d/.gitignore"; cp "$d/.gitignore" "$TMPROOT/gi.before"
+as B start "$d" >/dev/null 2>&1 || true
+check "a refused start leaves .gitignore unchanged" cmp -s "$d/.gitignore" "$TMPROOT/gi.before"
+
 finish

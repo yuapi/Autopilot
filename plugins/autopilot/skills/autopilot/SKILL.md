@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.41.1
+  version: 1.42.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.41.1** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.42.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -66,8 +66,7 @@ In session mode, also run `bash <skill folder>/scripts/runlock.sh touch` at the 
 
 0. **Only on first entry in session mode**:
    - If a person invoked the skill again while `.autopilot/STOP` exists, treat it as a request to resume: move the STOP content into the LOG and delete STOP.
-   - Add `.autopilot/STOP`, `.autopilot/RUN`, `.autopilot/.hook-state`, `.autopilot/driver-logs/`, `.autopilot/driver.lock` and `.autopilot/.task` to `.gitignore` if they are missing.
-   - Claim the run marker with `bash <skill folder>/scripts/runlock.sh start`. It writes this session's ID (`CLAUDE_CODE_SESSION_ID`) into `.autopilot/RUN`. **If it exits with 2, another loop is already running in this repository**: tell the person what it printed and stop without changing any state; two loops on one repository corrupt the BACKLOG and fight over commits. A marker idle for 2 hours counts as abandoned and is taken over.
+   - Claim the run marker with `bash <skill folder>/scripts/runlock.sh start`. It writes this session's ID (`CLAUDE_CODE_SESSION_ID`) into `.autopilot/RUN` and adds the run artifacts (`.autopilot/STOP`, `RUN`, `.hook-state`, `driver-logs/`, `driver.lock`, `.task`) to `.gitignore`; if the script cannot run, add those lines yourself. **If it exits with 2, another loop is already running in this repository**: tell the person what it printed and stop without changing any state; two loops on one repository corrupt the BACKLOG and fight over commits. A marker idle for 2 hours counts as abandoned and is taken over.
    - If the person asked for a number of tasks ("do 3 tasks", `/autopilot:run 3`), add `--tasks 3` to that call: `task.sh done` then writes STOP after the third completed task and the loop ends normally. Only a person sets a budget; never add one on your own to end early.
    - If the repository has no commit yet (`git rev-parse --verify HEAD` fails) and has files outside `.autopilot/`, no task can start (they count as uncommitted) and nothing can be stashed. Write STOP with the fix (commit the existing files first), tell the person, and stop. Do not commit their files for them.
    - If `git config user.name` or `git config user.email` is empty, every commit would fail and the loop could only burn attempts. Write STOP with the reason and the fix (`git config user.name "…"` and `git config user.email …`), tell the person, and stop. Never set an identity yourself: the commits would carry a made-up author.
@@ -348,7 +347,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30Z | T-042 | done | skill 1.41.1
+## 2026-10-01T14:30Z | T-042 | done | skill 1.42.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
@@ -426,4 +425,4 @@ Shows on one screen whether the loop is running or stopped and why (and which se
 
 ## When the repository has its own Stop hook
 
-If the repository has a Stop hook that demands committing untracked files, this skill's Phase 4 rollback (`git clean`) and Phase 5 commit satisfy it naturally. The `.autopilot/` run artifacts (STOP, RUN, .hook-state, .task, driver-logs, driver.lock) are added to `.gitignore` by Phase 0 (session mode) and by the driver.
+If the repository has a Stop hook that demands committing untracked files, this skill's Phase 4 rollback (`git clean`) and Phase 5 commit satisfy it naturally. The `.autopilot/` run artifacts (STOP, RUN, .hook-state, .task, driver-logs, driver.lock) are added to `.gitignore` by `runlock.sh start` (session mode) and by the driver.
