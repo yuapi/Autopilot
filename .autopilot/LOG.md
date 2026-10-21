@@ -795,3 +795,7 @@
 - 변경: finalstop.sh(STOP에 "(checked by finalstop.sh)" 표시), assets/autopilot-stop.sh·.claude/hooks 사본(표시 없는 Final stop/최종 정지 → STOP.refused로 옮기고 계속 막음), autopilot.sh(같은 처리 후 다음 실행), runlock.sh·드라이버 .gitignore에 STOP.refused, SKILL.md, 테스트(hook +10, driver +5, finalstop +1), CHANGELOG
 - 순서: 구현을 task.sh start보다 먼저 해 버림 → 변경을 stash하고 행 추가·start 후 되돌려 순서를 바로잡음
 - 검증: hook 45·driver 97·finalstop 23·runlock 31 통과, validate PASS. 실제 eval: 세션 todo 예산 정지 정상 종료(RUN 제거), 드라이버 stats 2작업 규칙 검사 ok
+
+## 2026-10-21T11:45Z | - | release | skill 1.54.0
+- 1.54.0 (minor): 손으로 쓴 최종 정지 거절(T-111). PR #288 → main, #289 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
