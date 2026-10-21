@@ -4,7 +4,8 @@
 #                                   are uncommitted; then attempts + 1, status in_progress
 #   bash task.sh done <ID> [repo]   refuse unless the task has its own commit(s) since `start` that change
 #                                   files outside .autopilot/, name no other task, leave CONFIG.md alone and
-#                                   add no generated files (__pycache__, *.pyc, node_modules, .DS_Store, …);
+#                                   add no generated files (__pycache__, *.pyc, node_modules, .DS_Store, …)
+#                                   and delete files only when it is a cleanup task;
 #                                   then status done + date
 #   bash task.sh fail <ID> [repo]   status back to open (attempts kept), or blocked from the 3rd attempt
 #   bash task.sh drop <ID> [repo]   the task turned out unnecessary (cannot reproduce, already fixed):
@@ -53,6 +54,12 @@ if [ "$cmd" = done ]; then
       inside=0; for p in $scope; do p="${p#./}"; p="${p%/}"; case "$f" in "$p"|"$p"/*) inside=1;; esac; done
       [ "$inside" = 1 ] || printf '%s ' "$f"; done)"
     [ -z "$outside" ] || { echo "[task] refused: changes outside scope ($scope) from .autopilot/CONFIG.md: $outside— roll them back or leave them to a person" >&2; exit 1; }
+  fi
+  # files are deleted only in cleanup tasks (SKILL.md Phase 3); a rename is not a deletion
+  ttype="$(tr -d '\r' < .autopilot/BACKLOG.md | awk -F'|' -v id="$id" '{ g = $2; gsub(/ /, "", g) } g == id { t = $3; gsub(/ /, "", t); print t; exit }')"
+  if [ "$ttype" != cleanup ]; then
+    deleted="$(git log -M --diff-filter=D --format= --name-only "$range" -- . ':!.autopilot' | grep -v '^$' | sort -u | head -5 | tr '\n' ' ' || true)"
+    [ -z "$deleted" ] || { echo "[task] refused: $id is a ${ttype:-?} task, and its commits delete $deleted— files are deleted only in cleanup tasks (after confirming zero references). Restore them, or queue a cleanup task" >&2; exit 1; }
   fi
   # generated files never go into a task commit (SKILL.md Phase 5): name the ones the task added
   gen="$(git log --no-renames --diff-filter=A --format= --name-only "$range" -- . ':!.autopilot' | grep -v '^$' | sort -u \

@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.54.1
+  version: 1.54.2
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.54.1** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.54.2** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -286,7 +286,7 @@ Claim it with `bash <skill folder>/scripts/task.sh start <ID>`: it refuses while
 - Public interfaces may **grow but not change or shrink.** Add new commands, endpoints, options and functions freely. Keep existing signatures, behavior and defaults. If something must change, add it under a new name and leave the old one. The only exception is the scope written in an `adopted` proposal.
 - Add a new dependency only if all of these hold: widely used (a standard of its ecosystem), permissive license (MIT/Apache/BSD), pinned version, and the reason written in the commit message. Otherwise mark the task `blocked`.
 - Add external network calls only when the feature itself requires them (e.g. an HTTP client feature), and only with timeouts, retries and error handling.
-- Delete files only in `cleanup` tasks, and only after confirming zero references with grep.
+- Delete files only in `cleanup` tasks, and only after confirming zero references with grep. `task.sh done` refuses another type of task whose commits delete files (renames are fine).
 - The completion criteria of `feature` and `enhance` tasks always include tests. A feature without tests is not done.
 
 ### Phase 4 — verify
@@ -349,7 +349,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30Z | T-042 | done | skill 1.54.1
+## 2026-10-01T14:30Z | T-042 | done | skill 1.54.2
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
