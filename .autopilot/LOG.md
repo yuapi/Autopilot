@@ -630,3 +630,8 @@
 
 ## 2026-10-21T03:23Z | - | release | skill 1.39.1
 - 1.39.1 릴리즈: release/1.39.1 → main, main → develop 역병합. 태그 대기: v1.39.1 (403, 누적 v1.11.0~v1.39.1, 45개)
+
+## 2026-10-21T03:26Z | T-094 | done | skill 1.39.1
+- 발굴: claude -p "/autopilot:status"를 하위 폴더에서 실행 — 레포 루트를 찾아 정상 표시. idle인데 진행 중 작업이 있으면 설명 없음
+- 변경: scripts/status.sh(루프가 없고 in_progress 작업이 있으면 안내), tests/test_status.sh(+2), CHANGELOG
+- 검증: validate PASS
