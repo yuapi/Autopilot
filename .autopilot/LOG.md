@@ -686,3 +686,19 @@
 - 발굴: 잘못된 CONFIG 탐색 실행의 두 번째 결과. scope: nope/가 경고 없이 통과 → 발굴 0건·변경 전부 거절로 거짓 최종 정지 위험
 - 변경: status.sh(없는 scope 경로 경고, CRLF 허용), autopilot.sh(사전 점검에서 exit 1과 고칠 방법), SKILL.md Phase 0(STOP과 고칠 방법, CONFIG는 바꾸지 않음), 테스트(driver +5, status +3), CHANGELOG
 - 검증: test_driver 82, test_status 45 통과, validate PASS
+
+## 2026-10-21T09:59Z | - | release | skill 1.45.0
+- 1.45.0 (minor): 없는 scope 경로에서 정지(T-100). PR #245 → main, #246 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-10-21T10:00Z | - | retro | skill 1.45.0
+- 범위: T-089~T-100, 12건 done·0 failed·0 blocked(성공률 100%). 유형: fix 6, enhance 3, docs 1, perf 1, test 1. 출처: 탐색 실행 6(전부 성공), 심화 발굴 3, 직접 겪음 2, eval 관찰 1
+- 실패 원인: 없음. 막힌 것은 매 릴리스의 태그·Release(세션 정책)뿐 — 환경 문제로 이미 "배운 것"에 있음
+- 관찰: 이번 사이클 결함은 대부분 "잘못된 설정" 시나리오(T-098, T-100)와 출력 크기(T-099)에서 나옴. eval --fixture all 7개 예제 100%
+- 직접 겪음: eval을 백그라운드로 두고 턴을 끝내자 Stop 훅이 연속 차단(3번이면 STOP). 코드를 먼저 커밋하고 포그라운드로 기다려 해결
+- 배운 것: 18줄 → 14줄로 합침, 설정 오류·출력 크기·긴 대기 규칙 추가. last_retro 갱신
+
+## 2026-10-21T10:03Z | T-101 | done | skill 1.45.0
+- 발굴: 잘못된 CONFIG 시나리오 3번째(배운 것의 새 규칙대로 같은 계열 계속). base_branch를 읽는 스크립트가 없어 오타가 조용히 통과
+- 변경: autopilot.sh(branch·pr에서 로컬·origin 둘 다 없으면 exit 1과 고칠 방법), status.sh(같은 조건 경고), SKILL.md Phase 0 1(STOP), 테스트(driver +6, status +3), CHANGELOG
+- 검증: test_driver 88, test_status 48 통과, validate PASS

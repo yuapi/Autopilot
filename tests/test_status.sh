@@ -109,6 +109,16 @@ check_not "existing scope path → not named" grep -q 'scope names pkg' <<<"$out
 printf 'scope: .\n' > "$d/.autopilot/CONFIG.md"
 check_not "scope: . → no warning" bash -c "bash '$ST' '$d' | grep -q 'scope names'"
 
+# a base_branch that exists neither locally nor on origin is named (branch/pr modes only)
+d="$(mktemp -d "$TMPROOT/bb.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
+git -C "$d" -c user.name=t -c user.email=t@t commit -q --allow-empty -m init; git -C "$d" branch develop
+printf 'integration: pr\nbase_branch: devlop\n' > "$d/.autopilot/CONFIG.md"
+check "missing base_branch → warning" bash -c "bash '$ST' '$d' | grep -q '^Warning: CONFIG base_branch: devlop exists neither'"
+printf 'integration: pr\nbase_branch: develop\n' > "$d/.autopilot/CONFIG.md"
+check_not "existing base_branch → no warning" bash -c "bash '$ST' '$d' | grep -q 'base_branch:'"
+printf 'integration: local\nbase_branch: devlop\n' > "$d/.autopilot/CONFIG.md"
+check_not "local mode → base_branch not checked" bash -c "bash '$ST' '$d' | grep -q 'base_branch:'"
+
 # the task in progress is shown with its start time
 d="$(mktemp -d "$TMPROOT/n.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
 printf '| T-007 | fix | in_progress | 2 | fix the parser | t | s | |\n| T-008 | fix | open | 0 | other | t | s | |\n' > "$d/.autopilot/BACKLOG.md"
