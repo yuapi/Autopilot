@@ -646,3 +646,7 @@
 
 ## 2026-10-21T03:36Z | - | release | skill 1.41.0
 - 1.41.0 릴리즈: release/1.41.0 → main, main → develop 역병합. 태그 대기: v1.41.0 (403, 누적 v1.11.0~v1.41.0)
+
+## 2026-10-21T03:39Z | T-096 | done | skill 1.41.0
+- 변경: tests/eval/fixture-hooks(todo 사본)·.setup(commit-msg·pre-commit 훅 설치)·.expected, scripts/eval.sh(.setup 실행, body= 기대값), tests/test_eval.sh(+3), README 2종, CHANGELOG
+- 검증: validate PASS. 실제 eval --fixture hooks --mode session --iterations 2: 8/8, 커밋 5개 모두 훅 통과, 규칙 검사 전부 ok
