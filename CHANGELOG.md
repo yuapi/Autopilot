@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- README (EN/KO): `AUTOPILOT_RUN_STALE_MIN`, `AUTOPILOT_SCAN_MAX` and `scan.sh --all`, the driver's CONFIG preflight checks, and the hook's stall notice
 - The Stop hook says when its stall count is running ("Stop 1 of 3 without a change to the LOG or commits") and to wait for a background command in the foreground: a turn ended while an eval ran counted as no progress and silently ended the run at the third stop
 
 ## 1.47.0 — 2026-10-21
