@@ -86,6 +86,10 @@ for k, v in re.findall(r"^(integration|merge|release|local_branch):\s*([^\s#]+)"
         safe = allowed[k][0]
         print(f"Warning: CONFIG {k}: {v} is not one of {' | '.join(allowed[k])}; autopilot treats it as {safe}. Fix .autopilot/CONFIG.md.")
         if k == "integration": cfg[k] = safe
+m = re.search(r"^scope:[ \t]*([^#\r\n]*)", read("CONFIG.md"), re.M)
+for sp in (m.group(1).split() if m else []):
+    if sp not in (".", "auto") and not os.path.exists(os.path.join(root, sp)):
+        print(f"Warning: CONFIG scope names {sp}, which does not exist here: discovery finds nothing there and every change is refused. Fix scope: in .autopilot/CONFIG.md.")
 if os.environ.get("CLAUDE_CODE_REMOTE") == "true" and cfg.get("integration", "local") == "local":
     print("Warning: this is a cloud session and integration is local: the loop's commits stay in this container and are lost when it is reclaimed. Set integration: branch (or pr) in .autopilot/CONFIG.md to push them.")
 

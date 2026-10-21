@@ -88,6 +88,16 @@ if ! git rev-parse -q --verify HEAD >/dev/null 2>&1 && [ -n "$(git status --porc
   exit 1
 fi
 
+# CONFIG scope naming a path that does not exist: discovery would find nothing there and task.sh done
+# would refuse every change, which ends in a final stop that is not true. Say so and stop.
+scope="$( { [ -f .autopilot/CONFIG.md ] && tr -d '\r' < .autopilot/CONFIG.md | sed -n 's/^scope:[[:space:]]*\([^#]*\).*/\1/p' | head -1 | xargs; } || true)"
+if [ -n "$scope" ] && [ "$scope" != . ] && [ "$scope" != auto ]; then
+  for p in $scope; do
+    [ -e "$p" ] || { echo "[driver] CONFIG scope names $p, which does not exist in this repository." >&2
+      echo "[driver] Fix scope: in .autopilot/CONFIG.md (paths relative to the repository root, space-separated), then run the driver again." >&2; exit 1; }
+  done
+fi
+
 # Integration preflight: branch/pr modes publish results. Say up front if the tools are missing,
 # instead of letting tasks fail one by one. The driver only gets Bash, so PRs need the gh CLI
 # (glab for a GitLab origin).

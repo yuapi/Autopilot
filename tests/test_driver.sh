@@ -191,6 +191,17 @@ check "no git identity → claude not called" test ! -e "$d/.autopilot/calls"
 check "the driver does not set an identity itself" test -z "$(git -C "$d" config --local user.email)"
 check "SKILL.md: Phase 0 stops without a git identity and never sets one" grep -q "Never set an identity yourself" "$REPO/$SKILL_REL/SKILL.md"
 
+# CONFIG scope naming a missing path: nothing could be found or changed, so the driver stops with the fix
+d="$(newrepo)"; printf 'scope: src nope/\n' > "$d/.autopilot/CONFIG.md"; mkdir -p "$d/src"
+out="$(FAKE_MODE=ok drive "$d" 1 2>&1)"; rc=$?
+check "missing scope path → exit 1" test "$rc" -eq 1
+check "missing scope path → names it and the fix" bash -c "grep -q 'scope names nope/, which does not exist' <<<\"\$1\" && grep -q 'Fix scope:' <<<\"\$1\"" _ "$out"
+check "missing scope path → claude not called" test ! -e "$d/.autopilot/calls"
+d="$(newrepo)"; printf 'scope: src\n' > "$d/.autopilot/CONFIG.md"; mkdir -p "$d/src"
+out="$(FAKE_MODE=ok drive "$d" 1 2>&1)"
+check_not "existing scope path → no scope message" grep -q "scope names" <<<"$out"
+check "SKILL.md: Phase 0 stops on a missing scope path" grep -q "scope\` names a path that does not exist" "$REPO/$SKILL_REL/SKILL.md"
+
 # no commit yet but files in the repository: nothing could start, so the driver stops with the fix
 d="$(newrepo)"; echo "print(1)" > "$d/app.py"
 out="$(FAKE_MODE=ok drive "$d" 1 2>&1)"; rc=$?
