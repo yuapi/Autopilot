@@ -619,3 +619,6 @@
 ## 2026-10-21T03:07Z | T-092 | done | skill 1.38.0
 - 변경: SKILL.md Phase 5 6단계(모든 모드에서 매 작업 끝에 .autopilot/만 커밋), scripts/eval.sh(규칙 검사 "끝난 뒤 작업 트리 깨끗", 실행 부산물 제외), tests(skill_rules 갱신, eval +2), CHANGELOG
 - 검증: validate PASS. 예전 드라이버 실행 재채점 → BROKEN(4개 미커밋). 새 실행 드라이버 2회 8/8·세션 2작업 11/11, 둘 다 트리 깨끗
+
+## 2026-10-21T03:11Z | - | release | skill 1.39.0
+- 1.39.0 릴리즈: release/1.39.0 → main, main → develop 역병합. 태그 대기: v1.39.0 (403, 누적 v1.11.0~v1.39.0)
