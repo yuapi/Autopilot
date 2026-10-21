@@ -7,6 +7,9 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.51.0 — 2026-10-21
+- `log.sh` refuses a task entry that disagrees with the BACKLOG (a `done` entry before `task.sh done`, an ID with no row), so the LOG and the BACKLOG cannot drift apart
+
 ## 1.50.0 — 2026-10-21
 - `finalstop.sh` requires this cycle's deep discovery: the latest dated record must hold all four stages and be no older than the last task in the LOG (a record from an earlier cycle let every later final stop through). The ROADMAP template and SKILL.md ask for the UTC time on each record
 

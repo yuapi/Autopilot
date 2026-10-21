@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 108
+next_id: 109
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -114,3 +114,4 @@ next_id: 108
 | T-105 | fix | done | 1 | task.sh done의 scope 검사가 rename을 새 경로로만 봄: scope 밖 파일을 scope 안으로 git mv하면(밖의 파일 삭제) 통과. --no-renames로 양쪽 경로를 다 검사 | scope: pkg에서 other/a.py → pkg/a.py 이동 커밋을 done이 거절하고 other/a.py를 이름으로 댐; scope 안 rename은 통과; test_task 추가 검사 | 탐색 실행(2026-10-21, scope 경계 rename) | 2026-10-21 |
 | T-106 | security | done | 1 | "CONFIG는 사람이 정하고 Claude는 읽기만"이 강제되지 않음: task.sh done이 .autopilot/ 전체를 검사에서 빼서, 작업 커밋이 CONFIG를 integration: pr·merge: auto로 바꿔도 통과(이슈 본문이 유도할 수 있는 경로). done이 start 이후 커밋의 CONFIG.md 변경을 거절 | CONFIG를 바꾼 작업 커밋에서 done 거절·이유 표시, CONFIG를 안 건드리면 통과, 첫 커밋 없던 레포(start=none)는 오탐 없음; test_task 추가 검사; SKILL.md 문구 | 탐색 실행(2026-10-21, CONFIG 변경 커밋) | 2026-10-21 |
 | T-107 | fix | done | 1 | finalstop.sh가 심화 발굴 기록의 날짜를 안 봄: 예전 사이클의 기록(네 단계 이름만 있으면)이 이후 최종 정지를 영원히 통과시킴(이 레포의 2026-10-21 기록도 이후 작업 12개보다 오래됨). 가장 최근 날짜 기록에 네 단계가 모두 있고 그 시각이 마지막 작업 LOG 항목 이후여야 함 | 오래된 기록 → 거절(날짜·시각 쓰라는 안내), 마지막 작업 이후 UTC 시각 기록 → 통과, 날짜 없는 기록 → 거절; 템플릿·SKILL.md 문구; test_finalstop 갱신 | 탐색 실행(2026-10-21, finalstop 조건 점검) | 2026-10-21 |
+| T-108 | fix | done | 1 | log.sh가 BACKLOG를 확인하지 않음: task.sh done 전에 done 항목을 쓰거나 없는 작업(T-999)도 기록됨 → LOG와 BACKLOG 불일치. 작업 항목은 BACKLOG(또는 archive) 행이 있고 상태가 맞아야 함(done→done, failed→open·blocked, blocked→blocked) | in_progress 작업에 log.sh done → 거절·task.sh done 안내, 없는 ID → 거절, 맞는 상태 → 기록, BACKLOG 없는 레포·'-' 항목은 그대로; test_log 추가 검사 | 탐색 실행(2026-10-21, LOG·BACKLOG 순서) | 2026-10-21 |
