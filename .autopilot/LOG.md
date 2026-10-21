@@ -822,3 +822,7 @@
 - 발굴: 배운 것 적용(규칙 강제 확인). Never 목록 "비밀·토큰·키"가 강제되지 않아 API_KEY = "sk_live_…" 추가 커밋이 task.sh done 통과
 - 변경: task.sh(작업이 추가한 줄을 scan.sh 비밀 패턴으로 검사, autopilot-scan: ignore·fixture/testdata 제외, 첫 커밋 이전 start=none은 빈 트리와 비교), SKILL.md Never 목록, tests/test_task.sh(+4, 두 스크립트 패턴 동일 검사 포함), CHANGELOG
 - 검증: test_task 76 통과, validate PASS(레포 자체 scan 깨끗). 실제 eval 세션 2작업: watch 8/8, wordcount 9/9, 실패 0
+
+## 2026-10-21T12:15Z | - | release | skill 1.54.3
+- 1.54.3 (patch): 비밀을 추가하는 작업 커밋 거절(T-114). PR #300 → main, #301 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
