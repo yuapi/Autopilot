@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 99
+next_id: 100
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -105,3 +105,4 @@ next_id: 99
 | T-096 | test | done | 1 | eval 예제 hooks: fixture-<이름>.setup(git init 뒤 실행)으로 commit-msg 훅 설치, body= 기대값으로 모든 커밋 메시지가 훅 요구를 지켰는지(우회 없음) 채점 | 가짜 claude 테스트, 실제 실행 1회 | T-095 규칙을 eval로 계속 측정 | 2026-10-21 |
 | T-097 | enhance | done | 1 | runlock.sh start가 실행 산출물(STOP·RUN·.hook-state·driver-logs/·driver.lock·.task)을 .gitignore에 추가 — 지금은 Phase 0에서 모델이 손으로 해야 하고, 빠지면 git add -A가 RUN을 커밋 | 새 레포에서 runlock.sh start 후 .gitignore에 6줄, 다시 실행해도 중복 없음, 거절(exit 2) 시 .gitignore 변경 없음; test_runlock.sh 추가 검사 통과; SKILL.md Phase 0 문구 갱신 | 탐색 실행(2026-10-21, 빈 레포에서 runlock.sh start → .gitignore 없음) | 2026-10-21 |
 | T-098 | fix | done | 1 | CONFIG 오타 값(integration: prr 등)이 조용히 통과: workbranch.sh가 local이 아닌 것으로 보고 기본 브랜치(master)에 그대로 머묾, status.sh도 경고 없음. 모르는 integration은 local로(가장 안전), status.sh가 잘못된 키·허용값을 경고, SKILL.md에 규칙 명시 | integration: prr인 레포에서 workbranch.sh가 autopilot/<날짜>로 전환; status.sh가 "Warning: CONFIG" 줄에 키와 허용값 표시; 정상 값은 경고 없음; test_workbranch·test_status 추가 검사 통과 | 탐색 실행(2026-10-21, 잘못된 CONFIG 값) | 2026-10-21 |
+| T-099 | enhance | done | 1 | scan.sh 큰 섹션: TODO 수백 개인 레포에서 모든 줄을 출력(2만 파일·400줄, 컨텍스트 약 2만 토큰)하고 규칙상 모두 작업/하지 않기로 해야 함. 섹션당 50줄(AUTOPILOT_SCAN_MAX, --all)로 자르고 남은 수와 폴더별 개수 표시, SKILL.md 1-B에 큰 섹션은 파일·폴더 단위로 묶어 사이클당 10개까지 | 400 TODO 레포에서 섹션 50줄 + "… 350 more" + 폴더별 개수; --all은 전부; 작은 레포 출력 불변; test_scan 추가 검사; eval --fixture all 전후 점수 | 탐색 실행(2026-10-21, 심화 3단계 성능 10배 입력) | 2026-10-21 |

@@ -668,3 +668,12 @@
 - 발굴: 잘못된 CONFIG 탐색 실행. integration: prr에서 workbranch.sh가 master에 머물고 status.sh는 경고 없음 → T-098
 - 변경: workbranch.sh(모르는 integration→local, local_branch→auto, 경고), status.sh(키별 허용값 경고, 클라우드 경고 판단도 local로), autopilot.sh(기존 경고에 "local로 취급" 추가), SKILL.md 상태 파일 표, 테스트(workbranch +4, status +4, driver 1 수정), CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-21T09:35Z | - | release | skill 1.43.0
+- 1.43.0 (minor): 모르는 CONFIG 값은 가장 안전한 값으로(T-098). PR #237 → main, #238 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-10-21T09:49Z | T-099 | done | skill 1.43.0
+- 발굴: 심화 3단계(성능 10배 입력) 탐색 실행. 2만 파일·400 TODO 레포에서 scan.sh는 1초로 빠르나 모든 줄을 출력(약 2만 토큰)하고, 규칙상 400개 모두 작업/하지 않기로 해야 함 → T-099
+- 변경: scan.sh(섹션당 50줄, AUTOPILOT_SCAN_MAX·--all, 남은 수와 20그룹 이내 가장 깊은 폴더별 개수), SKILL.md 1-B(잘린 섹션은 파일·폴더 단위로 사이클당 10개까지), tests/test_scan.sh(+7), CHANGELOG
+- 검증: validate PASS. eval --fixture all --mode session 전(1.36 기록: kv 11/11, mono 8/8, stats 8/9, todo 10/11, watch 8/8, wordcount 9/9; hooks 8/8은 T-096) → 후 7개 모두 100%(64/64), 규칙 위반 0, 약 $1.26

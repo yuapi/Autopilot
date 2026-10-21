@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.43.0
+  version: 1.44.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.43.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.44.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -114,7 +114,7 @@ If CONFIG sets `scope` (paths other than `.`), discovery covers only those paths
 
 Discovery runs on two axes. Running only the **maintenance axis** piles up tests and lint. The **product axis** must always run too.
 
-Start every discovery cycle with `bash <skill folder>/scripts/scan.sh`. It lists code markers and risky patterns (shell built from strings, `eval`/`exec`, unsafe deserialization, disabled TLS checks, hard-coded secrets) with file and line, deterministically. **Every line it prints becomes a task or gets a one-line reason under ROADMAP "Not doing".** Lines marked `autopilot-scan: ignore` and fixture/testdata folders are skipped.
+Start every discovery cycle with `bash <skill folder>/scripts/scan.sh`. It lists code markers and risky patterns (shell built from strings, `eval`/`exec`, unsafe deserialization, disabled TLS checks, hard-coded secrets) with file and line, deterministically. **Every line it prints becomes a task or gets a one-line reason under ROADMAP "Not doing".** Lines marked `autopilot-scan: ignore` and fixture/testdata folders are skipped. A section with more than 50 lines is cut off with `… N more line(s)` and the hits per folder: it is too large for one cycle, so group it instead. Queue at most 10 tasks for it this cycle, each for one file or one folder from that list (run `scan.sh <folder>` for the folder's full list). Give whole folders that should stay as they are (vendored, generated, legacy kept on purpose) one "Not doing" reason each. The rest stays in the scan output for later cycles; that does not break the every-line rule.
 
 #### 1-A. Understand the product (first step of every discovery cycle)
 
@@ -347,7 +347,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30Z | T-042 | done | skill 1.43.0
+## 2026-10-01T14:30Z | T-042 | done | skill 1.44.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
