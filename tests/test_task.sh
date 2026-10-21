@@ -126,6 +126,16 @@ t "$d" start T-001 >/dev/null; (cd "$d" && echo 1 > a/x && echo 2 > b/y && git a
 check "several scope paths (trailing slash allowed)" bash -c "cd '$d' && bash '$TS' done T-001 >/dev/null"
 check "status.sh shows the scope" bash -c "bash '$REPO/$SKILL_REL/scripts/status.sh' '$d' | grep -q 'scope=a'"
 
+# a rename counts both paths: moving a file into the scope deletes it outside
+d="$(newrepo)"; mkdir -p "$d/pkg" "$d/other"; printf 'scope: pkg\n' > "$d/.autopilot/CONFIG.md"
+seq 1 40 > "$d/other/a.txt"; seq 1 40 > "$d/pkg/c.txt"; (cd "$d" && git add -A && git commit -qm c >/dev/null)
+t "$d" start T-001 >/dev/null; (cd "$d" && git mv other/a.txt pkg/a.txt && git commit -qm "autopilot(T-001): move in")
+out="$(t "$d" done T-001)"
+check "rename from outside into the scope → refused, old path named" grep -q "changes outside scope (pkg) from .autopilot/CONFIG.md: other/a.txt" <<<"$out"
+(cd "$d" && git reset -q --hard HEAD~1); t "$d" fail T-001 >/dev/null; t "$d" start T-001 >/dev/null
+(cd "$d" && git mv pkg/c.txt pkg/d.txt && git commit -qm "autopilot(T-001): rename inside")
+check "rename inside the scope → accepted" bash -c "cd '$d' && bash '$TS' done T-001 >/dev/null"
+
 # a CRLF BACKLOG (Windows checkout) stays CRLF
 d="$(newrepo)"; sedi 's/$/\r/' "$d/.autopilot/BACKLOG.md"; (cd "$d" && git commit -qam crlf)
 t "$d" start T-001 >/dev/null
