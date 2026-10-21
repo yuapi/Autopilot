@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.54.0 — 2026-10-21
 - A final stop written by hand no longer ends the loop: `finalstop.sh` marks the STOP it writes, and the Stop hook and the driver move an unmarked "Final stop" to `STOP.refused` and go on (a hand-written one skipped every final-stop check). Stops by a person, the task budget and the no-progress stop are unchanged
 
 ## 1.53.0 — 2026-10-21
