@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- A CONFIG `base_branch` that exists neither locally nor on origin (a typo) in `branch`/`pr` mode: `status.sh` warns, the driver stops before the first run with the fix, and SKILL.md Phase 0 writes STOP with it
 
 ## 1.45.0 — 2026-10-21
 - A CONFIG `scope` path that does not exist no longer passes silently (discovery found nothing and every change was refused, heading for a false final stop): `status.sh` warns, the driver stops before the first run with the fix, and SKILL.md Phase 0 writes STOP with it

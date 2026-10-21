@@ -191,6 +191,22 @@ check "no git identity → claude not called" test ! -e "$d/.autopilot/calls"
 check "the driver does not set an identity itself" test -z "$(git -C "$d" config --local user.email)"
 check "SKILL.md: Phase 0 stops without a git identity and never sets one" grep -q "Never set an identity yourself" "$REPO/$SKILL_REL/SKILL.md"
 
+# CONFIG base_branch naming a branch that does not exist: in pr mode no task could start, so the driver stops
+d="$(newrepo)"; git -C "$d" remote add origin https://example.invalid/x.git
+git -C "$d" commit -q --allow-empty -m init && git -C "$d" branch develop
+printf 'integration: pr\nbase_branch: devlop\n' > "$d/.autopilot/CONFIG.md"
+out="$(FAKE_MODE=ok drive_gh "$d" 1 2>&1)"; rc=$?
+check "missing base_branch → exit 1" test "$rc" -eq 1
+check "missing base_branch → names it and the fix" bash -c "grep -q 'base_branch: devlop exists neither' <<<\"\$1\" && grep -q 'Fix base_branch:' <<<\"\$1\"" _ "$out"
+check "missing base_branch → claude not called" test ! -e "$d/.autopilot/calls"
+printf 'integration: pr\nbase_branch: develop\n' > "$d/.autopilot/CONFIG.md"
+out="$(FAKE_MODE=ok drive_gh "$d" 1 2>&1)"
+check_not "existing base_branch → no base message" grep -q "base_branch:" <<<"$out"
+printf 'integration: local\nbase_branch: devlop\n' > "$d/.autopilot/CONFIG.md"
+out="$(FAKE_MODE=ok drive "$d" 1 2>&1)"
+check_not "local mode ignores base_branch" grep -q "base_branch:" <<<"$out"
+check "SKILL.md: Phase 0 stops on a missing base_branch" grep -q "names a \`base_branch\` that exists neither" "$REPO/$SKILL_REL/SKILL.md"
+
 # CONFIG scope naming a missing path: nothing could be found or changed, so the driver stops with the fix
 d="$(newrepo)"; printf 'scope: src nope/\n' > "$d/.autopilot/CONFIG.md"; mkdir -p "$d/src"
 out="$(FAKE_MODE=ok drive "$d" 1 2>&1)"; rc=$?
