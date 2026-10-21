@@ -207,6 +207,17 @@ out="$(FAKE_MODE=ok drive "$d" 1 2>&1)"
 check_not "local mode ignores base_branch" grep -q "base_branch:" <<<"$out"
 check "SKILL.md: Phase 0 stops on a missing base_branch" grep -q "names a \`base_branch\` that exists neither" "$REPO/$SKILL_REL/SKILL.md"
 
+# CONFIG branch_prefix that git rejects: every task branch would fail, so the driver stops
+d="$(newrepo)"; git -C "$d" remote add origin https://example.invalid/x.git
+printf 'integration: pr\nbranch_prefix: my feature/   # comment\n' > "$d/.autopilot/CONFIG.md"
+out="$(FAKE_MODE=ok drive_gh "$d" 1 2>&1)"; rc=$?
+check "invalid branch_prefix → exit 1" test "$rc" -eq 1
+check "invalid branch_prefix → names it and the fix" bash -c "grep -q 'branch_prefix: \"my feature/\" does not make a valid' <<<\"\$1\" && grep -q 'Fix branch_prefix:' <<<\"\$1\"" _ "$out"
+check "invalid branch_prefix → claude not called" test ! -e "$d/.autopilot/calls"
+printf 'integration: pr\nbranch_prefix: feature/\n' > "$d/.autopilot/CONFIG.md"
+out="$(FAKE_MODE=ok drive_gh "$d" 1 2>&1)"
+check_not "valid branch_prefix → no prefix message" grep -q "branch_prefix:" <<<"$out"
+
 # CONFIG scope naming a missing path: nothing could be found or changed, so the driver stops with the fix
 d="$(newrepo)"; printf 'scope: src nope/\n' > "$d/.autopilot/CONFIG.md"; mkdir -p "$d/src"
 out="$(FAKE_MODE=ok drive "$d" 1 2>&1)"; rc=$?

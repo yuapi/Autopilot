@@ -119,6 +119,12 @@ check_not "existing base_branch → no warning" bash -c "bash '$ST' '$d' | grep 
 printf 'integration: local\nbase_branch: devlop\n' > "$d/.autopilot/CONFIG.md"
 check_not "local mode → base_branch not checked" bash -c "bash '$ST' '$d' | grep -q 'base_branch:'"
 
+# a branch_prefix git rejects is named (branch/pr modes only)
+printf 'integration: branch\nbranch_prefix: feat~/\n' > "$d/.autopilot/CONFIG.md"
+check "invalid branch_prefix → warning" bash -c "bash '$ST' '$d' | grep -q '^Warning: CONFIG branch_prefix: \"feat~/\" does not make a valid git branch name'"
+printf 'integration: branch\nbranch_prefix: feature/\n' > "$d/.autopilot/CONFIG.md"
+check_not "valid branch_prefix → no warning" bash -c "bash '$ST' '$d' | grep -q 'branch_prefix:'"
+
 # the task in progress is shown with its start time
 d="$(mktemp -d "$TMPROOT/n.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
 printf '| T-007 | fix | in_progress | 2 | fix the parser | t | s | |\n| T-008 | fix | open | 0 | other | t | s | |\n' > "$d/.autopilot/BACKLOG.md"
