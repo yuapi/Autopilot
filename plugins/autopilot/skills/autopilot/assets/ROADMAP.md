@@ -27,7 +27,7 @@ last_retro: (not yet)
 (Three typical user tasks and where each step got stuck)
 
 ## Deep discovery
-(Only when zero substantive tasks were found. What stages 1 static / 2 running / 3 quality attributes / 4 external signals checked, how many found, date)
+(Only when zero substantive tasks were found. One record per cycle, starting with the UTC time (`date -u +%Y-%m-%dT%H:%MZ`): what stages 1 static / 2 running / 3 quality attributes / 4 external signals checked, how many found)
 
 ## Features in progress
 (features/<slug>.md list and current stage)

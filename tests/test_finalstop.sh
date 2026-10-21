@@ -42,4 +42,21 @@ check_not "outside a git repository → exit 1" bash -c "cd '$TMPROOT' && echo '
 d="$(newrepo)"; echo ".autopilot/.task" >> "$d/.gitignore"
 check "only .gitignore changed → final stop accepted" bash -c "cd '$d' && printf 'Final stop: x\n' | bash '$FS' >/dev/null 2>&1"
 
+# the deep discovery record must be this cycle's: dated, and no older than the last task in the LOG
+log() { printf '# LOG\n\n## 2026-10-21T10:00Z | T-001 | done | skill 1.0.0\n- x\n' > "$1/.autopilot/LOG.md"; }
+d="$(newrepo)"; log "$d"
+printf '## Deep discovery\n2026-10-19\n- 1 static: 0. 2 running: 0. 3 quality: 0. 4 external: 0\n' > "$d/.autopilot/ROADMAP.md"
+out="$(stop "$d")"; rc=$?
+check "record older than the last task → refused" test "$rc" -eq 1
+check "stale record → says so and how to date it" bash -c "grep -q 'latest record (2026-10-19) is older than the last task in the LOG (2026-10-21T10:00Z)' <<<\"\$1\" && grep -q 'date -u' <<<\"\$1\"" _ "$out"
+printf '## Deep discovery\n2026-10-21 (same day, no time)\n- 1 static: 0. 2 running: 0. 3 quality: 0. 4 external: 0\n' > "$d/.autopilot/ROADMAP.md"
+check "same day without a time counts as the start of the day → refused" grep -q "is older than the last task" <<<"$(stop "$d")"
+printf '## Deep discovery\n- 1 static: 0. 2 running: 0. 3 quality: 0. 4 external: 0\n' > "$d/.autopilot/ROADMAP.md"
+check "undated record with tasks in the LOG → refused" grep -q 'record has no date' <<<"$(stop "$d")"
+printf '## Deep discovery\n2026-10-19\n- 1 static: 0. 2 running: 0. 3 quality: 0. 4 external: 0\n\n2026-10-21T10:05Z\n- 1 static: 0. 2 running: 0\n' > "$d/.autopilot/ROADMAP.md"
+check "fresh record must hold all four stages itself" grep -q "stage(s): 3 quality attributes, 4 external signals" <<<"$(stop "$d")"
+printf '## Deep discovery\n2026-10-21T10:05Z\n- 1 static: 0. 2 running: 0. 3 quality: 0. 4 external: 0\n\n2026-10-19\n- 1 static: 2\n' > "$d/.autopilot/ROADMAP.md"
+out="$(stop "$d")"; rc=$?
+check "fresh complete record (newest first) → accepted" test "$rc" -eq 0
+
 finish
