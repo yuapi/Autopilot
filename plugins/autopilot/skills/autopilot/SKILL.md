@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.49.0
+  version: 1.50.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.49.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.50.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -237,9 +237,9 @@ If rediscovery finds **zero substantive tasks**, do not stop yet; go to **deep d
 
 Quality attribute checklist: error handling (does it give the cause and the fix), input validation, configurability (hard-coded values), observability (logs, diagnostic commands, `--verbose`), performance (with 10× the input), portability (OS, shell, runtime versions), secure defaults, upgrade and migration path, usability (help, first-run guidance), accuracy of documented examples.
 
-You may conclude zero only after writing each stage's result (what was checked, how many found) under ROADMAP "Deep discovery". Never skip stages and call it zero. On the final stop:
+You may conclude zero only after writing each stage's result (what was checked, how many found) under ROADMAP "Deep discovery", as one record for this cycle that starts with the UTC time (`date -u +%Y-%m-%dT%H:%MZ`). Never skip stages and call it zero. On the final stop:
 1. Do not queue auxiliary tasks either.
-2. Run `bash <skill folder>/scripts/finalstop.sh <<'EOF'` with the STOP content below (in the output language) and `EOF`. It refuses (exit 1) while ROADMAP "Deep discovery" lacks any of the four stages, while a task is `open` or `in_progress`, or while changes outside `.autopilot/` are uncommitted, and lists what is missing: then this is not the final stop — do what it lists and continue the loop. When it accepts, it writes STOP, deletes RUN and adds the `stop` LOG entry. Never write a final-stop STOP by hand.
+2. Run `bash <skill folder>/scripts/finalstop.sh <<'EOF'` with the STOP content below (in the output language) and `EOF`. It refuses (exit 1) while the latest ROADMAP "Deep discovery" record lacks any of the four stages or is older than the last task in the LOG, while a task is `open` or `in_progress`, or while changes outside `.autopilot/` are uncommitted, and lists what is missing: then this is not the final stop — do what it lists and continue the loop. When it accepts, it writes STOP, deletes RUN and adds the `stop` LOG entry. Never write a final-stop STOP by hand.
 3. Commit the state if the integration mode commits state, then exit.
 
 ```
@@ -348,7 +348,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30Z | T-042 | done | skill 1.49.0
+## 2026-10-01T14:30Z | T-042 | done | skill 1.50.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)

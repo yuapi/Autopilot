@@ -7,6 +7,9 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.50.0 — 2026-10-21
+- `finalstop.sh` requires this cycle's deep discovery: the latest dated record must hold all four stages and be no older than the last task in the LOG (a record from an earlier cycle let every later final stop through). The ROADMAP template and SKILL.md ask for the UTC time on each record
+
 ## 1.49.0 — 2026-10-21
 - `task.sh done` refuses a task whose commits change `.autopilot/CONFIG.md`: "people set CONFIG, autopilot only reads it" was a rule only, and a task commit switching to `integration: pr` with `merge: auto` passed
 
