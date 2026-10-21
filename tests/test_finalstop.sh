@@ -15,6 +15,7 @@ stop() { (cd "$1" && printf '%s\n' "${2:-$SUM}" | bash "$FS" 2>&1); }
 d="$(newrepo)"; out="$(stop "$d")"; rc=$?
 check "all conditions hold → exit 0" test "$rc" -eq 0
 check "STOP written from stdin" grep -qx "Final stop: no substantive work left" "$d/.autopilot/STOP"
+check "STOP marked as checked by finalstop.sh" grep -qxF "(checked by finalstop.sh)" "$d/.autopilot/STOP"
 check "RUN removed" test ! -e "$d/.autopilot/RUN"
 check "stop LOG entry added" grep -q "| - | stop | skill" "$d/.autopilot/LOG.md"
 

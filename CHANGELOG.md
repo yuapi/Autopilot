@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- A final stop written by hand no longer ends the loop: `finalstop.sh` marks the STOP it writes, and the Stop hook and the driver move an unmarked "Final stop" to `STOP.refused` and go on (a hand-written one skipped every final-stop check). Stops by a person, the task budget and the no-progress stop are unchanged
 
 ## 1.53.0 — 2026-10-21
 - With no way to verify, the first task may also be a fix that sets up the test runner itself (its regression test failing first, then passing) instead of a separate `test` task; a fix committed with no test is still refused by the rule. The eval grades it with a new `first=` expectation (the first task's commits must add a test file)

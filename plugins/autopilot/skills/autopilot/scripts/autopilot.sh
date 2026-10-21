@@ -68,7 +68,7 @@ trap 'rm -f "$LOCK"' EXIT
 
 # Keep .autopilot run artifacts out of commits (the state files themselves are committed by the skill)
 if [ -s .gitignore ] && [ -n "$(tail -c1 .gitignore)" ]; then echo >> .gitignore; fi
-for ig in .autopilot/driver-logs/ .autopilot/STOP .autopilot/RUN .autopilot/.hook-state .autopilot/driver.lock .autopilot/.task; do
+for ig in .autopilot/driver-logs/ .autopilot/STOP .autopilot/STOP.refused .autopilot/RUN .autopilot/.hook-state .autopilot/driver.lock .autopilot/.task; do
   grep -qsxF "$ig" .gitignore || printf '%s\n' "$ig" >> .gitignore
 done
 
@@ -209,6 +209,17 @@ iter=0
 crash=0
 stall=0
 while :; do
+  # a final stop finalstop.sh did not write skipped its checks: move it aside and run again
+  if [ -f .autopilot/STOP ]; then
+    case "$(head -1 .autopilot/STOP | tr -d '\r')" in
+      "Final stop: no progress"*) ;;
+      "Final stop"*|"최종 정지"*)
+        if ! grep -qF "(checked by finalstop.sh)" .autopilot/STOP; then
+          mv -f .autopilot/STOP .autopilot/STOP.refused
+          echo "[driver] .autopilot/STOP was a final stop not written by finalstop.sh (its conditions were never checked). Moved it to STOP.refused; the next run goes on." >&2
+        fi;;
+    esac
+  fi
   if [ -f .autopilot/STOP ]; then
     echo "[driver] STOP file found. Exiting."
     cat .autopilot/STOP 2>/dev/null

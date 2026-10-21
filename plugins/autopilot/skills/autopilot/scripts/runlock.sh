@@ -36,7 +36,7 @@ age_min() { "$PY" -c 'import os,sys,time; print(int((time.time()-os.path.getmtim
 write() { mkdir -p .autopilot; printf 'session: %s\nstarted: %s\n' "$me" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$RUN"; set_budget; }
 ignore_artifacts() {  # keep run artifacts out of commits, as the driver does (a refusal changes nothing)
   if [ -s .gitignore ] && [ -n "$(tail -c1 .gitignore)" ]; then echo >> .gitignore; fi
-  for ig in .autopilot/STOP .autopilot/RUN .autopilot/.hook-state .autopilot/driver-logs/ .autopilot/driver.lock .autopilot/.task; do
+  for ig in .autopilot/STOP .autopilot/STOP.refused .autopilot/RUN .autopilot/.hook-state .autopilot/driver-logs/ .autopilot/driver.lock .autopilot/.task; do
     grep -qsxF "$ig" .gitignore || printf '%s\n' "$ig" >> .gitignore
   done
 }
