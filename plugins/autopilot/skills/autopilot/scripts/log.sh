@@ -6,6 +6,8 @@
 #   EOF
 # status: done failed blocked retro discover release stop. Body lines come from stdin; a line that does not
 # start with "- " gets one. Earlier entries are never touched, so the LOG stays in time order.
+# A task entry (done, failed, blocked) is refused unless the BACKLOG row agrees: done → done, failed →
+# open or blocked, blocked → blocked (run task.sh first). Without a BACKLOG.md it is not checked.
 # Prints the header it wrote; for `done` it warns when the last commit names several task IDs.
 # Exit 1 on a bad argument or an empty body.
 set -eu
@@ -28,6 +30,19 @@ if [ ! -t 0 ]; then
   done
 fi
 [ -n "$body" ] || { echo "[log] empty body: pass the entry's bullet lines on stdin" >&2; exit 1; }
+
+# A task entry must match the BACKLOG, so the two never disagree: done after task.sh done, failed after
+# task.sh fail (open again, or blocked from the 3rd attempt), blocked after task.sh drop or a 3rd fail
+if [ "$id" != - ] && [ -f .autopilot/BACKLOG.md ] && [ "$status" != retro ] && [ "$status" != discover ] && [ "$status" != release ] && [ "$status" != stop ]; then
+  st="$(cat .autopilot/BACKLOG.md .autopilot/BACKLOG.archive.md 2>/dev/null | tr -d '\r' | awk -F'|' -v id="$id" '{ g = $2; gsub(/ /, "", g) } g == id { s = $4; gsub(/ /, "", s); print s; exit }')"
+  case "$status:$st" in
+    done:done|failed:open|failed:blocked|blocked:blocked) ;;
+    *:) echo "[log] refused: $id has no BACKLOG row. Add the task to the BACKLOG first" >&2; exit 1;;
+    done:*) echo "[log] refused: $id is $st in the BACKLOG, not done. Run task.sh done $id first" >&2; exit 1;;
+    failed:*) echo "[log] refused: $id is $st in the BACKLOG. Run task.sh fail $id first" >&2; exit 1;;
+    blocked:*) echo "[log] refused: $id is $st in the BACKLOG, not blocked. Run task.sh drop $id (or fail at the 3rd attempt) first" >&2; exit 1;;
+  esac
+fi
 
 # version: 1.2.3, "1.2.3" or '1.2.3' (the account plugin sync writes it single-quoted)
 version="$(sed -n "s/^[[:space:]]*version:[[:space:]]*[\"']\{0,1\}\([0-9][0-9.]*\)[\"']\{0,1\}[[:space:]]*\$/\1/p" "$here/SKILL.md" | head -1)"

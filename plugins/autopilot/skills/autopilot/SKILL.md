@@ -363,7 +363,7 @@ bash <skill folder>/scripts/log.sh T-042 done <<'EOF'
 EOF
 ```
 
-It appends at the end of the file with the current UTC time and this skill's version (use `-` as the ID for entries without a task). Writing entries by hand produced entries inserted above earlier ones and times that were made up, which breaks "the last N runs" and every rule that reads the LOG in order. If the script cannot run, append at the very end and take the time from `date -u +%Y-%m-%dT%H:%MZ`.
+It appends at the end of the file with the current UTC time and this skill's version (use `-` as the ID for entries without a task). A task entry must agree with its BACKLOG row, so run `task.sh` first: `done` after `task.sh done`, `failed` after `task.sh fail`, `blocked` after `task.sh drop` (or a third failure); otherwise it refuses and says which step is missing. Writing entries by hand produced entries inserted above earlier ones and times that were made up, which breaks "the last N runs" and every rule that reads the LOG in order. If the script cannot run, append at the very end and take the time from `date -u +%Y-%m-%dT%H:%MZ`.
 
 The third column (status) is one of `done` / `failed` / `blocked` / `retro` / `discover` / `release` / `stop`. "The last N runs" in the repeat-failure and same-file rules count only `done`, `failed` and `blocked`. The bullet text is in the output language.
 
