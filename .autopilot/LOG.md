@@ -635,3 +635,7 @@
 - 발굴: claude -p "/autopilot:status"를 하위 폴더에서 실행 — 레포 루트를 찾아 정상 표시. idle인데 진행 중 작업이 있으면 설명 없음
 - 변경: scripts/status.sh(루프가 없고 in_progress 작업이 있으면 안내), tests/test_status.sh(+2), CHANGELOG
 - 검증: validate PASS
+
+## 2026-10-21T03:29Z | - | release | skill 1.40.0
+- 1.40.0 릴리즈: release/1.40.0 → main, main → develop 역병합. 태그 대기: v1.40.0 (403, 누적 v1.11.0~v1.40.0)
+- ROADMAP 심화 발굴에 이번 사이클 4단계 기록(모든 단계에서 실질 작업이 나와 루프 계속)
