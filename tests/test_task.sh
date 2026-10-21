@@ -161,6 +161,18 @@ check "generated files added → refused, named" bash -c "grep -q 'add generated
 (cd "$d" && echo q >> code.txt && mkdir -p dist && echo b > dist/app.js && echo new > legacy/x.pyc && git add -A && git commit -qm "autopilot(T-001): clean")
 check "ordinary files, dist/ and an already tracked file → accepted" bash -c "cd '$d' && bash '$TS' done T-001 >/dev/null"
 
+# files are deleted only in cleanup tasks; a rename is not a deletion
+d="$(newrepo)"; (cd "$d" && seq 1 30 > old.txt && seq 1 30 > keep.txt && git add -A && git commit -qm files >/dev/null)
+t "$d" start T-001 >/dev/null; (cd "$d" && echo q >> code.txt && git rm -q old.txt && git commit -qam "autopilot(T-001): drop a file")
+out="$(t "$d" done T-001)"
+check "a fix task deleting a file → refused, named" grep -q "T-001 is a fix task, and its commits delete old.txt" <<<"$out"
+(cd "$d" && git reset -q --hard HEAD~1); t "$d" fail T-001 >/dev/null; t "$d" start T-001 >/dev/null
+(cd "$d" && git mv keep.txt kept.txt && echo q >> code.txt && git commit -qam "autopilot(T-001): rename")
+check "a rename is not a deletion → accepted" bash -c "cd '$d' && bash '$TS' done T-001 >/dev/null"
+sedi 's/| T-002 | fix |/| T-002 | cleanup |/' "$d/.autopilot/BACKLOG.md"
+t "$d" start T-002 >/dev/null; (cd "$d" && git rm -q old.txt && git commit -qm "autopilot(T-002): remove dead file")
+check "a cleanup task may delete" bash -c "cd '$d' && bash '$TS' done T-002 >/dev/null"
+
 # a CRLF BACKLOG (Windows checkout) stays CRLF
 d="$(newrepo)"; sedi 's/$/\r/' "$d/.autopilot/BACKLOG.md"; (cd "$d" && git commit -qam crlf)
 t "$d" start T-001 >/dev/null
