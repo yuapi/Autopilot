@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.41.1 — 2026-10-21
 - Seventh eval fixture `hooks`: commit-msg and pre-commit hooks installed by a new `fixture-<name>.setup` script; new `body=` expectations check every commit message, so a bypassed hook shows up
 
 ## 1.41.0 — 2026-10-21
