@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.48.1 — 2026-10-21
 - `task.sh done` checks both paths of a rename against CONFIG `scope`: moving a file from outside the scope into it (which deletes it outside) used to pass
 
 ## 1.48.0 — 2026-10-21
