@@ -774,3 +774,8 @@
 ## 2026-10-21T11:14Z | - | release | skill 1.52.0
 - 1.52.0 (minor): 처음 상태에서 읽기 명령 먼저(T-109). PR #279 → main, #280 → develop
 - tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-10-21T11:31Z | T-110 | done | skill 1.52.0
+- 원인: 보존 실행에서 모델이 별도 test 작업 대신 첫 fix 안에서 node:test를 세우고 회귀 테스트 실패→통과를 보임. 의도(검증 없는 커밋 금지)는 지켰고 문구("별도 test 작업 먼저")만 어김 — 강한 문구에도 약 절반
+- 변경: SKILL.md Phase 0 3·선택 예외(별도 하네스 작업 또는 러너를 세우는 첫 fix 둘 다 허용, 테스트 없는 fix는 여전히 금지), docs/skill-design.md(이유), scripts/eval.sh(first= 기대값: 첫 작업 커밋이 테스트 파일을 추가), fixture-wordcount.expected, tests/test_eval.sh(+2, 가짜 커밋 갱신), CHANGELOG
+- 검증: test_eval 100 통과, validate PASS. eval wordcount 전 harness-first 3/6 → 후 3/3(9/9). --fixture all: kv 10/11(vet, 재실행 11/11 → 변동), 나머지 100%, 규칙 위반 0, 약 $2.2
