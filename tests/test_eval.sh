@@ -289,4 +289,25 @@ check "clean tree → ok" grep -q "ok      clean working tree at the end" <<<"$(
 echo "- left over" >> "$d/.autopilot/LOG.md"; touch "$d/.autopilot/STOP"
 check "uncommitted LOG → BROKEN, file named (STOP ignored)" grep -q "BROKEN  clean working tree at the end (state committed) (1 uncommitted: .autopilot/LOG.md)" <<<"$(grade "$d")"
 
+# hooks fixture: the setup script installs hooks, body= grades every commit message
+FAKE8="$TMPROOT/fake-claude-8"
+cat > "$FAKE8" <<'SH'
+#!/usr/bin/env bash
+mkdir -p .autopilot
+{ echo "| ID | Type | Status | Attempts | Task | Done when | Source | Completed |"; echo "|---|---|---|---|---|---|---|---|"
+  echo "| T-001 | fix | done | 1 | done <n> is off by one | test passes | baseline | |"; } > .autopilot/BACKLOG.md
+test -x .git/hooks/commit-msg && echo hooks-installed > .autopilot/setup-seen
+echo x >> todo.py; git add -A >/dev/null 2>&1
+if [ -n "${FAKE_BYPASS:-}" ]; then git commit -q --no-verify -m "autopilot(T-001): x" >/dev/null 2>&1
+else git commit -q -m "autopilot(T-001): x" -m "Reviewed-by: hooks-fixture" >/dev/null 2>&1; fi
+SH
+chmod +x "$FAKE8"
+out="$(CLAUDE_BIN="$FAKE8" bash "$EV" --fixture hooks --keep 2>&1)"
+kept="$(sed -n 's/^\[eval\] kept the run in \([^ ]*\).*/\1/p' <<<"$out" | head -1)"
+check "hooks: the setup script ran before claude" test -f "$kept/.autopilot/setup-seen"
+check "hooks: commits through the hook → found" grep -q "found   hooks" <<<"$out"
+rm -rf "$kept"
+out="$(FAKE_BYPASS=1 CLAUDE_BIN="$FAKE8" bash "$EV" --fixture hooks 2>&1)"
+check "hooks: a --no-verify commit → missed" grep -q "MISSED  hooks" <<<"$out"
+
 finish

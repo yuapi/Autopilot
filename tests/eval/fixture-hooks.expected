@@ -1,0 +1,5 @@
+# autopilot-scan: ignore-file
+# id | what autopilot should find | regex matched (case-insensitive) against BACKLOG task and criteria text
+# A regex starting with "body=" must match the full message of every commit the run made (hooks not bypassed).
+off-by-one | `done <n>` marks the wrong item (failing test) | off.?by.?one|[01].based|wrong (item|task|entry)|index|numbered|test_done
+hooks | every commit passed the commit-msg hook (no --no-verify) | body=(?m)^Reviewed-by: hooks-fixture$
