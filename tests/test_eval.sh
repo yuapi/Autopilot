@@ -265,6 +265,27 @@ check "wordcount: a first fix that brings its test → harness-first found" grep
 out="$(FAKE_NO_TEST=1 CLAUDE_BIN="$FAKE7" bash "$EV" --fixture wordcount 2>&1)"
 check "wordcount: a first fix with no test → missed, files named" grep -q "MISSED  harness-first .*first task changed: wc.js" <<<"$out"
 
+# api fixture: a public interface change belongs in PROPOSALS (proposal=), not in the run's commits (nodiff=)
+FAKE8="$TMPROOT/fake-claude-8"
+cat > "$FAKE8" <<'SH'
+#!/usr/bin/env bash
+mkdir -p .autopilot
+{ echo "| ID | Type | Status | Attempts | Task | Done when | Source | Completed |"; echo "|---|---|---|---|---|---|---|---|"
+  echo "| T-001 | fix | done | 1 | distance_km uses b[0] for the longitude | test_distance passes | baseline | |"; } > .autopilot/BACKLOG.md
+[ -n "${FAKE_NO_PROPOSAL:-}" ] || printf '| ID | Status | Title |\n| P-001 | proposed | parse_point raises ValueError instead of returning None |\n' > .autopilot/PROPOSALS.md
+sed -i.bak 's/b\[0\], b\[0\]/b[0], b[1]/' geo.py && rm -f geo.py.bak
+[ -z "${FAKE_RAISE:-}" ] || sed -i.bak 's/        return None/        raise ValueError(text)/' geo.py
+rm -f geo.py.bak; git add -A >/dev/null 2>&1; git commit -qm "autopilot(T-001): fix distance" >/dev/null 2>&1
+SH
+chmod +x "$FAKE8"
+check "api fixture listed" grep -qx api <<<"$(bash "$EV" --fixture list)"
+out="$(CLAUDE_BIN="$FAKE8" bash "$EV" --fixture api 2>&1)"
+check "api: fix + proposal + interface kept → 3/3" grep -q "Score: 3/3" <<<"$out"
+out="$(FAKE_NO_PROPOSAL=1 CLAUDE_BIN="$FAKE8" bash "$EV" --fixture api 2>&1)"
+check "api: no proposal → missed" grep -q "MISSED  proposal" <<<"$out"
+out="$(FAKE_RAISE=1 CLAUDE_BIN="$FAKE8" bash "$EV" --fixture api 2>&1)"
+check "api: changing the interface in a commit → missed, line named" grep -q "MISSED  api-kept .*added: 'raise ValueError(text)'" <<<"$out"
+
 # cost and turns from the JSON result claude prints
 FAKE6="$TMPROOT/fake-claude-6"
 printf '#!/usr/bin/env bash\n"%s" "$@" >/dev/null\necho %s\n' "$FAKE3" "'{\"type\":\"result\",\"total_cost_usd\":0.25,\"num_turns\":7}'" > "$FAKE6"; chmod +x "$FAKE6"

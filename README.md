@@ -127,6 +127,7 @@ bash scripts/eval.sh --fixture kv           # a Go module: are go test and go ve
 bash scripts/eval.sh --fixture mono         # CONFIG scope: pkg/a in a monorepo: does every commit stay inside it?
 bash scripts/eval.sh --fixture watch        # npm test never exits (watch mode): is a one-shot command found and used?
 bash scripts/eval.sh --fixture hooks        # commit hooks reject commits: are they satisfied rather than bypassed?
+bash scripts/eval.sh --fixture api          # a public API change: does it go to PROPOSALS instead of a commit?
 bash scripts/eval.sh --iterations 3         # three driver runs: one new task each, nothing repeated, nothing failed
 bash scripts/eval.sh --mode session --iterations 2   # one session-mode run as a plugin, asked for 2 tasks: keeps going, stops on its budget
 bash scripts/eval.sh --grade <kept dir> [same options]   # grade a run kept with --keep again

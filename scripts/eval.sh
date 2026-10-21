@@ -15,7 +15,9 @@
 # one starting with nofile= must match no file any commit changed (for CONFIG scope); one starting with
 # roadmap= is matched against the ROADMAP the run wrote (e.g. the recorded baseline commands); one starting
 # with body= must match every commit's full message; one starting with first= must match a file the first
-# completed task's commits changed (e.g. a test file: the first task sets up a way to verify).
+# completed task's commits changed (e.g. a test file: the first task sets up a way to verify); one
+# starting with proposal= must match a PROPOSALS.md row; one starting with nodiff= must match no line the
+# run's commits added outside .autopilot/ (e.g. a public interface change that belongs in a proposal).
 # tests/eval/fixture-<name>.setup, if present, runs in the new repository after the fixture commit
 # (for what files cannot carry, such as git hooks).
 # Needs the claude CLI and spends real model usage (one driver run). Not part of validate.sh.
@@ -193,6 +195,18 @@ for ident, what, rx in items:
             what = what.strip() + f" (e.g. {bad[0]!r})"
     elif rx.startswith("type="):
         hit = bool(completed) and completed[0] == rx[5:]
+    elif rx.startswith("proposal="):
+        try: proposals = open(os.path.join(work, ".autopilot", "PROPOSALS.md"), encoding="utf-8").read()
+        except FileNotFoundError: proposals = ""
+        rows = "\n".join(l for l in proposals.splitlines() if re.match(r"^\|\s*P-\d+", l))
+        hit = bool(re.search(rx[9:], rows, re.I))
+    elif rx.startswith("nodiff="):
+        added = [l[1:] for c in commits for l in git("show", "--format=", "--no-color", c, "--", ".", ":!.autopilot").splitlines()
+                 if l.startswith("+") and not l.startswith("+++")]
+        bad = [l.strip() for l in added if re.search(rx[7:], l)]
+        hit = not bad
+        if bad:
+            what = what.strip() + f" (added: {bad[0][:60]!r})"
     elif rx.startswith("first="):
         # files changed by the first completed task's own commits (named by its ID; else the first commit
         # that changes anything outside .autopilot/)
