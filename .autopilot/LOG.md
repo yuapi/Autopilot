@@ -1000,3 +1000,12 @@
 ## 2026-11-10T09:45Z | - | release | skill 1.60.0
 - 1.60.0 (minor): 서브에이전트 활용(사람의 요청, T-131·T-132). PR #358 → main, #359 → develop
 - tag pending: git 태그 push 403, Release API "not permitted for this session type"
+
+## 2026-11-10T09:58Z | - | discover | skill 1.60.0
+- 발굴: 큐가 비어 재발굴. 이슈 0·PR 0·scan 0, scan.sh가 서브에이전트 필수(140파일) 안내 → 서브에이전트 2개(새 기능 탐색 실행, 규칙·스크립트 정적 대조)
+- 결과: 보고 14건을 직접 재현·중복 정리해 T-133~T-137(fix 3, enhance 1, docs 1)
+
+## 2026-11-10T10:00Z | T-133 | done | skill 1.60.0
+- 변경: runlock.sh(start가 살아 있는 driver.lock pid면 exit 2·안내, 죽은 pid는 무시), tests/test_runlock.sh(+4), CHANGELOG
+- 검증: test_runlock 38 통과, validate PASS
+- Subagents: 2, 이번 발굴(새 기능 탐색 실행, 규칙·스크립트 정적 대조) — 보고 14건 중 재현된 것을 T-133~T-137로
