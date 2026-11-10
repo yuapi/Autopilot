@@ -956,3 +956,7 @@
 - 변경: docs/skill-design.md(분리 이유·위험·안전장치 3가지), README 2종 레이아웃에 references/, CHANGELOG
 - 한계: pr 모드로 도는 eval 예제가 없어 references/integration.md는 규칙 테스트로만 확인
 - features/skill-split.md done, PROPOSALS P-001 done
+
+## 2026-11-10T05:47Z | - | release | skill 1.59.0
+- 1.59.0 (minor): SKILL.md를 핵심 루프와 references/로 분리(P-001, T-127~T-129). PR #345 → main, #346 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type"
