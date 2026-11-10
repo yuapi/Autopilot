@@ -945,3 +945,8 @@
 - 기능 skill-split 1/3(P-001 채택). 변경: SKILL.md의 branch·pr 규칙(모드별 표, 작업 브랜치 간 상태, PR 규칙, 열린 PR 재방문, 릴리스)을 그대로 references/integration.md로, SKILL.md에는 "branch·pr 모드면 Phase 0 1 전에 읽는다" 한 줄과 모든 모드 규칙(CONFIG·관례·Always) 유지, tests/test_skill_rules.sh(SKILL.md+references 함께 검사, +3), CHANGELOG
 - 검증: SKILL.md 48,528 → 45,755바이트(약 -6%), test_skill_rules 64 통과, validate PASS(0 warnings, 참조 파일 언급 검사 포함)
 - 후속: T-128(2/3) open
+
+## 2026-11-10T05:29Z | T-128 | done | skill 1.58.0
+- 기능 skill-split 2/3. 변경: Stop 훅 설치·대체 설치, 드라이버, status.sh 상세, 레포 자체 Stop 훅을 그대로 references/operations.md로, SKILL.md에는 훅이 막는 때·해제 방법·상태 요청 시 status.sh 실행만 유지, validate.sh(SKILL.md+references 함께 검사, references 파일이 SKILL.md에 없으면 실패), 테스트(skill_rules +3, scripts +2), CHANGELOG
+- 검증: SKILL.md 45,755 → 42,941바이트(분리 전 48,528 대비 -11.5%), validate PASS(0 warnings), test_scripts 78 통과
+- 후속: T-129(3/3, eval 전후 비교) open
