@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- README (EN/KO): the safety notice and "publishing is opt-in" name the cloud-session work-branch push as their one exception, and the Subagents line is in done entries, not every LOG entry; `references/subagents.md` says `log.sh` cannot check the 50-line review itself
 - `workbranch.sh --push` says why a push failed: git's message, plus the fix for a diverged branch (merge, never force) or a branch with no commit; it said "blocked or offline" for every failure
 - `status.sh` reads CONFIG like the other scripts: an empty value no longer takes the next line as its value, the first occurrence of a key wins, `scope` shows every path, and the takeover note follows `AUTOPILOT_RUN_STALE_MIN` (it said 2 h whatever the setting)
 - The subagent record is harder to dodge: only a task's done entry clears `scan.sh`'s demand (`log.sh - done` no longer does), the demand counts outside git too, `- Subagents: 0` is read as none, and a quote in CONFIG `scope` no longer breaks the file count (`xargs` dropped from scope parsing in `scan.sh`, `log.sh`, `task.sh` and the driver)

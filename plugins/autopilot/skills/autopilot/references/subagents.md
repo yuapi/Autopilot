@@ -8,7 +8,7 @@ Subagents work in parallel and look with fresh eyes. They do not replace the rul
 
 - Phase 1: every discovery cycle in a repository with more than 20 tracked files (`git ls-files`, inside CONFIG `scope` if set, `.autopilot/` aside; `scan.sh` prints the count).
 - Phase 4: every diff with more than 50 changed lines (`git diff --stat`).
-- Below those sizes, doing it yourself is fine and cheaper: the LOG line says so, with the numbers (`- Subagents: none, small (12 files, 8 lines)`). In a larger repository, a task that ran no discovery and has a diff of 50 lines or fewer writes `- Subagents: none, no discovery this task, diff 8 lines`. `log.sh` refuses any other `none` over 20 files, except `- Subagents: none, no Agent tool`, and refuses "no discovery" while `.autopilot/.scan-required` exists (written by `scan.sh` when it said subagents are required, removed by the next done entry).
+- Below those sizes, doing it yourself is fine and cheaper: the LOG line says so, with the numbers (`- Subagents: none, small (12 files, 8 lines)`). In a larger repository, a task that ran no discovery and has a diff of 50 lines or fewer writes `- Subagents: none, no discovery this task, diff 8 lines`. `log.sh` cannot see the diff, so the 50-line review is yours to keep: it checks only that the line is there and that "no discovery" is true. `log.sh` refuses any other `none` over 20 files, except `- Subagents: none, no Agent tool`, and refuses "no discovery" while `.autopilot/.scan-required` exists (written by `scan.sh` when it said subagents are required, removed by the next done entry).
 
 ## What to hand them
 
