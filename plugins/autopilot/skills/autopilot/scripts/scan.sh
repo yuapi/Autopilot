@@ -93,7 +93,7 @@ search "Possible hard-coded secret (security)" 'AKIA[0-9A-Z]{16}|-----BEGIN [A-Z
 top="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 sub="$( { [ -f "$top/.autopilot/CONFIG.md" ] && tr -d '\r' < "$top/.autopilot/CONFIG.md" | sed -n 's/^subagents:[[:space:]]*\([^[:space:]#]*\).*/\1/p' | head -1; } || true)"
 if [ "${sub:-on}" = on ]; then
-  scope="$( { [ -f "$top/.autopilot/CONFIG.md" ] && tr -d '\r' < "$top/.autopilot/CONFIG.md" | sed -n 's/^scope:[[:space:]]*\([^#]*\).*/\1/p' | head -1 | xargs; } || true)"
+  scope="$( { [ -f "$top/.autopilot/CONFIG.md" ] && tr -d '\r' < "$top/.autopilot/CONFIG.md" | sed -n 's/^scope:[[:space:]]*\([^#]*\).*/\1/p' | head -1 | sed 's/^[[:space:]]*//; s/[[:space:]]*$//'; } || true)"
   case "${scope:-.}" in .|auto) scope=.;; esac
   if git -C "$top" rev-parse --git-dir >/dev/null 2>&1; then
     # shellcheck disable=SC2086

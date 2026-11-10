@@ -35,20 +35,22 @@ fi
 # them (or the reason not to) is a recorded decision rather than a step that is quietly skipped
 if [ "$status" = done ] && [ "$id" != - ]; then
   sub="$( { [ -f .autopilot/CONFIG.md ] && tr -d '\r' < .autopilot/CONFIG.md | sed -n 's/^subagents:[[:space:]]*\([^[:space:]#]*\).*/\1/p' | head -1; } || true)"
-  # "none" over 20 files needs one of the two reasons the rules allow: no Agent tool, or no discovery this task
-  if [ "${sub:-on}" = on ] && printf '%s' "$body" | grep -qi '^- Subagents: *none' \
-     && ! printf '%s' "$body" | grep -qiE '^- Subagents: *none.*no[ `]*agent[ `]*tool' \
-     && { [ -f .autopilot/.scan-required ] || ! printf '%s' "$body" | grep -qiE '^- Subagents: *none.*no discovery'; }; then
-  # tracked files, inside CONFIG scope if set, .autopilot/ aside (the same count as scan.sh and references/subagents.md)
-  top="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-  scope="$( { [ -f "$top/.autopilot/CONFIG.md" ] && tr -d '\r' < "$top/.autopilot/CONFIG.md" | sed -n 's/^scope:[[:space:]]*\([^#]*\).*/\1/p' | head -1 | xargs; } || true)"
-  case "${scope:-.}" in .|auto) scope=.;; esac
-  # shellcheck disable=SC2086
-  n="$(git -C "$top" ls-files -- $scope 2>/dev/null | grep -vc '^\.autopilot/' || true)"
+  # "none" (or 0) over 20 files, or while scan.sh's demand is open, needs a reason the rules allow:
+  # no Agent tool, or (only when scan.sh did not ask for subagents) no discovery this task
+  if [ "${sub:-on}" = on ] && printf '%s' "$body" | grep -qiE '^- Subagents: *(none|0)([^0-9a-z]|$)' \
+     && ! printf '%s' "$body" | grep -qiE '^- Subagents: *(none|0)([^0-9a-z]|$).*no[ `]*agent[ `]*tool' \
+     && { [ -f .autopilot/.scan-required ] || ! printf '%s' "$body" | grep -qiE '^- Subagents: *(none|0)([^0-9a-z]|$).*no discovery'; }; then
+    # tracked files, inside CONFIG scope if set, .autopilot/ aside (the same count as scan.sh and references/subagents.md)
+    top="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+    scope="$( { [ -f "$top/.autopilot/CONFIG.md" ] && tr -d '\r' < "$top/.autopilot/CONFIG.md" | sed -n 's/^scope:[[:space:]]*\([^#]*\).*/\1/p' | head -1 | sed 's/^[[:space:]]*//; s/[[:space:]]*$//'; } || true)"
+    case "${scope:-.}" in .|auto) scope=.;; esac
+    # shellcheck disable=SC2086
+    n="$(git -C "$top" ls-files -- $scope 2>/dev/null | grep -vc '^\.autopilot/' || true)"
+    if [ -f .autopilot/.scan-required ]; then
+      # also outside git, where there is nothing to count: scan.sh's demand is what counts
+      echo "[log] refused: '- Subagents: none' but scan.sh said this discovery cycle needs subagents (.autopilot/.scan-required). Run them (references/subagents.md) and record how many, or write '- Subagents: none, no Agent tool' if this session has none" >&2; exit 1
+    fi
     if [ "${n:-0}" -gt 20 ]; then
-      if [ -f .autopilot/.scan-required ]; then
-        echo "[log] refused: '- Subagents: none' but scan.sh said this discovery cycle needs subagents ($n tracked files, over 20; .autopilot/.scan-required). Run them (references/subagents.md) and record how many, or write '- Subagents: none, no Agent tool' if this session has none" >&2; exit 1
-      fi
       echo "[log] refused: '- Subagents: none' but this repository has $n tracked files (over 20): discovery subagents are required (references/subagents.md). Run them; or write '- Subagents: none, no discovery this task, diff <N> lines' (diff 50 lines or fewer), or '- Subagents: none, no Agent tool'" >&2; exit 1
     fi
   fi
@@ -85,7 +87,7 @@ else
 fi
 echo "$header"
 # a done entry has recorded this cycle's subagents (or the lack of an Agent tool): the scan's demand is met
-[ "$status" = done ] && rm -f .autopilot/.scan-required
+[ "$status" = done ] && [ "$id" != - ] && rm -f .autopilot/.scan-required
 # One task = one commit: say so when the last commit names several task IDs (the entry is still written)
 if [ "$status" = done ]; then
   subject="$(git log -1 --format=%s 2>/dev/null || true)"

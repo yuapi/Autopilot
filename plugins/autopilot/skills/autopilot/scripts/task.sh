@@ -49,7 +49,7 @@ if [ "$cmd" = done ]; then
   if [ "$start" != none ] && [ -n "$(git log --no-renames --format= --name-only "$range" -- .autopilot/CONFIG.md | head -1)" ]; then
     echo "[task] refused: the commits since $id started change .autopilot/CONFIG.md. People set CONFIG; autopilot only reads it. Roll that change back" >&2; exit 1
   fi
-  scope=""; [ -f .autopilot/CONFIG.md ] && scope="$(tr -d '\r' < .autopilot/CONFIG.md | sed -n 's/^scope:[[:space:]]*\([^#]*\).*/\1/p' | head -1 | xargs || true)"   # tr: a CONFIG saved with CRLF
+  scope=""; [ -f .autopilot/CONFIG.md ] && scope="$(tr -d '\r' < .autopilot/CONFIG.md | sed -n 's/^scope:[[:space:]]*\([^#]*\).*/\1/p' | head -1 | sed 's/^[[:space:]]*//; s/[[:space:]]*$//' || true)"   # tr: a CONFIG saved with CRLF
   if [ -n "$scope" ] && [ "$scope" != . ] && [ "$scope" != auto ]; then
     outside="$(git log --no-renames --format= --name-only "$range" -- . ':!.autopilot' ':!.gitignore' | grep -v '^$' | sort -u | while IFS= read -r f; do
       inside=0; for p in $scope; do p="${p#./}"; p="${p%/}"; case "$f" in "$p"|"$p"/*) inside=1;; esac; done
