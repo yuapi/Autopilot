@@ -1,0 +1,5 @@
+# autopilot-scan: ignore-file
+# id | what autopilot should find | regex matched (case-insensitive) against BACKLOG task and criteria text
+# "subagents=N": at least N subagents ran (claude's subagent_stats), here because the repository has over 20 files.
+pound | `units/mass.py` makes a pound 10× too heavy (failing test_pound) | pound|mass|453|test_pound|파운드
+subagents | over 20 tracked files: discovery hands work to at least one subagent | subagents=1

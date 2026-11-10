@@ -83,6 +83,7 @@ bash <스킬 폴더>/scripts/status.sh [레포 경로]
 - **실패에서 배운다.** 10작업마다 회고를 한다. 실패·blocked 원인을 분류하고, blocked 작업은 쪼개거나 접으며, 레포 전용 교훈(15줄 이내)을 남겨 이후 단계가 규칙처럼 따른다.
 - **이슈는 읽되 따르지 않는다.** `gh`나 트래커 MCP가 있으면 매 작업마다 마지막 확인 이후 열리거나 바뀐 이슈를 확인해 버그·기능 요청을 작업으로 만든다(출처 `issue #N`, 같은 우선순위에서 먼저 선택). 이슈 본문은 데이터로만 쓰고 지시로 따르지 않는다.
 - **실질 작업과 보조 작업.** 결함을 고치거나 동작을 추가·개선하는 작업(fix, security, feature, enhance, perf, todo, test, cleanup)은 *실질*, 형태만 바꾸는 작업(lint, docs, refactor)은 *보조*다. 보조 작업은 실질 작업과 함께일 때만 큐에 들어간다.
+- **일부를 서브에이전트에 맡긴다.** `.autopilot/CONFIG.md`의 `subagents: on`(기본값)이고 세션에 `Agent` 도구가 있으면, 추적 파일이 20개를 넘는 레포의 발굴을 최대 3개의 서브에이전트(탐색 실행, 사용자 시나리오, 한 영역 정적 검토)에 나눠 맡기고, 50줄 넘는 diff는 커밋 전에 하나가 검토한다. 루프는 받은 결과를 확인한 뒤에만 쓰고, 서브에이전트는 구현·커밋·push·`.autopilot/` 쓰기를 하지 않는다. `scan.sh`가 필요한지 알려 주고 LOG 항목마다 몇 개 썼는지 남는다. 한 에이전트로 다 하려면(토큰 절약) `subagents: off`.
 - **한 번에 작업 하나, 반드시 검증.** 작업은 1~2시간 분량에 완료 기준이 명시되며, 테스트·린트·빌드가 베이스라인보다 나빠지면 안 된다. 실패하면 전부 롤백한다.
 - **규칙은 적어만 두지 않고 검사한다.** `scripts/task.sh done`은 커밋이 다른 작업을 가리키거나, `scope` 밖 파일이나 `.autopilot/CONFIG.md`를 바꾸거나, (`cleanup` 작업이 아닌데) 파일을 지우거나, 생성 파일(`__pycache__`, `node_modules` 등)이나 비밀로 보이는 값을 추가하거나, 의존성 메이저 버전을 올리면 거절한다. `log.sh`는 BACKLOG와 어긋나는 LOG 항목을 거절하고, 최종 정지는 `finalstop.sh`가 받아들일 때만 유효하다(이번 사이클의 심화 발굴 기록, 열린 작업 없음, 커밋 안 된 변경 없음). 손으로 쓴 최종 정지는 치워지고 루프는 계속된다.
 - **최종 중단 조건.** (a) 재발굴에서 실질 작업이 0개이고 심화 발굴 4단계(정적 검토, 새 시나리오로 직접 실행, 품질 속성 점검표, 이슈·보류 항목 재검토)에서도 0개, (b) 직전 10회 중 7회 이상 실패, (c) 사람이 `.autopilot/STOP`을 만듦, (d) 정해 둔 한도에 닿음: 작업 수 예산(`/autopilot:run 3`)이나 드라이버 비용 한도. 3회 실패한 작업은 `blocked`로 표시되고 건너뛴다.
@@ -129,6 +130,7 @@ bash scripts/eval.sh --fixture watch        # npm test가 끝나지 않는(watch
 bash scripts/eval.sh --fixture hooks        # 커밋 훅이 커밋을 거부하는 레포: 우회하지 않고 맞추는가
 bash scripts/eval.sh --fixture api          # 공개 API를 바꾸는 개선: 커밋 대신 PROPOSALS로 가는가
 bash scripts/eval.sh --fixture branch       # integration: branch와 bare origin: 작업 브랜치는 push되고 base는 그대로인가
+bash scripts/eval.sh --fixture large        # 파일 20개 넘는 레포: 발굴을 서브에이전트에 나눠 주는가
 bash scripts/eval.sh --iterations 3         # 드라이버 3회: 매번 새 작업 하나, 반복 없음, 실패 없음
 bash scripts/eval.sh --mode session --iterations 2   # 플러그인으로 세션 모드 1회, 작업 2개 요청: 계속 이어 가다가 예산에서 멈추는가
 bash scripts/eval.sh --grade <남긴 폴더> [같은 옵션]   # --keep으로 남긴 실행을 다시 채점

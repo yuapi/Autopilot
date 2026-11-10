@@ -4,10 +4,18 @@ Read this at the start of Phase 1 and of Phase 4 when CONFIG `subagents` is `on`
 
 Subagents work in parallel and look with fresh eyes. They do not replace the rules: one task at a time, one commit per task, and the state files written only by you.
 
+## When they are required
+
+- Phase 1: every discovery cycle in a repository with more than 20 tracked files (`git ls-files`, inside CONFIG `scope` if set, `.autopilot/` aside; `scan.sh` prints the count).
+- Phase 4: every diff with more than 50 changed lines (`git diff --stat`).
+- Below those sizes, doing it yourself is fine and cheaper: the LOG line says so, with the numbers (`- Subagents: none, small (12 files, 8 lines)`). In a larger repository, a task that ran no discovery and has a diff of 50 lines or fewer writes `- Subagents: none, no discovery this task, diff 8 lines`. `log.sh` refuses any other `none` over 20 files, except `- Subagents: none, no Agent tool`, and refuses "no discovery" while `.autopilot/.scan-required` exists (written by `scan.sh` when it said subagents are required, removed by the next done entry).
+
 ## What to hand them
 
 - **Phase 1 discovery**: split the independent parts of discovery among at most 3 subagents started at once, for example (a) exploratory runs of the entry points with the edge inputs and the first-run rule, (b) the three user scenarios, (c) a static read of one area (error handling, security patterns, the feature map's "Weak"). Give each the repository path, the commands from ROADMAP "Maintenance status", the exploratory-run safety rules (temp directory, timeouts, no network, stop what you start) and what to return.
 - **Phase 4 review**: before the commit, one subagent reviews the task's diff (`git diff` of the uncommitted change) against the task's completion criteria, the Phase 3 rules (public interfaces grow but do not change, scope, dependencies) and the Never list, and returns concrete problems with file and line.
+
+Run them in the foreground, or wait for every background one, before you write the BACKLOG or commit: a result you did not wait for is cost with nothing to show for it.
 
 ## What they return
 

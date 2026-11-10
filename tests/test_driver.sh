@@ -196,6 +196,8 @@ check "subagents default → Agent in the allowlist" grep -q -- "--allowedTools 
 printf 'subagents: off\n' > "$d/.autopilot/CONFIG.md"; out="$(FAKE_MODE=ok drive "$d" 1 2>&1)"
 check_not "subagents: off → no Agent" grep -q "Agent" "$d/.autopilot/args"
 check "subagents: off → the driver says so" grep -q "subagents off" <<<"$out"
+printf 'subagents: on\r\n' > "$d/.autopilot/CONFIG.md"; FAKE_MODE=ok drive "$d" 1 >/dev/null 2>&1
+check "subagents: on in a CRLF CONFIG → Agent allowed" grep -q -- "--allowedTools .*,Agent" "$d/.autopilot/args"
 printf 'subagents: of\n' > "$d/.autopilot/CONFIG.md"; out="$(FAKE_MODE=ok drive "$d" 1 2>&1)"
 check "subagents typo → treated as off, with a warning" bash -c "grep -q 'subagents: of is not on or off; treating it as off' <<<\"\$1\" && ! grep -q Agent '$d/.autopilot/args'" _ "$out"
 
