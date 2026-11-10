@@ -141,6 +141,22 @@ check "subagents typo → warning, treated as off" bash -c "bash '$ST' '$d' | gr
 printf 'subagents: off\n' > "$d/.autopilot/CONFIG.md"
 check "subagents value shown" bash -c "bash '$ST' '$d' | grep -q 'subagents=off'"
 
+# CONFIG read like the other scripts: an empty value stays empty, the first occurrence wins, scope keeps all paths
+d="$(mktemp -d "$TMPROOT/cf.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
+printf 'subagents:\nmerge: auto\n' > "$d/.autopilot/CONFIG.md"
+out="$(bash "$ST" "$d")"
+check "empty value does not swallow the next line" bash -c "grep -q 'merge=auto' <<<\"\$1\" && ! grep -q 'subagents=merge' <<<\"\$1\" && ! grep -q 'Warning: CONFIG subagents' <<<\"\$1\"" _ "$out"
+printf 'integration:\n' > "$d/.autopilot/CONFIG.md"
+check "empty integration in a cloud session → the push note, not the lost-commits warning" bash -c "CLAUDE_CODE_REMOTE=true bash '$ST' '$d' | grep -q '^Note: cloud session with no integration'"
+printf 'subagents: on\nsubagents: off\n' > "$d/.autopilot/CONFIG.md"
+check "a key twice → the first one, as scan.sh and log.sh read it" bash -c "bash '$ST' '$d' | grep -q 'subagents=on'"
+printf 'scope: src lib\n' > "$d/.autopilot/CONFIG.md"; mkdir -p "$d/src" "$d/lib"
+check "scope shows every path" bash -c "bash '$ST' '$d' | grep -q 'scope=src lib'"
+rm "$d/.autopilot/CONFIG.md"; printf 'session: X\nstarted: 2026-01-01T00:00:00Z\n' > "$d/.autopilot/RUN"
+python3 -c 'import os,sys,time; t=time.time()-40*60; os.utime(sys.argv[1],(t,t))' "$d/.autopilot/RUN"
+check "AUTOPILOT_RUN_STALE_MIN sets the takeover note" bash -c "AUTOPILOT_RUN_STALE_MIN=30 bash '$ST' '$d' | grep -q 'idle for over 30 min'"
+check_not "default 120 min → no takeover note at 40 min" bash -c "bash '$ST' '$d' | grep -q 'idle for over'"
+
 # the task in progress is shown with its start time
 d="$(mktemp -d "$TMPROOT/n.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
 printf '| T-007 | fix | in_progress | 2 | fix the parser | t | s | |\n| T-008 | fix | open | 0 | other | t | s | |\n' > "$d/.autopilot/BACKLOG.md"

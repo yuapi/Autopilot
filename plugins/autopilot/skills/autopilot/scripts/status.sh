@@ -33,7 +33,8 @@ elif os.path.exists(os.path.join(A, "RUN")):
     run = read("RUN")
     sess = (re.findall(r"^session:\s*(\S+)", run, re.M) or ["unknown"])[0]
     idle = int((time.time() - os.path.getmtime(os.path.join(A, "RUN"))) // 60)
-    note = " — idle for over 2 h, a new run will take it over" if idle >= 120 else ""
+    stale = int(os.environ.get("AUTOPILOT_RUN_STALE_MIN", "120") or 120)   # the same window as runlock.sh
+    note = f" — idle for over {stale} min, a new run will take it over" if idle >= stale else ""
     bud = re.findall(r"^tasks:\s*(\d+)", run, re.M)
     if bud:
         note += f", {(re.findall(r'^done:\s*(\d+)', run, re.M) or ['0'])[0]}/{bud[0]} tasks of its budget done"
@@ -78,7 +79,16 @@ if os.path.exists(hook):
         print("Note: the installed Stop hook is a copy from another skill version. The next run updates it (or run scripts/hook.sh install).")
     print("Note: the skill declares its own Stop hook since 1.16; the copy in .claude/hooks is only needed where skill hooks are ignored. Remove it with scripts/hook.sh uninstall.")
 
-cfg = dict(re.findall(r"^(integration|merge|release|language|scope|subagents):\s*([^\s#]+)", read("CONFIG.md"), re.M))
+# Read CONFIG the way the other scripts do: the first occurrence of a key wins, a value never runs
+# onto the next line ([ \t]*, not \s*), and scope keeps all its space-separated paths
+def config_values(text, keys):
+    out = {}
+    for m in re.finditer(r"^(" + "|".join(keys) + r"):[ \t]*([^#\r\n]*)", text, re.M):
+        v = m.group(2).strip() if m.group(1) == "scope" else (m.group(2).split() or [""])[0]
+        if m.group(1) not in out and v:
+            out[m.group(1)] = v
+    return out
+cfg = config_values(read("CONFIG.md"), ["integration", "merge", "release", "language", "scope", "subagents"])
 refused = os.path.join(A, "STOP.refused")
 if os.path.exists(refused):
     mins = int((time.time() - os.path.getmtime(refused)) // 60)
@@ -86,7 +96,7 @@ if os.path.exists(refused):
     print(f"Note: a final stop not written by finalstop.sh was set aside {mins} min ago (.autopilot/STOP.refused: {first!r}); the loop went on. finalstop.sh decides when the work is done.")
 print("Integration: " + (", ".join(f"{k}={v}" for k, v in cfg.items()) if cfg else "local (no CONFIG)"))
 allowed = {"integration": ("local", "branch", "pr"), "merge": ("off", "auto"), "release": ("off", "auto"), "local_branch": ("auto", "current"), "subagents": ("off", "on")}
-for k, v in re.findall(r"^(integration|merge|release|local_branch|subagents):\s*([^\s#]+)", read("CONFIG.md"), re.M):
+for k, v in config_values(read("CONFIG.md"), ["integration", "merge", "release", "local_branch", "subagents"]).items():
     if v not in allowed[k]:
         safe = allowed[k][0]
         print(f"Warning: CONFIG {k}: {v} is not one of {' | '.join(allowed[k])}; autopilot treats it as {safe}. Fix .autopilot/CONFIG.md.")
