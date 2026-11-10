@@ -1009,3 +1009,9 @@
 - 변경: runlock.sh(start가 살아 있는 driver.lock pid면 exit 2·안내, 죽은 pid는 무시), tests/test_runlock.sh(+4), CHANGELOG
 - 검증: test_runlock 38 통과, validate PASS
 - Subagents: 2, 이번 발굴(새 기능 탐색 실행, 규칙·스크립트 정적 대조) — 보고 14건 중 재현된 것을 T-133~T-137로
+
+## 2026-11-10T10:04Z | T-134 | done | skill 1.60.0
+- 변경: log.sh(작업의 done 항목만 .scan-required 해제, 표시가 있으면 파일 수와 무관하게 필수, "0"도 none, \b 대신 이식 가능한 패턴), scope 해석에서 xargs 제거(scan·log·task·autopilot), tests/test_log.sh(+5), tests/test_scan.sh(레포 scan 테스트가 표시를 남기지 않게), CHANGELOG
+- 검증: 새 테스트 4건이 수정 전 스크립트에서 실패(61/65)·수정 후 65 통과, scan 39·task 78·driver 105 통과, validate PASS
+- 직접 겪음: 기록하려다 log.sh가 거절 — validate의 "레포 scan 깨끗" 테스트가 실제 레포에 .scan-required를 남겼음. 테스트를 고치고 그 표시를 지움(발굴이 만든 것이 아님)
+- Subagents: none, no discovery this task, diff 40 lines
