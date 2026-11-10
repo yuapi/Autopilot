@@ -58,6 +58,13 @@ printf '최종 정지: 할 일 없음\n' > "$d/.autopilot/STOP"
 check "hand-written Korean final stop → refused too" blocks "$d"
 printf 'Final stop: no substantive work left\n(checked by finalstop.sh)\n' > "$d/.autopilot/STOP"
 check_not "final stop from finalstop.sh → allows ending" blocks "$d"
+# a final stop from before 1.54 has no mark, but finalstop.sh logged its first line as a stop entry
+d="$(newrepo)"; touch "$d/.autopilot/RUN"; printf 'Final stop: no substantive work left\n- Cycles: 2\n' > "$d/.autopilot/STOP"
+printf '\n## 2026-10-01T00:00Z | - | stop | skill 1.40.0\n- Final stop: no substantive work left\n' >> "$d/.autopilot/LOG.md"
+check_not "unmarked final stop with its stop LOG entry (older finalstop.sh) → allows ending" blocks "$d"
+d="$(newrepo)"; touch "$d/.autopilot/RUN"; printf 'Final stop: no substantive work left\n' > "$d/.autopilot/STOP"
+printf '\n## 2026-10-01T00:00Z | T-001 | done | skill 1.40.0\n- Final stop: no substantive work left\n' >> "$d/.autopilot/LOG.md"
+check "the same line under a task entry is not a stop entry → refused" blocks "$d"
 for body in 'Stopped by a person' 'Stopped after 3 task(s) as asked' 'Final stop: no progress' 'please stop'; do
   d="$(newrepo)"; touch "$d/.autopilot/RUN"; printf '%s\n' "$body" > "$d/.autopilot/STOP"
   check_not "STOP \"$body\" → allows ending" blocks "$d"

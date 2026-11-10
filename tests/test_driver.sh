@@ -202,6 +202,10 @@ check "hand-written final stop → moved to STOP.refused" grep -q "Final stop: n
 check "hand-written final stop → says why" grep -q "not written by finalstop.sh" <<<"$out"
 check "checked final stop → driver stops (exit 0)" bash -c "test $rc -eq 0 && grep -q 'checked by finalstop.sh' '$d/.autopilot/STOP'"
 check "STOP.refused is ignored by git" grep -qxF .autopilot/STOP.refused "$d/.gitignore"
+d="$(newrepo)"; printf 'Final stop: nothing left\n' > "$d/.autopilot/STOP"
+printf '# LOG\n\n## 2026-10-01T00:00Z | - | stop | skill 1.40.0\n- Final stop: nothing left\n' > "$d/.autopilot/LOG.md"
+out="$(FAKE_MODE=ok drive "$d" 3 2>&1)"
+check "unmarked final stop from an older finalstop.sh → driver stops without a run" bash -c "test ! -e '$d/.autopilot/calls' && test -f '$d/.autopilot/STOP' && grep -q 'STOP file found' <<<\"\$1\"" _ "$out"
 
 # CONFIG base_branch naming a branch that does not exist: in pr mode no task could start, so the driver stops
 d="$(newrepo)"; git -C "$d" remote add origin https://example.invalid/x.git
