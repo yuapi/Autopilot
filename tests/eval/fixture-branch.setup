@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Runs in the fresh eval repository after the fixture commit: a bare origin holding main, so
+# integration: branch has somewhere to push task branches.
+set -eu
+o="$(mktemp -d)/origin.git"; git init -q --bare "$o"
+git remote add origin "$o"
+git push -q origin main
+git fetch -q origin && git remote set-head origin main
