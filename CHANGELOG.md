@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- A final stop written by `finalstop.sh` before 1.54 (unmarked) is honored again when the LOG has its `stop` entry: after upgrading, the driver set such a finished repository's STOP aside and started working again
 
 ## 1.56.0 — 2026-11-10
 - `status.sh` shows a note when the Stop hook or the driver set a hand-written final stop aside (`.autopilot/STOP.refused`), with its first line and how long ago
