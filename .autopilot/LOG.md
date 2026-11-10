@@ -1030,3 +1030,13 @@
 - 변경: README.md·README.ko.md(안전 안내와 "내보내기는 직접 켜야 한다"에 클라우드 세션 작업 브랜치 push 예외, Subagents 줄은 done 항목), references/subagents.md(50줄 검토는 log.sh가 확인 못 함), CHANGELOG
 - 검증: validate PASS
 - Subagents: none, no discovery this task, diff 12 lines
+
+## 2026-11-10T10:16Z | - | release | skill 1.60.1
+- 1.60.1 (patch): 서브에이전트 발굴로 찾은 결함 수정(T-133~T-137). PR #366 → main, #367 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type"
+
+## 2026-11-10T10:16Z | - | discover | skill 1.60.1
+- 심화 발굴(이번 사이클): 4단계 기록(서브에이전트 2개의 보고를 재현해 T-133~T-137로 처리), 남은 실질 작업 0건
+
+## 2026-11-10T10:16Z | - | stop | skill 1.60.1
+- Final stop: no substantive work left (실질 작업 없음)

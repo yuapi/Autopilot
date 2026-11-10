@@ -50,6 +50,13 @@ last_retro: 2026-11-10T05:59Z
 3. 오래 도는 세션이 "할 일 없음"이라 판단: 이전엔 근거 없이 멈출 수 있었음 → finalstop.sh가 빠진 조건을 알려 줌(T-041, T-045)
 
 ## 심화 발굴
+2026-11-10T10:16Z (서브에이전트 기능 뒤 큐가 비어 진행, 서브에이전트 2개 사용)
+- 1 정적: 이슈 0·PR 0·scan.sh 0건. 정적 대조 서브에이전트(SKILL.md·references·스크립트·README) 7건 보고 → 재현된 것 T-133(드라이버 실행 중 세션 시작), T-135(status CONFIG 해석), T-137(README) 처리
+- 2 실행: 탐색 실행 서브에이전트(scan·log·workbranch·status 경계 입력) 7건 보고 → T-134(서브에이전트 기록 구멍 4가지), T-136(push 실패 원인) 처리. 처리 중 직접 겪음: validate가 레포에 .scan-required를 남김 → T-134에서 수정
+- 3 품질 속성: 이식성(grep \b → 이식 가능한 패턴), 오류 메시지(push 실패 원인), 일관성(CONFIG 해석 통일)
+- 4 외부 신호: 열린 이슈 0, 열린 PR 0, 결정 대기 제안 없음, 하지 않기로 한 것(Actions CI) 이유 유지
+- 결과: 보고된 것 모두 처리, 남은 실질 작업 0건
+
 2026-11-10T06:00Z (P-001·P-002 채택분과 T-130 뒤 큐가 비어 진행)
 - 1 정적: 이슈 0·PR 0·scan.sh 0건. 제안은 P-001·P-002 모두 done, 새 제안 없음. 빠진 것·약한 것: 없음
 - 2 실행: 새 시나리오 — 클라우드 세션의 작업 브랜치 push(언어만 있는 CONFIG에서 push, CRLF integration: local에서 push 안 함, 기본 브랜치 거절), branch 모드 eval(작업 브랜치 push·base 불변, references/integration.md를 실제로 읽음), 분리된 SKILL.md로 세션·드라이버 모드 eval(점수 그대로)
