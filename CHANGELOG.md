@@ -7,6 +7,13 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.60.1 — 2026-11-10
+- README (EN/KO): the safety notice and "publishing is opt-in" name the cloud-session work-branch push as their one exception, and the Subagents line is in done entries, not every LOG entry; `references/subagents.md` says `log.sh` cannot check the 50-line review itself
+- `workbranch.sh --push` says why a push failed: git's message, plus the fix for a diverged branch (merge, never force) or a branch with no commit; it said "blocked or offline" for every failure
+- `status.sh` reads CONFIG like the other scripts: an empty value no longer takes the next line as its value, the first occurrence of a key wins, `scope` shows every path, and the takeover note follows `AUTOPILOT_RUN_STALE_MIN` (it said 2 h whatever the setting)
+- The subagent record is harder to dodge: only a task's done entry clears `scan.sh`'s demand (`log.sh - done` no longer does), the demand counts outside git too, `- Subagents: 0` is read as none, and a quote in CONFIG `scope` no longer breaks the file count (`xargs` dropped from scope parsing in `scan.sh`, `log.sh`, `task.sh` and the driver)
+- `runlock.sh start` refuses (exit 2) while a driver runs in the repository (a live pid in `.autopilot/driver.lock`): a session loop used to start next to a running driver, though one loop per repository is the rule
+
 ## 1.60.0 — 2026-11-10
 - Subagents are used, not only allowed: required for discovery in a repository with more than 20 tracked files and for a diff over 50 lines (`references/subagents.md`). `scan.sh` says at the start of every discovery cycle whether they are required, `log.sh` needs a `- Subagents:` line in every done entry and refuses "none" over 20 tracked files (counted inside `scope`) unless the session has no Agent tool or the task ran no discovery; while `scan.sh`'s demand is open (`.autopilot/.scan-required`), "no discovery" is refused too. New eval fixture `large` (26 files) and `subagents=N` expectation; the eval prints the main model, a subagent's model apart, and the subagent count
 - Subagents (asked for by a person): with CONFIG `subagents: on` (the default) the loop hands parts of Phase 1 discovery (exploratory runs, scenarios, a static read; at most 3) and a pre-commit review of the diff (1) to subagents when the session has an `Agent` tool, and checks what they report before acting on it. They never implement, commit, push or write `.autopilot/`. Rules in `references/subagents.md`; the driver's and the eval's allowlists include `Agent` unless `subagents: off`; `status.sh` shows the value and warns about a typo (treated as off)

@@ -996,3 +996,37 @@
 - 변경: references/subagents.md, SKILL.md, scripts/scan.sh·log.sh·autopilot.sh(CRLF)·runlock.sh, scripts/eval.sh(주 모델·서브에이전트 모델 구분, 서브에이전트 수, subagents= 기대값), tests/eval/fixture-large(26파일, pound 10배 결함), 테스트(log +16, scan +6, eval +6, driver +1, skill_rules +4), README 2종, docs/skill-design.md, CHANGELOG
 - 검증: validate PASS(클라우드·비클라우드), eval --fixture all(--model claude-sonnet-5-5) 10개 예제 100%, 규칙 위반 0, $2.15. large 3/3 서브에이전트 사용·8/8
 - Subagents: 1, 커밋 전 diff 검토(결함 6건 보고 — 개수 불일치, 경로 지정 scan의 CONFIG 위치, 너무 엄격·느슨한 none, 드라이버 CRLF, 약한 테스트 2 — 모두 확인 후 수정)
+
+## 2026-11-10T09:45Z | - | release | skill 1.60.0
+- 1.60.0 (minor): 서브에이전트 활용(사람의 요청, T-131·T-132). PR #358 → main, #359 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type"
+
+## 2026-11-10T09:58Z | - | discover | skill 1.60.0
+- 발굴: 큐가 비어 재발굴. 이슈 0·PR 0·scan 0, scan.sh가 서브에이전트 필수(140파일) 안내 → 서브에이전트 2개(새 기능 탐색 실행, 규칙·스크립트 정적 대조)
+- 결과: 보고 14건을 직접 재현·중복 정리해 T-133~T-137(fix 3, enhance 1, docs 1)
+
+## 2026-11-10T10:00Z | T-133 | done | skill 1.60.0
+- 변경: runlock.sh(start가 살아 있는 driver.lock pid면 exit 2·안내, 죽은 pid는 무시), tests/test_runlock.sh(+4), CHANGELOG
+- 검증: test_runlock 38 통과, validate PASS
+- Subagents: 2, 이번 발굴(새 기능 탐색 실행, 규칙·스크립트 정적 대조) — 보고 14건 중 재현된 것을 T-133~T-137로
+
+## 2026-11-10T10:04Z | T-134 | done | skill 1.60.0
+- 변경: log.sh(작업의 done 항목만 .scan-required 해제, 표시가 있으면 파일 수와 무관하게 필수, "0"도 none, \b 대신 이식 가능한 패턴), scope 해석에서 xargs 제거(scan·log·task·autopilot), tests/test_log.sh(+5), tests/test_scan.sh(레포 scan 테스트가 표시를 남기지 않게), CHANGELOG
+- 검증: 새 테스트 4건이 수정 전 스크립트에서 실패(61/65)·수정 후 65 통과, scan 39·task 78·driver 105 통과, validate PASS
+- 직접 겪음: 기록하려다 log.sh가 거절 — validate의 "레포 scan 깨끗" 테스트가 실제 레포에 .scan-required를 남겼음. 테스트를 고치고 그 표시를 지움(발굴이 만든 것이 아님)
+- Subagents: none, no discovery this task, diff 40 lines
+
+## 2026-11-10T10:06Z | T-135 | done | skill 1.60.0
+- 변경: status.sh(config_values: 한 줄만 읽음, 첫 번째 값 사용, scope 전체 경로, AUTOPILOT_RUN_STALE_MIN 반영), tests/test_status.sh(+6), CHANGELOG
+- 검증: test_status 61 통과, validate PASS(이번엔 레포에 .scan-required 남지 않음)
+- Subagents: none, no discovery this task, diff 45 lines
+
+## 2026-11-10T10:09Z | T-136 | done | skill 1.60.0
+- 변경: workbranch.sh(--push 실패 시 git 메시지와 원인별 고칠 방법: 갈라진 브랜치는 merge·force push 금지, 커밋 없는 브랜치는 먼저 커밋, 그 밖은 LOG에 기록), tests/test_workbranch.sh(+3), CHANGELOG
+- 검증: test_workbranch 35 통과, validate PASS
+- Subagents: none, no discovery this task, diff 30 lines
+
+## 2026-11-10T10:11Z | T-137 | done | skill 1.60.0
+- 변경: README.md·README.ko.md(안전 안내와 "내보내기는 직접 켜야 한다"에 클라우드 세션 작업 브랜치 push 예외, Subagents 줄은 done 항목), references/subagents.md(50줄 검토는 log.sh가 확인 못 함), CHANGELOG
+- 검증: validate PASS
+- Subagents: none, no discovery this task, diff 12 lines

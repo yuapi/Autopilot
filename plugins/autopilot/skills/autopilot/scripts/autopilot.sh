@@ -90,7 +90,7 @@ fi
 
 # CONFIG scope naming a path that does not exist: discovery would find nothing there and task.sh done
 # would refuse every change, which ends in a final stop that is not true. Say so and stop.
-scope="$( { [ -f .autopilot/CONFIG.md ] && tr -d '\r' < .autopilot/CONFIG.md | sed -n 's/^scope:[[:space:]]*\([^#]*\).*/\1/p' | head -1 | xargs; } || true)"
+scope="$( { [ -f .autopilot/CONFIG.md ] && tr -d '\r' < .autopilot/CONFIG.md | sed -n 's/^scope:[[:space:]]*\([^#]*\).*/\1/p' | head -1 | sed 's/^[[:space:]]*//; s/[[:space:]]*$//'; } || true)"
 if [ -n "$scope" ] && [ "$scope" != . ] && [ "$scope" != auto ]; then
   for p in $scope; do
     [ -e "$p" ] || { echo "[driver] CONFIG scope names $p, which does not exist in this repository." >&2
