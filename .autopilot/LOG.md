@@ -960,3 +960,8 @@
 ## 2026-11-10T05:47Z | - | release | skill 1.59.0
 - 1.59.0 (minor): SKILL.md를 핵심 루프와 references/로 분리(P-001, T-127~T-129). PR #345 → main, #346 → develop
 - tag pending: git 태그 push 403, Release API "not permitted for this session type"
+
+## 2026-11-10T05:54Z | T-130 | done | skill 1.59.0
+- 변경: tests/eval/fixture-branch(temp.py c_to_f +23 결함, CONFIG integration: branch), fixture-branch.setup(bare origin), .expected(remote=·basekept=), scripts/eval.sh(커밋을 모든 로컬 브랜치에서 수집, remote=·basekept= 채점), tests/test_eval.sh(+4, 합계 비용 기대값을 예제 수로 계산), README 2종 예제 목록, CHANGELOG
+- 검증: test_eval 116 통과, validate PASS. 실제 eval branch 세션 2회(--model claude-sonnet-5-5): 9/9·9/9, origin에 autopilot/T-001-fix-c-to-f, main 그대로. 세션 기록에서 두 실행 모두 references/integration.md를 cat으로 읽음 — P-001 분리 안내가 실제로 따라짐
+- 과정: 테스트 파일 편집 셸 명령이 안전 검사(따옴표 해석 불가)에 막힘 → 삭제가 아닌 편집이라 Edit 도구로 같은 편집
