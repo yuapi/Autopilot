@@ -38,4 +38,4 @@ Shows on one screen whether the loop is running or stopped and why (and which se
 
 ## When the repository has its own Stop hook
 
-If the repository has a Stop hook that demands committing untracked files, this skill's Phase 4 rollback (`git clean`) and Phase 5 commit satisfy it naturally. The `.autopilot/` run artifacts (STOP, STOP.refused, RUN, .hook-state, .task, driver-logs, driver.lock) are added to `.gitignore` by `runlock.sh start` (session mode) and by the driver.
+If the repository has a Stop hook that demands committing untracked files, this skill's Phase 4 rollback (`git clean`) and Phase 5 commit satisfy it naturally. The `.autopilot/` run artifacts (STOP, STOP.refused, .scan-required, RUN, .hook-state, .task, driver-logs, driver.lock) are added to `.gitignore` by `runlock.sh start` (session mode) and by the driver.

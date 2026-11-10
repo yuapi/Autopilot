@@ -320,11 +320,27 @@ FAKE9="$TMPROOT/fake-claude-9"
 printf '#!/usr/bin/env bash\n"%s" "$@" >/dev/null\nm=model-a; [ -f geo.py ] && m=model-b\necho "{\\"type\\":\\"result\\",\\"total_cost_usd\\":0.1,\\"num_turns\\":2,\\"modelUsage\\":{\\"$m\\":{}}}"\n' "$FAKE3" > "$FAKE9"; chmod +x "$FAKE9"
 out="$(CLAUDE_BIN="$FAKE9" bash "$EV" 2>&1)"
 check "the cost line names the model" grep -q 'Cost: \$0.10 over 1 run(s), 2 turns, model: model-a' <<<"$out"
+check "the cost line counts subagents (0 when the result has no stats)" grep -q 'model: model-a, subagents: 0' <<<"$out"
 out="$(CLAUDE_BIN="$FAKE9" bash "$EV" --fixture all 2>&1)"
 check "--fixture all: cost per fixture in the summary" grep -qE '^  todo +Score: .* · \$0.10$' <<<"$out"
 nfix="$(bash "$EV" --fixture list | wc -l | tr -d ' ')"; total="$(python3 -c 'import sys; print(f"{0.1*int(sys.argv[1]):.2f}")' "$nfix")"
 check "--fixture all: total cost and models" grep -qF "total cost \$$total, model: model-a,model-b" <<<"$out"
-check "--fixture all: mixed models → warning" grep -q 'ran on different models; pass --model' <<<"$out"
+check "--fixture all: mixed models → warning" grep -q 'ran on different main models; pass --model' <<<"$out"
+
+# a subagent on another model is listed apart from the main model and does not count as mixing
+FAKE11="$TMPROOT/fake-claude-11"
+cat > "$FAKE11" <<SH
+#!/usr/bin/env bash
+"$FAKE3" "\$@" >/dev/null
+echo '{"type":"result","total_cost_usd":0.2,"num_turns":3,"modelUsage":{"model-a":{"costUSD":0.18},"model-h":{"costUSD":0.02}},"subagent_stats":{"spawned":2}}'
+SH
+chmod +x "$FAKE11"
+out="$(CLAUDE_BIN="$FAKE11" bash "$EV" 2>&1)"
+check "main model, the subagent's model apart, and the subagent count" grep -q 'model: model-a (also model-h), subagents: 2' <<<"$out"
+out="$(CLAUDE_BIN="$FAKE11" bash "$EV" --fixture all 2>&1)"
+check_not "--fixture all: one main model with a subagent model → no warning" grep -q 'different main models' <<<"$out"
+nfix="$(bash "$EV" --fixture list | wc -l | tr -d ' ')"
+check "--fixture all: subagents summed (2 per fixture)" grep -qE "total cost .*, model: model-a, subagents: $((2 * nfix))\$" <<<"$out"
 
 # driver mode uses the real driver's prompt and allowlist, with the working copy as a plugin
 out="$(CLAUDE_BIN="$FAKES" bash "$EV" --iterations 1 --keep 2>&1)"

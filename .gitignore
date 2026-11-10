@@ -10,3 +10,4 @@ __pycache__/
 .autopilot/.task
 .autopilot/STOP.refused
 .autopilot/driver.lock
+.autopilot/.scan-required

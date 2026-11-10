@@ -68,7 +68,7 @@ trap 'rm -f "$LOCK"' EXIT
 
 # Keep .autopilot run artifacts out of commits (the state files themselves are committed by the skill)
 if [ -s .gitignore ] && [ -n "$(tail -c1 .gitignore)" ]; then echo >> .gitignore; fi
-for ig in .autopilot/driver-logs/ .autopilot/STOP .autopilot/STOP.refused .autopilot/RUN .autopilot/.hook-state .autopilot/driver.lock .autopilot/.task; do
+for ig in .autopilot/driver-logs/ .autopilot/STOP .autopilot/STOP.refused .autopilot/.scan-required .autopilot/RUN .autopilot/.hook-state .autopilot/driver.lock .autopilot/.task; do
   grep -qsxF "$ig" .gitignore || printf '%s\n' "$ig" >> .gitignore
 done
 
@@ -171,7 +171,7 @@ case "${AUTOPILOT_PERMISSION:-allowlist}" in
     esac
     PERM_ARGS=(--allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,Skill,TodoWrite,Agent")
     # CONFIG subagents: on (default) lets the skill start subagents; off, or a typo, keeps them out
-    sub="$( { [ -f .autopilot/CONFIG.md ] && sed -n 's/^subagents:[[:space:]]*\([^[:space:]#]*\).*/\1/p' .autopilot/CONFIG.md | head -1; } || true)"
+    sub="$( { [ -f .autopilot/CONFIG.md ] && tr -d '\r' < .autopilot/CONFIG.md | sed -n 's/^subagents:[[:space:]]*\([^[:space:]#]*\).*/\1/p' | head -1; } || true)"
     case "${sub:-on}" in
       on) echo "[driver] permissions: allowlist (Bash, file tools, Skill, Agent for subagents)" ;;
       *) [ "$sub" = off ] || echo "[driver] CONFIG subagents: $sub is not on or off; treating it as off" >&2

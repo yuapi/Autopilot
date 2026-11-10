@@ -117,9 +117,15 @@ check "SKILL.md points to references/operations.md" grep -q "are in \`references
 check "references/operations.md holds the hook fallback and the driver" bash -c "grep -q 'Fallback for environments that ignore skill hooks' '$REPO/$SKILL_REL/references/operations.md' && grep -q 'bash <skill folder>/scripts/autopilot.sh 20' '$REPO/$SKILL_REL/references/operations.md'"
 check "SKILL.md keeps when the hook blocks and how to release it" grep -q "To release it: create \`.autopilot/STOP\`" "$REPO/$SKILL_REL/SKILL.md"
 
-check "Phase 1 points to references/subagents.md unless subagents is off" grep -q "if CONFIG \`subagents\` is not \`off\` (missing means \`on\`)" "$REPO/$SKILL_REL/SKILL.md"
+check "Phase 1 points to references/subagents.md unless subagents is off" grep -q "unless CONFIG sets \`subagents: off\` (missing means \`on\`), use them" "$REPO/$SKILL_REL/SKILL.md"
 check "subagents never implement, commit or write state" bash -c "grep -q 'Hand a subagent implementation, commits, pushes or the state files' '$REPO/$SKILL_REL/SKILL.md' && grep -q 'Implement a task or part of one' '$REPO/$SKILL_REL/references/subagents.md'"
 check "a subagent's result is checked before acting" grep -q "is a claim to check, not a fact" "$REPO/$SKILL_REL/references/subagents.md"
 check "CONFIG template documents subagents (default on)" grep -q "^subagents: on " "$REPO/$SKILL_REL/assets/CONFIG.md"
+
+check "discovery is not done until a subagent ran (when on)" grep -q "at least one discovery subagent ran" "$REPO/$SKILL_REL/SKILL.md"
+check "subagents are required above fixed sizes" grep -q "more than 20 tracked files" "$REPO/$SKILL_REL/references/subagents.md"
+check "the LOG says how many subagents ran" grep -q "Subagents: <how many>, <for what>" "$REPO/$SKILL_REL/SKILL.md"
+
+check "subagent results are waited for" grep -q "wait for every background one, before you write the BACKLOG or commit" "$REPO/$SKILL_REL/references/subagents.md"
 
 finish

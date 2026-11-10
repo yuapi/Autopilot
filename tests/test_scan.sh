@@ -87,4 +87,18 @@ check "--all prints every line" test "$(bash "$SC" --all "$d" | grep -c ':1:# ')
 check "AUTOPILOT_SCAN_MAX changes the limit" bash -c "AUTOPILOT_SCAN_MAX=5 bash '$SC' '$d' | grep -q '^… 56 more line(s)'"
 check_not "AUTOPILOT_SCAN_MAX=0 is refused" bash -c "AUTOPILOT_SCAN_MAX=0 bash '$SC' '$d'"
 
+# subagents line: required over 20 tracked files (CONFIG subagents: on, the default), optional below, absent when off
+d="$(mktemp -d "$TMPROOT/sa.XXXX")"; git -C "$d" init -q
+for i in $(seq 1 21); do echo "x = $i" > "$d/m$i.py"; done; git -C "$d" add -A
+check "over 20 tracked files → subagents required" bash -c "bash '$SC' '$d' | grep -q '^# subagents: required this discovery cycle (21 tracked files > 20'"
+mkdir -p "$d/sub"; echo "y = 1" > "$d/sub/a.py"; git -C "$d" add -A
+check "scan.sh <folder> still counts the whole repository" bash -c "bash '$SC' '$d/sub' | grep -q '(22 tracked files > 20'"
+git -C "$d" rm -q --cached m21.py m20.py sub/a.py
+check "20 tracked files → optional (untracked ones do not count)" bash -c "bash '$SC' '$d' | grep -q '^# subagents: optional this cycle (19 tracked files'"
+git -C "$d" add -A; mkdir -p "$d/.autopilot"; printf 'subagents: off\r\n' > "$d/.autopilot/CONFIG.md"
+check "subagents: off (CRLF) → scan succeeds without a subagents line" bash -c "out=\$(bash '$SC' '$d') && grep -q '^# end of scan' <<<\"\$out\" && ! grep -q '^# subagents' <<<\"\$out\""
+check "subagents: off is read from the repository root when scanning a folder" bash -c "out=\$(bash '$SC' '$d/sub') && ! grep -q '^# subagents' <<<\"\$out\""
+printf 'scope: sub\n' > "$d/.autopilot/CONFIG.md"
+check "CONFIG scope limits the count" bash -c "bash '$SC' '$d/sub' | grep -q '^# subagents: optional this cycle (1 tracked files'"
+
 finish

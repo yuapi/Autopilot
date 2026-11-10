@@ -7,6 +7,8 @@
 # Without an argument it scans the repository root; with one, only that directory.
 # A line containing "autopilot-scan: ignore" is skipped; so is a file with "autopilot-scan: ignore-file"
 # in its first 5 lines (for code that discusses these patterns, like this script).
+# Lines starting with "#" are headers, not findings: the last ones say whether subagents are required
+# this cycle (CONFIG subagents: on and over 20 tracked files) and mark the end of the scan.
 # A section prints at most AUTOPILOT_SCAN_MAX lines (default 50), then "… N more lines" and the hit
 # count per folder, so a repository with hundreds of markers can be grouped (SKILL.md 1-B). --all prints every line.
 set -u
@@ -86,4 +88,25 @@ search "Dynamic code execution (security)" '(^|[^a-zA-Z_.])(eval|exec)\([^)]|new
 search "Unsafe deserialization (security)" 'pickle\.loads?\(|yaml\.load\([^)]*\)|marshal\.loads\(|unserialize\('
 search "TLS verification disabled (security)" 'verify[[:space:]]*=[[:space:]]*False|rejectUnauthorized[[:space:]]*:[[:space:]]*false|InsecureSkipVerify[[:space:]]*:[[:space:]]*true|NODE_TLS_REJECT_UNAUTHORIZED|CURLOPT_SSL_VERIFYPEER[^;]*(0|false)'
 search "Possible hard-coded secret (security)" 'AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----|(password|passwd|secret|api_?key|token)[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"'[:space:]]{8,}["'"'"']' -i
+# subagents (CONFIG subagents: on, the default): over 20 tracked files they are required this cycle.
+# Counted on the whole repository (scope from CONFIG), not on the folder passed in, the same way as log.sh.
+top="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+sub="$( { [ -f "$top/.autopilot/CONFIG.md" ] && tr -d '\r' < "$top/.autopilot/CONFIG.md" | sed -n 's/^subagents:[[:space:]]*\([^[:space:]#]*\).*/\1/p' | head -1; } || true)"
+if [ "${sub:-on}" = on ]; then
+  scope="$( { [ -f "$top/.autopilot/CONFIG.md" ] && tr -d '\r' < "$top/.autopilot/CONFIG.md" | sed -n 's/^scope:[[:space:]]*\([^#]*\).*/\1/p' | head -1 | xargs; } || true)"
+  case "${scope:-.}" in .|auto) scope=.;; esac
+  if git -C "$top" rev-parse --git-dir >/dev/null 2>&1; then
+    # shellcheck disable=SC2086
+    nfiles="$(git -C "$top" ls-files -- $scope 2>/dev/null | grep -vc '^\.autopilot/' || true)"
+  else
+    nfiles="$(tr -cd '\0' < "$LIST" | wc -c | tr -d ' ')"
+  fi
+  if [ "${nfiles:-0}" -gt 20 ]; then
+    echo "# subagents: required this discovery cycle ($nfiles tracked files > 20; CONFIG subagents: on). Read references/subagents.md and start them now (with no Agent tool, say so in the LOG)."
+    # remembered until a done entry records the subagents that ran, so "no discovery this task" cannot be claimed
+    [ -d "$top/.autopilot" ] && date -u +%Y-%m-%dT%H:%MZ > "$top/.autopilot/.scan-required" 2>/dev/null || true
+  else
+    echo "# subagents: optional this cycle (${nfiles:-0} tracked files, 20 or fewer)"
+  fi
+fi
 echo "# end of scan"
