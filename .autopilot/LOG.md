@@ -969,3 +969,9 @@
 ## 2026-11-10T05:59Z | - | release | skill 1.59.1
 - 1.59.1 (patch): eval branch 예제(T-130). PR #350 → main, #351 → develop
 - tag pending: git 태그 push 403, Release API "not permitted for this session type"
+
+## 2026-11-10T05:59Z | - | retro | skill 1.59.1
+- 범위: T-121~T-130, 10건 done·0 failed·0 blocked(성공률 100%). 유형: fix 3, enhance 2, feature 2, refactor 2, test 1(+docs 없음). 출처: 심화 발굴 4, 채택된 제안 5(P-002 2·P-001 3), T-129 한계 1
+- 실패 원인: 없음. 과정 실수 1건 — 셸 따옴표가 복잡한 편집이 안전 검사에 막힘(Edit 도구로 해결)
+- 관찰: 사람이 제안 둘을 채택하자 기능 문서·단계 작업으로 바꿔 둘 다 완료(1.58.0, 1.59.0). 분리 후 eval 비용 -10%, 점수 그대로. branch 예제로 references/integration.md를 실제로 읽는 것을 확인
+- 배운 것: 편집은 Edit 도구로, 실행 기록 확인 방법, 옮긴 규칙에는 eval 예제 필요 추가(줄 수 15 이내). last_retro 갱신
