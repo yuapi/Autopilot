@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 120
+next_id: 121
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -126,3 +126,4 @@ next_id: 120
 | T-117 | test | done | 1 | eval에 제안(1-F)을 재는 예제가 없음: 공개 인터페이스를 바꿔야 하는 개선(parse_point가 None 대신 ValueError)이 PROPOSALS로 가는지 확인하는 fixture-api와 proposal= 기대값 추가 | eval --fixture api 세션 실행에서 proposal 항목 발견·일반 결함도 발견, test_eval 가짜 실행 검사, --fixture list에 api | eval 범위 점검(2026-10-21, 1-F 미측정) | 2026-10-21 |
 | T-118 | fix | done | 1 | 제안이 "하지 않기로 한 것"으로 사라짐: eval api 4회 중 3회 proposal 누락, 보존 실행에서 모델이 ROADMAP Not doing에 "public API 변경, PROPOSALS 참고"라고 쓰고 PROPOSALS 행은 만들지 않음. 1-F 대상은 PROPOSALS에 쓰고 Not doing만으로 끝내지 않는다는 규칙과 기계적 확인 | eval api 세션 3회 모두 proposal 발견, --fixture all 유지, 규칙 위반 0 | eval 관찰(2026-10-21, T-117 fixture-api) | 2026-11-10 |
 | T-119 | fix | done | 1 | 상태 커밋 뒤 .gitignore가 커밋 안 된 채 남음: eval mono(scope)에서 "clean working tree" 규칙 위반. runlock.sh start·task.sh start가 .gitignore에 줄을 추가하는데 Phase 5 6은 ".autopilot/만 커밋"이라 남음. 상태 커밋에 .gitignore를 포함(스크립트가 추가한 줄) | eval mono 세션 3회 clean working tree ok, --fixture all 규칙 위반 0; SKILL.md Phase 5 6 문구·test_skill_rules | eval 관찰(2026-11-10, T-118 --fixture all mono) | 2026-11-10 |
+| T-120 | enhance | done | 1 | eval.sh가 어떤 모델로 돌았는지 안 보여 줌: 기본 모델이 바뀌어(claude-fable-5-2) 비용이 약 5배가 됐는데 원인을 추측해야 했고, 다른 모델의 점수를 비교하게 됨. 비용 줄에 모델(JSON modelUsage), --fixture all 요약에 예제별 비용·모델·합계, 모델이 섞이면 경고 | 가짜 JSON의 모델이 비용 줄과 요약에 나옴, 섞이면 경고, test_eval 추가 검사; README eval 절 | 직접 겪음(2026-11-10, T-118 eval 비용 $7.46) | 2026-11-10 |
