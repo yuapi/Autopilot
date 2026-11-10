@@ -853,3 +853,8 @@
 - 검증: validate PASS. eval api 세션: proposal 전 1/4 → 후 4/4(9/9). --fixture all: 8개 예제 모두 100%, mono만 규칙 위반(끝에 .gitignore 미커밋 — 이번 변경과 무관, T-119로 큐). 첫 --fixture all 실행은 워커 재시작 중 claude 호출이 0턴으로 끝나 무효, 다시 실행
 - 관찰: eval 실행당 비용이 약 $0.18 → $0.87(같은 턴 수). claude -p 기본 모델이 바뀐 것으로 보임 — 이후 eval은 --model을 지정
 - 후속: T-119 추가
+
+## 2026-11-10T03:37Z | T-119 | done | skill 1.54.4
+- 원인: runlock.sh start·task.sh start가 .gitignore에 실행 산출물 줄을 넣는데 Phase 5 6은 ".autopilot/만 커밋" → mono eval과 이 레포 자체 실행(driver.lock 줄) 모두 .gitignore가 남음
+- 변경: SKILL.md Phase 5 6·Phase 4 실패 경로(상태 커밋에 .gitignore 포함), tests/test_skill_rules.sh, CHANGELOG. 이 레포의 남아 있던 .gitignore 줄도 상태 커밋에 포함
+- 검증: validate PASS. eval mono 세션 3회(--model claude-sonnet-5-5): clean working tree 3/3 ok, 점수 8/8·8/8·7/8, 실행당 약 $0.21 — 비용 상승이 기본 모델 탓임을 확인
