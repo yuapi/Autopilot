@@ -862,3 +862,8 @@
 ## 2026-11-10T03:41Z | - | release | skill 1.55.0
 - 1.55.0 (minor): 제안이 Not doing으로 사라지지 않게(T-118), 상태 커밋에 .gitignore(T-119), eval api 예제(T-117), README 강제 규칙(T-116). PR #311 → main, #312 → develop
 - tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-11-10T03:46Z | T-120 | done | skill 1.55.0
+- 발굴: 이슈 0·PR 0·scan 0건. 직접 겪음 — T-118 eval이 $7.46(약 5배), JSON modelUsage로 기본 모델이 claude-fable-5-2로 바뀐 것을 확인
+- 변경: scripts/eval.sh(비용 줄에 모델, --fixture all 요약에 예제별 비용·합계·모델, 모델이 섞이면 경고), tests/test_eval.sh(+4), README 2종 eval 절, CHANGELOG
+- 검증: test_eval 110 통과, validate PASS. 실제 eval hooks(--model claude-sonnet-5-5): "Cost: $0.22 … model: claude-sonnet-5-5", 8/8

@@ -294,6 +294,15 @@ check "cost summed over runs" grep -q 'Cost: \$0.50 over 2 run(s), 14 turns' <<<
 check "runs ask claude for JSON output" bash -c "CLAUDE_BIN='$FAKES' bash '$EV' --mode session --iterations 1 --keep 2>&1 | sed -n 's/^\[eval\] kept the run in \([^ ]*\).*/\1/p' | head -1 | xargs -I{} grep -q -- '--output-format json' {}/.autopilot/args"
 out="$(CLAUDE_BIN="$FAKE3" bash "$EV" 2>&1)"
 check "no JSON result → cost unknown" grep -q "Cost: unknown" <<<"$out"
+# the model each run used is shown, and --fixture all warns when fixtures ran on different models
+FAKE9="$TMPROOT/fake-claude-9"
+printf '#!/usr/bin/env bash\n"%s" "$@" >/dev/null\nm=model-a; [ -f geo.py ] && m=model-b\necho "{\\"type\\":\\"result\\",\\"total_cost_usd\\":0.1,\\"num_turns\\":2,\\"modelUsage\\":{\\"$m\\":{}}}"\n' "$FAKE3" > "$FAKE9"; chmod +x "$FAKE9"
+out="$(CLAUDE_BIN="$FAKE9" bash "$EV" 2>&1)"
+check "the cost line names the model" grep -q 'Cost: \$0.10 over 1 run(s), 2 turns, model: model-a' <<<"$out"
+out="$(CLAUDE_BIN="$FAKE9" bash "$EV" --fixture all 2>&1)"
+check "--fixture all: cost per fixture in the summary" grep -qE '^  todo +Score: .* · \$0.10$' <<<"$out"
+check "--fixture all: total cost and models" grep -q 'total cost \$0.80, model: model-a,model-b' <<<"$out"
+check "--fixture all: mixed models → warning" grep -q 'ran on different models; pass --model' <<<"$out"
 
 # driver mode uses the real driver's prompt and allowlist, with the working copy as a plugin
 out="$(CLAUDE_BIN="$FAKES" bash "$EV" --iterations 1 --keep 2>&1)"
