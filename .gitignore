@@ -9,3 +9,4 @@ dist/
 __pycache__/
 .autopilot/.task
 .autopilot/STOP.refused
+.autopilot/driver.lock
