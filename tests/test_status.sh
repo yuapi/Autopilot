@@ -125,6 +125,12 @@ check "invalid branch_prefix → warning" bash -c "bash '$ST' '$d' | grep -q '^W
 printf 'integration: branch\nbranch_prefix: feature/\n' > "$d/.autopilot/CONFIG.md"
 check_not "valid branch_prefix → no warning" bash -c "bash '$ST' '$d' | grep -q 'branch_prefix:'"
 
+# a final stop the hook set aside is shown
+d="$(mktemp -d "$TMPROOT/sr.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
+check_not "no STOP.refused → no note" bash -c "bash '$ST' '$d' | grep -q 'set aside'"
+printf 'Final stop: nothing left\n' > "$d/.autopilot/STOP.refused"
+check "STOP.refused → note with its first line" bash -c "bash '$ST' '$d' | grep -q \"^Note: a final stop not written by finalstop.sh was set aside 0 min ago (.autopilot/STOP.refused: 'Final stop: nothing left')\""
+
 # the task in progress is shown with its start time
 d="$(mktemp -d "$TMPROOT/n.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
 printf '| T-007 | fix | in_progress | 2 | fix the parser | t | s | |\n| T-008 | fix | open | 0 | other | t | s | |\n' > "$d/.autopilot/BACKLOG.md"
