@@ -46,10 +46,18 @@ if [ "$push" = 1 ]; then
   if [ -n "$integration_set" ]; then echo "[workbranch] CONFIG sets integration: $integration_set; not pushing here (that mode decides)"; exit 0; fi
   [ "$protected" = 0 ] || { echo "[workbranch] refused: ${current:-detached HEAD} is a default branch; only a work branch is pushed. Run workbranch.sh first" >&2; exit 1; }
   git remote get-url origin >/dev/null 2>&1 || { echo "[workbranch] no remote named origin: the commits stay in this container and are lost when it is reclaimed" >&2; exit 0; }
-  if git push -q -u origin "$current" 2>/dev/null; then
+  if err="$(git push -q -u origin "$current" 2>&1)"; then
     echo "[workbranch] pushed $current to origin (cloud session without integration in CONFIG; no PR, no merge)"; exit 0
   fi
-  echo "[workbranch] push of $current failed (blocked or offline): write it in the LOG and go on; the commits stay in this container" >&2; exit 1
+  # say why: a rejected (diverged) branch, a branch with no commit and a blocked push need different fixes
+  why="$(printf '%s\n' "$err" | grep -E '^(error|fatal|remote|To |hint: Updates were rejected)| ! \[' | head -3 | tr '\n' ' ')"
+  case "$err" in
+    *"src refspec"*) fix="the branch has no commit yet: commit the task first" ;;
+    *"non-fast-forward"*|*"fetch first"*|*"rejected"*) fix="origin/$current has commits this branch lacks: merge it in (git pull --no-rebase origin $current), never force push" ;;
+    *) fix="blocked or offline: write it in the LOG and go on; never work around a block" ;;
+  esac
+  echo "[workbranch] push of $current failed: ${why:-no message from git}" >&2
+  echo "[workbranch] $fix. The commits stay in this container until a push works." >&2; exit 1
 fi
 
 if [ "$integration" != "local" ] || [ "$local_branch" = "current" ]; then

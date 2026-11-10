@@ -103,4 +103,16 @@ check "flow: the work branch with the task and its state is on origin" test "$(g
 check "flow: origin main is untouched" test "$(git -C "$origin" rev-parse main)" = "$main_before"
 check "the driver says the work branch will be pushed" grep -q "after every task the work branch is pushed" "$REPO/$SKILL_REL/scripts/autopilot.sh"
 
+# a failed --push says why: a diverged branch and a branch with no commit get their own fix
+origin="$(mktemp -d "$TMPROOT/od.XXXX")"; git init -q --bare "$origin"
+d="$(newrepo main)"; git -C "$d" remote add origin "$origin"
+b="$(bash "$WB" "$d" 2>/dev/null | tail -1)"; CLAUDE_CODE_REMOTE=true bash "$WB" --push "$d" >/dev/null 2>&1
+(cd "$d" && echo z >> f && git commit -qam amended --amend)
+out="$(CLAUDE_CODE_REMOTE=true bash "$WB" --push "$d" 2>&1)"; rc=$?
+check "diverged branch → exit 1, says to merge, never force" bash -c "test $rc -eq 1 && grep -q 'merge it in (git pull --no-rebase origin' <<<\"\$1\" && grep -q 'never force push' <<<\"\$1\"" _ "$out"
+check "diverged branch → git's own message is shown" grep -q 'push of .* failed: .*rejected' <<<"$out"
+e="$(mktemp -d "$TMPROOT/e.XXXX")"; git -C "$e" init -q -b feat; git -C "$e" remote add origin "$origin"
+out="$(CLAUDE_CODE_REMOTE=true bash "$WB" --push "$e" 2>&1)"
+check "branch with no commit → says to commit first" grep -q 'the branch has no commit yet' <<<"$out"
+
 finish
