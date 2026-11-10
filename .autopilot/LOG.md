@@ -858,3 +858,7 @@
 - 원인: runlock.sh start·task.sh start가 .gitignore에 실행 산출물 줄을 넣는데 Phase 5 6은 ".autopilot/만 커밋" → mono eval과 이 레포 자체 실행(driver.lock 줄) 모두 .gitignore가 남음
 - 변경: SKILL.md Phase 5 6·Phase 4 실패 경로(상태 커밋에 .gitignore 포함), tests/test_skill_rules.sh, CHANGELOG. 이 레포의 남아 있던 .gitignore 줄도 상태 커밋에 포함
 - 검증: validate PASS. eval mono 세션 3회(--model claude-sonnet-5-5): clean working tree 3/3 ok, 점수 8/8·8/8·7/8, 실행당 약 $0.21 — 비용 상승이 기본 모델 탓임을 확인
+
+## 2026-11-10T03:41Z | - | release | skill 1.55.0
+- 1.55.0 (minor): 제안이 Not doing으로 사라지지 않게(T-118), 상태 커밋에 .gitignore(T-119), eval api 예제(T-117), README 강제 규칙(T-116). PR #311 → main, #312 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
