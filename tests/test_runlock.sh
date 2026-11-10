@@ -69,4 +69,11 @@ sed -i '/^.autopilot\/STOP$/d' "$d/.gitignore"; cp "$d/.gitignore" "$TMPROOT/gi.
 as B start "$d" >/dev/null 2>&1 || true
 check "a refused start leaves .gitignore unchanged" cmp -s "$d/.gitignore" "$TMPROOT/gi.before"
 
+# a loop that was asked to stop but whose session is gone: the refusal says how to resume, not "create STOP"
+d="$(newrepo)"; as A start "$d" >/dev/null; as A stop "$d" >/dev/null
+out="$(as B start "$d" 2>&1)"; rc=$?
+check "STOP exists, other session's RUN → still refused (exit 2)" test "$rc" -eq 2
+check "STOP exists → says it was asked to stop and how to resume" bash -c "grep -q 'was asked to stop' <<<\"\$1\" && grep -q 'delete .autopilot/RUN and invoke autopilot again' <<<\"\$1\"" _ "$out"
+check_not "STOP exists → no advice to create STOP" grep -q 'create .autopilot/STOP to stop it' <<<"$out"
+
 finish
