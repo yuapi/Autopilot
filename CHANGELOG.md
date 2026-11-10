@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- `runlock.sh start` explains how to resume when the running loop was already asked to stop: it said "create .autopilot/STOP to stop it" although STOP existed, which left a person whose old session had closed with no way forward for two hours
 
 ## 1.55.1 — 2026-11-10
 - `eval.sh` prints the model each run used next to its cost, and `--fixture all` lists the cost per fixture, the total, and warns when fixtures ran on different models (the default model changed and a full run cost 5× more with nothing saying why)
