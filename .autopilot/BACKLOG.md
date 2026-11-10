@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 122
+next_id: 123
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -128,3 +128,4 @@ next_id: 122
 | T-119 | fix | done | 1 | 상태 커밋 뒤 .gitignore가 커밋 안 된 채 남음: eval mono(scope)에서 "clean working tree" 규칙 위반. runlock.sh start·task.sh start가 .gitignore에 줄을 추가하는데 Phase 5 6은 ".autopilot/만 커밋"이라 남음. 상태 커밋에 .gitignore를 포함(스크립트가 추가한 줄) | eval mono 세션 3회 clean working tree ok, --fixture all 규칙 위반 0; SKILL.md Phase 5 6 문구·test_skill_rules | eval 관찰(2026-11-10, T-118 --fixture all mono) | 2026-11-10 |
 | T-120 | enhance | done | 1 | eval.sh가 어떤 모델로 돌았는지 안 보여 줌: 기본 모델이 바뀌어(claude-fable-5-2) 비용이 약 5배가 됐는데 원인을 추측해야 했고, 다른 모델의 점수를 비교하게 됨. 비용 줄에 모델(JSON modelUsage), --fixture all 요약에 예제별 비용·모델·합계, 모델이 섞이면 경고 | 가짜 JSON의 모델이 비용 줄과 요약에 나옴, 섞이면 경고, test_eval 추가 검사; README eval 절 | 직접 겪음(2026-11-10, T-118 eval 비용 $7.46) | 2026-11-10 |
 | T-121 | enhance | done | 1 | /autopilot:stop 후 이전 세션이 훅 없이 끝나면(닫힘·중단) RUN이 남아, 2시간 안의 재개가 "STOP을 만들어 멈추라"며 거절됨 — STOP은 이미 있음. 자동 인수는 진행 중일 수 있는 이전 루프와 겹쳐 위험하므로, STOP이 있을 때는 "멈추라는 요청을 받은 세션이 현재 작업 뒤 멈춤, 그 세션이 없으면 .autopilot/RUN을 지우고 다시 호출"로 안내 | STOP+다른 세션 RUN에서 start가 exit 2와 새 안내, STOP 없을 때 기존 안내 유지; test_runlock 추가 검사 | 심화 발굴 2단계 새 시나리오(2026-11-10, 멈춘 뒤 다른 세션에서 재개) | 2026-11-10 |
+| T-122 | enhance | done | 1 | status.sh가 STOP.refused(훅·드라이버가 치운 손으로 쓴 최종 정지)를 보여 주지 않아, 사람은 루프가 멈추려다 거절된 것을 모름. 첫 줄과 경과 시간을 Note로 표시 | STOP.refused가 있으면 status에 Note·첫 줄·분 단위 경과, 없으면 아무것도 없음; test_status 추가 검사 | 심화 발굴 2단계 새 시나리오(2026-11-10, 거절된 최종 정지 뒤 상태 확인) | 2026-11-10 |

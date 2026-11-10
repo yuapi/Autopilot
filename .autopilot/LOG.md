@@ -882,3 +882,12 @@
 - 발굴: 심화 발굴(1 정적: 이슈 0·PR 0·scan 0, shellcheck 없음) 2단계 새 시나리오 — 멈춘 뒤 다른 세션에서 재개. 이전 세션 RUN이 남아 거절되는데 안내가 "STOP을 만들라"(이미 있음)
 - 변경: runlock.sh(STOP이 있으면 "멈추라는 요청을 받았고 현재 작업 뒤 끝남, 그 세션이 없으면 RUN을 지우고 다시 호출" 안내, 자동 인수는 하지 않음), tests/test_runlock.sh(+3), CHANGELOG
 - 검증: test_runlock 34 통과, validate PASS
+
+## 2026-11-10T03:57Z | - | release | skill 1.55.2
+- 1.55.2 (patch): 멈춘 루프를 재개하는 안내(T-121). PR #320 → main, #321 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-11-10T03:59Z | T-122 | done | skill 1.55.2
+- 발굴: 심화 발굴 2단계 새 시나리오 — 손으로 쓴 최종 정지가 거절된 뒤 /autopilot:status. STOP.refused가 상태에 안 나옴
+- 변경: status.sh(STOP.refused가 있으면 Note·첫 줄·경과 분), tests/test_status.sh(+2), CHANGELOG
+- 검증: test_status 52 통과, validate PASS
