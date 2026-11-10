@@ -996,3 +996,7 @@
 - 변경: references/subagents.md, SKILL.md, scripts/scan.sh·log.sh·autopilot.sh(CRLF)·runlock.sh, scripts/eval.sh(주 모델·서브에이전트 모델 구분, 서브에이전트 수, subagents= 기대값), tests/eval/fixture-large(26파일, pound 10배 결함), 테스트(log +16, scan +6, eval +6, driver +1, skill_rules +4), README 2종, docs/skill-design.md, CHANGELOG
 - 검증: validate PASS(클라우드·비클라우드), eval --fixture all(--model claude-sonnet-5-5) 10개 예제 100%, 규칙 위반 0, $2.15. large 3/3 서브에이전트 사용·8/8
 - Subagents: 1, 커밋 전 diff 검토(결함 6건 보고 — 개수 불일치, 경로 지정 scan의 CONFIG 위치, 너무 엄격·느슨한 none, 드라이버 CRLF, 약한 테스트 2 — 모두 확인 후 수정)
+
+## 2026-11-10T09:45Z | - | release | skill 1.60.0
+- 1.60.0 (minor): 서브에이전트 활용(사람의 요청, T-131·T-132). PR #358 → main, #359 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type"
