@@ -19,7 +19,8 @@
 # starting with proposal= must match a PROPOSALS.md row; one starting with nodiff= must match no line the
 # run's commits added outside .autopilot/ (e.g. a public interface change that belongs in a proposal).
 # tests/eval/fixture-<name>.setup, if present, runs in the new repository after the fixture commit
-# (for what files cannot carry, such as git hooks).
+# (for what files cannot carry, such as git hooks, or a bare origin). One starting with remote= must match
+# a branch on origin; basekept=<branch> checks that origin's <branch> still holds the fixture commit.
 # Needs the claude CLI and spends real model usage (one driver run). Not part of validate.sh.
 # Rule checks (one commit per task, LOG only appended, deep discovery before a final stop) are reported
 # separately; any broken rule fails the eval whatever the score.
@@ -180,7 +181,10 @@ items = [l.split("|", 2) for l in open(expected, encoding="utf-8") if l.strip() 
 found = 0
 print(f"\nBACKLOG rows: {len(rows)}")
 git = lambda *a: subprocess.run(["git", "-C", work, *a], capture_output=True, text=True).stdout
-commits = git("rev-list", "--reverse", "HEAD").split()[1:]   # everything after the fixture commit
+# everything after the fixture commit, on every local branch (in branch/pr mode the task commits sit
+# on task branches and HEAD may be back on the base)
+root = git("rev-list", "--max-parents=0", "HEAD").split()[0]
+commits = git("rev-list", "--reverse", "--topo-order", "--branches", "^" + root).split()
 subjects = [git("show", "-s", "--format=%s", c).strip() for c in commits]
 for ident, what, rx in items:
     rx = rx.strip()
@@ -219,6 +223,16 @@ for ident, what, rx in items:
         hit = not bad
         if bad:
             what = what.strip() + f" (added: {bad[0][:60]!r})"
+    elif rx.startswith("remote="):
+        heads = [l.split("refs/heads/", 1)[1] for l in git("ls-remote", "--heads", "origin").splitlines() if "refs/heads/" in l]
+        hit = any(re.search(rx[7:], h) for h in heads)
+        if not hit:
+            what = what.strip() + f" (origin has: {', '.join(heads) or 'nothing'})"
+    elif rx.startswith("basekept="):
+        line = git("ls-remote", "--heads", "origin", rx[9:]).split()
+        hit = bool(line) and line[0] == root
+        if not hit:
+            what = what.strip() + (" (origin " + rx[9:] + " moved)" if line else " (no such branch on origin)")
     elif rx.startswith("first="):
         # files changed by the first completed task's own commits (named by its ID; else the first commit
         # that changes anything outside .autopilot/)

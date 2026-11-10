@@ -1,0 +1,6 @@
+# autopilot-scan: ignore-file
+# id | what autopilot should find | regex matched (case-insensitive) against BACKLOG task and criteria text
+# "remote=" must match a branch on origin; "basekept=<branch>" checks origin's branch still holds the fixture commit.
+c-to-f | `c_to_f` adds 23 instead of 32 (failing test) | c_to_f|fahrenheit|\+ ?23|\b32\b|212|test_c_to_f|화씨
+pushed | integration: branch pushes the task branch (`autopilot/T-…`) to origin | remote=^autopilot/T-\d+
+basekept | the base branch on origin is never pushed to directly | basekept=main

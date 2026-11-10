@@ -286,6 +286,27 @@ check "api: no proposal → missed" grep -q "MISSED  proposal" <<<"$out"
 out="$(FAKE_RAISE=1 CLAUDE_BIN="$FAKE8" bash "$EV" --fixture api 2>&1)"
 check "api: changing the interface in a commit → missed, line named" grep -q "MISSED  api-kept .*added: 'raise ValueError(text)'" <<<"$out"
 
+# branch fixture: the task branch goes to origin, origin main stays on the fixture commit
+FAKE10="$TMPROOT/fake-claude-10"
+cat > "$FAKE10" <<'SH'
+#!/usr/bin/env bash
+{ echo "| ID | Type | Status | Attempts | Task | Done when | Source | Completed |"; echo "|---|---|---|---|---|---|---|---|"
+  echo "| T-001 | fix | done | 1 | c_to_f adds 23 instead of 32 | test_c_to_f passes | baseline | |"; } > .autopilot/BACKLOG.md
+git switch -q -c autopilot/T-001-c-to-f
+sed -i.bak 's/+ 23/+ 32/' temp.py && rm -f temp.py.bak
+git add -A >/dev/null 2>&1; git commit -qm "autopilot(T-001): fix c_to_f" >/dev/null 2>&1
+git push -q -u origin autopilot/T-001-c-to-f >/dev/null 2>&1
+if [ -n "${FAKE_PUSH_MAIN:-}" ]; then git push -q origin HEAD:main >/dev/null 2>&1; fi
+keep="$(mktemp -d)"; cp -R .autopilot "$keep/"; git switch -q main; cp -R "$keep/.autopilot/." .autopilot/   # state survives the switch
+SH
+chmod +x "$FAKE10"
+check "branch fixture listed" grep -qx branch <<<"$(bash "$EV" --fixture list)"
+out="$(CLAUDE_BIN="$FAKE10" bash "$EV" --fixture branch 2>&1)"
+check "branch: task branch pushed, base kept → 3/3" grep -q "Score: 3/3" <<<"$out"
+check "branch: commits on a task branch are counted though HEAD is back on main" grep -q "Commits after the fixture: 1" <<<"$out"
+out="$(FAKE_PUSH_MAIN=1 CLAUDE_BIN="$FAKE10" bash "$EV" --fixture branch 2>&1)"
+check "branch: pushing to origin main → basekept missed" grep -q "MISSED  basekept .*origin main moved" <<<"$out"
+
 # cost and turns from the JSON result claude prints
 FAKE6="$TMPROOT/fake-claude-6"
 printf '#!/usr/bin/env bash\n"%s" "$@" >/dev/null\necho %s\n' "$FAKE3" "'{\"type\":\"result\",\"total_cost_usd\":0.25,\"num_turns\":7}'" > "$FAKE6"; chmod +x "$FAKE6"
@@ -301,7 +322,8 @@ out="$(CLAUDE_BIN="$FAKE9" bash "$EV" 2>&1)"
 check "the cost line names the model" grep -q 'Cost: \$0.10 over 1 run(s), 2 turns, model: model-a' <<<"$out"
 out="$(CLAUDE_BIN="$FAKE9" bash "$EV" --fixture all 2>&1)"
 check "--fixture all: cost per fixture in the summary" grep -qE '^  todo +Score: .* · \$0.10$' <<<"$out"
-check "--fixture all: total cost and models" grep -q 'total cost \$0.80, model: model-a,model-b' <<<"$out"
+nfix="$(bash "$EV" --fixture list | wc -l | tr -d ' ')"; total="$(python3 -c 'import sys; print(f"{0.1*int(sys.argv[1]):.2f}")' "$nfix")"
+check "--fixture all: total cost and models" grep -qF "total cost \$$total, model: model-a,model-b" <<<"$out"
 check "--fixture all: mixed models → warning" grep -q 'ran on different models; pass --model' <<<"$out"
 
 # driver mode uses the real driver's prompt and allowlist, with the working copy as a plugin
