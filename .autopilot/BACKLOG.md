@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 131
+next_id: 133
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -137,3 +137,4 @@ next_id: 131
 | T-128 | refactor | done | 1 | [feat:skill-split 2/3] Stop 훅 상세·대체 설치, 드라이버, 상태 확인, 레포 자체 Stop 훅 절을 references/operations.md로 옮기고 SKILL.md에 읽는 조건 한 줄 | validate PASS, 규칙 문구 그대로 이동, SKILL.md 크기 감소 | P-001(채택) | 2026-11-10 |
 | T-129 | test | done | 1 | [feat:skill-split 3/3] eval --fixture all 전후 비교(--model claude-sonnet-5-5 고정, 분리 전 1.57.0 worktree vs 현재), 드라이버 모드 eval 1회, docs/skill-design.md(분리 이유·읽는 조건)·README 레이아웃, SKILL.md 크기 전후 | 점수 유지·규칙 위반 0, 크기 감소 기록, 설계 문서·README 갱신 | P-001(채택) | 2026-11-10 |
 | T-130 | test | done | 1 | branch 모드를 재는 eval 예제가 없음(P-001로 references/integration.md를 규칙 테스트로만 확인): fixture-branch(.setup이 bare origin과 CONFIG integration: branch를 만듦), 작업 브랜치가 origin에 push되고 base는 그대로인지 채점하는 기대값 | eval --fixture branch 세션 실행에서 작업 브랜치 push·base 불변 발견, test_eval 가짜 실행 검사 | T-129 한계(2026-11-10) | 2026-11-10 |
+| T-131 | feature | open | 0 | [feat:subagents 1/2] 서브에이전트 활용: CONFIG subagents: on/off(기본 on, 오타는 off), references/subagents.md(Phase 1 발굴 분담·Phase 4 diff 검토, 구현·커밋·상태 파일은 맡기지 않음), SKILL.md 안내·Never, 드라이버·eval 허용 도구에 Agent, status.sh | test_driver·test_status·test_skill_rules·test_eval 추가 검사, validate PASS | 사람의 요청(2026-11-10 대화) | |
