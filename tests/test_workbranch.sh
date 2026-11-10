@@ -72,4 +72,35 @@ d="$(newrepo main)"; printf 'integration: pr\n' > "$d/.autopilot/CONFIG.md"
 out="$(bash "$WB" "$d" 2>&1)"
 check "integration: pr → stays, no warning" bash -c "test '$(branch "$d")' = main && ! grep -q 'is not' <<<'$out'"
 
+# --push: in a cloud session without integration in CONFIG, push the work branch, never a default branch
+origin="$(mktemp -d "$TMPROOT/o.XXXX")"; git init -q --bare "$origin"
+d="$(newrepo main)"; git -C "$d" remote add origin "$origin"
+out="$(CLAUDE_CODE_REMOTE=true bash "$WB" --push "$d" 2>&1)"; rc=$?
+check "--push on main → refused (exit 1)" test "$rc" -eq 1
+check "--push on main → nothing pushed" test -z "$(git -C "$origin" branch --list)"
+b="$(bash "$WB" "$d" 2>/dev/null | tail -1)"
+out="$(CLAUDE_CODE_REMOTE=true bash "$WB" --push "$d" 2>&1)"
+check "--push on the work branch in a cloud session → pushed" bash -c "grep -q 'pushed $b to origin' <<<\"\$1\" && git -C '$origin' show-ref -q --verify 'refs/heads/$b'" _ "$out"
+check "--push sets the upstream" test "$(git -C "$d" rev-parse --abbrev-ref '@{u}')" = "origin/$b"
+check "--push outside a cloud session → does nothing" bash -c "CLAUDE_CODE_REMOTE= bash '$WB' --push '$d' | grep -q 'not a cloud session'"
+printf 'integration: local\n' > "$d/.autopilot/CONFIG.md"
+check "--push with integration: local in CONFIG → does nothing" bash -c "CLAUDE_CODE_REMOTE=true bash '$WB' --push '$d' | grep -q 'CONFIG sets integration: local; not pushing'"
+rm "$d/.autopilot/CONFIG.md"; git -C "$d" remote remove origin
+check "--push without origin → says the commits stay here (exit 0)" bash -c "CLAUDE_CODE_REMOTE=true bash '$WB' --push '$d' 2>&1 | grep -q 'no remote named origin'"
+git -C "$d" remote add origin "$TMPROOT/no-such-remote"
+check_not "--push that fails → exit 1" bash -c "CLAUDE_CODE_REMOTE=true bash '$WB' --push '$d' >/dev/null 2>&1"
+
+# the whole flow in a cloud session without integration in CONFIG: leave main, do a task, push only the work branch
+origin="$(mktemp -d "$TMPROOT/of.XXXX")"; git init -q --bare "$origin"
+d="$(newrepo main)"; git -C "$d" remote add origin "$origin"; git -C "$d" push -q origin main
+printf '| ID | Type | Status | Attempts | Task | Done when | Source | Completed |\n| T-001 | fix | open | 0 | a | t | s | |\n' > "$d/.autopilot/BACKLOG.md"
+(cd "$d" && git add -A && git commit -qm state)
+b="$(bash "$WB" "$d" 2>/dev/null | tail -1)"; TS="$REPO/$SKILL_REL/scripts/task.sh"
+(cd "$d" && bash "$TS" start T-001 >/dev/null && echo fix >> f && git commit -qam "autopilot(T-001): fix" && bash "$TS" done T-001 >/dev/null && git add -A && git commit -qm "autopilot: record state")
+main_before="$(git -C "$origin" rev-parse main)"
+CLAUDE_CODE_REMOTE=true bash "$WB" --push "$d" >/dev/null 2>&1
+check "flow: the work branch with the task and its state is on origin" test "$(git -C "$origin" rev-parse "refs/heads/$b")" = "$(git -C "$d" rev-parse HEAD)"
+check "flow: origin main is untouched" test "$(git -C "$origin" rev-parse main)" = "$main_before"
+check "the driver says the work branch will be pushed" grep -q "after every task the work branch is pushed" "$REPO/$SKILL_REL/scripts/autopilot.sh"
+
 finish

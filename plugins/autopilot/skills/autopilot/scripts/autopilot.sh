@@ -98,6 +98,11 @@ if [ -n "$scope" ] && [ "$scope" != . ] && [ "$scope" != auto ]; then
   done
 fi
 
+# A cloud session without integration in CONFIG pushes its work branch after every task (P-002): say so
+if [ "${CLAUDE_CODE_REMOTE:-}" = true ] && [ -z "$( { [ -f .autopilot/CONFIG.md ] && sed -n 's/^integration:[[:space:]]*\([^[:space:]#]*\).*/\1/p' .autopilot/CONFIG.md | head -1; } || true)" ]; then
+  echo "[driver] cloud session with no integration in .autopilot/CONFIG.md: after every task the work branch is pushed to origin (no PR, no merge). Set integration: local to keep the commits here only."
+fi
+
 # Integration preflight: branch/pr modes publish results. Say up front if the tools are missing,
 # instead of letting tasks fail one by one. The driver only gets Bash, so PRs need the gh CLI
 # (glab for a GitLab origin).

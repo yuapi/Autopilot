@@ -909,3 +909,30 @@
 - 발굴: 심화 발굴 2단계 새 시나리오 language: ja. STOP 요약을 번역하면 finalstop.sh가 거절하는데, 언어 절의 번역하지 않는 토큰 목록에 "Final stop"이 없음
 - 변경: SKILL.md 언어 절(최종 정지 요약의 첫 단어 Final stop은 번역하지 않음), finalstop.sh 거절 메시지("untranslated"), 테스트(finalstop +1·1 갱신, skill_rules +1), CHANGELOG
 - 검증: test_finalstop 24, test_skill_rules 60 통과, validate PASS
+
+## 2026-11-10T04:16Z | - | release | skill 1.57.0
+- 1.57.0 (minor): "Final stop"은 번역하지 않는 토큰(T-124). PR #332 → main, #333 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-11-10T04:16Z | - | discover | skill 1.57.0
+- 심화 발굴(이번 사이클): 4단계 모두 기록(ROADMAP 심화 발굴). 이번 라운드 새 실질 작업 0건. P-001 근거 수치 갱신(431줄·47.6KB)
+
+## 2026-11-10T04:17Z | - | stop | skill 1.57.0
+- Final stop: no substantive work left (실질 작업 없음)
+
+## 2026-11-10T05:07Z | - | discover | skill 1.57.0
+- STOP: Final stop: no substantive work left (실질 작업 없음)
+- STOP: - 사이클: 이번 세션 기준 여러 발굴 사이클(마지막: 2026-11-10, T-111~T-124 뒤)
+- STOP: - 완료: 124건 (fix 51, enhance 33, feature 14, test 14, docs 7, perf 3, security 2)
+- 재개: 사람이 2026-11-10 대화에서 P-001·P-002를 둘 다 채택하고 루프 재개를 요청. STOP 삭제
+- 태그·Release: 사람이 로컬 실행 불가(클라우드 세션)라고 함. 세션에 태그·Release를 만드는 도구가 없고 git·API는 정책으로 막혀 계속 tag pending(우회하지 않음)
+
+## 2026-11-10T05:10Z | T-125 | done | skill 1.57.0
+- 기능 cloud-push 1/2(P-002 채택). 변경: workbranch.sh --push(클라우드·CONFIG에 integration 없음일 때만 작업 브랜치 push, 기본 브랜치·분리된 HEAD 거절, origin 없으면 안내, 실패는 exit 1), SKILL.md(상태 파일 표·Phase 0 클라우드 안내·Phase 5 6·통합 표), status.sh(Note/Warning 구분), 테스트(workbranch +8, status +1·1 갱신, skill_rules +1), CHANGELOG
+- 검증: workbranch 29·status 53·skill_rules 61 통과, validate PASS
+- 후속: T-126(2/2) open
+
+## 2026-11-10T05:16Z | T-126 | done | skill 1.57.0
+- 기능 cloud-push 2/2(P-002 완료). 변경: autopilot.sh(클라우드·integration 없음이면 시작 때 push 안내), README 2종, docs/skill-design.md(CONFIG 원칙의 예외와 이유), tests/test_workbranch.sh(+3 흐름 테스트: 작업 브랜치가 origin에, main은 그대로), tests/test_driver.sh(+2, 클라우드 여부에 의존하지 않게 고침), CHANGELOG
+- 검증: workbranch 32 통과, validate PASS(클라우드 세션과 CLAUDE_CODE_REMOTE 없는 환경 둘 다)
+- features/cloud-push.md done, PROPOSALS P-002 done

@@ -7,6 +7,10 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.58.0 — 2026-11-10
+- The driver says at start when a cloud session will push its work branch; README (EN/KO) and docs/skill-design.md describe the cloud push and why it is the one exception to "only CONFIG widens what leaves the repository"
+- Cloud sessions keep their work (P-002): when CONFIG sets no `integration`, the loop pushes its work branch (`autopilot/<date>`) after every task with the new `workbranch.sh --push` (never a default branch, no PR, no merge). `integration: local` set explicitly keeps the commits local; terminals outside the cloud are unchanged
+
 ## 1.57.0 — 2026-11-10
 - The words `Final stop` that begin a final-stop summary are listed with the machine-readable tokens to keep untranslated: with `language: ja` and the like, a translated summary was refused by `finalstop.sh`
 
