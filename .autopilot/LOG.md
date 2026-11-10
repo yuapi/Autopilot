@@ -873,3 +873,7 @@
 - 실패 원인: 없음. 과정 실수 2건 — T-111 구현을 task.sh start보다 먼저 함(stash로 순서 바로잡음), T-118 validate 실패를 `| tail -1`이 가려 커밋(다음 커밋에서 고침)
 - 관찰: 지난 회고의 "규칙 강제 확인" 규칙이 결함 5건을 바로 찾음. 새 eval 예제(api)가 1-F 결함을 찾음. 기본 모델 변경으로 eval 비용 5배
 - 배운 것: 강제 확인 줄에 Never 목록 결과 반영, eval --model 지정, 파이프 종료 코드 규칙 추가, 표식 단어 줄은 경계 입력 줄에 합침(15줄). last_retro·last_scan·last_issue_check 갱신
+
+## 2026-11-10T03:50Z | - | release | skill 1.55.1
+- 1.55.1 (patch): eval이 실행 모델·예제별 비용·합계를 보여 줌(T-120). PR #316 → main, #317 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
