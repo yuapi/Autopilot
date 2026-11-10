@@ -981,3 +981,7 @@
 
 ## 2026-11-10T06:00Z | - | stop | skill 1.59.1
 - Final stop: no substantive work left (실질 작업 없음)
+
+## 2026-11-10T06:01Z | - | discover | skill 1.59.1
+- STOP: Final stop: no substantive work left (실질 작업 없음)
+- 재개: 사람이 2026-11-10 대화에서 "오토파일럿이 서브에이전트를 활용할 수 있게, 사용자 옵션으로 끌 수 있게 기본값 켬"을 요청. STOP 삭제
