@@ -832,3 +832,29 @@
 - 변경: task.sh(package.json·requirements*.txt·pyproject.toml·Cargo.toml의 의존성 메이저를 start와 HEAD 사이 비교, 상승이면 거절·PROPOSALS 안내, 프로젝트 자체 version·requires-python 등은 제외), SKILL.md Never 목록, tests/test_task.sh(+2), CHANGELOG
 - 검증: test_task 78 통과, validate PASS. 실제 eval 세션 2작업: wordcount 9/9(package.json 있음), todo 11/11, 실패 0
 - 메모: Never 목록에서 남은 것(질문하지 않기, 훅 우회, 공개 인터페이스 변경)은 스크립트로 판단할 수 없어 규칙으로 둠
+
+## 2026-10-21T12:24Z | - | release | skill 1.54.4
+- 1.54.4 (patch): 의존성 메이저 상승 거절(T-115). PR #304 → main, #305 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-10-21T12:27Z | T-116 | done | skill 1.54.4
+- 변경: README.md·README.ko.md "How it works"에 "규칙은 적어만 두지 않고 검사한다" 항목(task.sh done·log.sh·finalstop.sh·훅이 거절하는 것), CHANGELOG
+- 검증: 항목마다 해당 스크립트 테스트가 있는지 대조(test_task·test_log·test_finalstop·test_hook), validate PASS
+
+## 2026-10-21T12:35Z | T-117 | done | skill 1.54.4
+- 발굴: eval 범위 점검. 1-F(제안)를 재는 예제가 없음
+- 변경: tests/eval/fixture-api(geo.py: parse_point None→ValueError TODO, distance_km b[0] 결함, test_geo.py, README), fixture-api.expected, scripts/eval.sh(proposal=·nodiff= 기대값), tests/test_eval.sh(+4), README 2종 예제 목록, CHANGELOG
+- 검증: test_eval 106 통과, validate PASS. 실제 eval api 세션 4회: distance·api-kept 4/4, proposal 1/4 — 보존 실행에서 Not doing에 "PROPOSALS 참고"라고만 쓰고 제안 행이 없음
+- 후속: T-118 추가(제안이 Not doing으로 사라지는 문제)
+
+## 2026-11-10T03:33Z | T-118 | done | skill 1.54.4
+- 원인: 모든 줄 규칙이 scan 표식을 "하지 않기로 한 것" 한 줄로 닫게 해 줘서, 모델이 "public API 변경, PROPOSALS 참고"라고만 쓰고 제안을 안 만듦
+- 변경: SKILL.md 1-A "발굴 완료 조건"(1-F 대상은 이번 사이클에 PROPOSALS 행, Not doing 줄은 안 셈), 1-F 첫 문단(Not doing 언급은 제안이 아님), tests/test_skill_rules.sh(두 규칙 검사; 첫 커밋 때 옛 문장 검사로 validate가 실패했는데 `| tail -1`이 종료 코드를 가려 커밋됨 → 다음 커밋에서 고침), CHANGELOG
+- 검증: validate PASS. eval api 세션: proposal 전 1/4 → 후 4/4(9/9). --fixture all: 8개 예제 모두 100%, mono만 규칙 위반(끝에 .gitignore 미커밋 — 이번 변경과 무관, T-119로 큐). 첫 --fixture all 실행은 워커 재시작 중 claude 호출이 0턴으로 끝나 무효, 다시 실행
+- 관찰: eval 실행당 비용이 약 $0.18 → $0.87(같은 턴 수). claude -p 기본 모델이 바뀐 것으로 보임 — 이후 eval은 --model을 지정
+- 후속: T-119 추가
+
+## 2026-11-10T03:37Z | T-119 | done | skill 1.54.4
+- 원인: runlock.sh start·task.sh start가 .gitignore에 실행 산출물 줄을 넣는데 Phase 5 6은 ".autopilot/만 커밋" → mono eval과 이 레포 자체 실행(driver.lock 줄) 모두 .gitignore가 남음
+- 변경: SKILL.md Phase 5 6·Phase 4 실패 경로(상태 커밋에 .gitignore 포함), tests/test_skill_rules.sh, CHANGELOG. 이 레포의 남아 있던 .gitignore 줄도 상태 커밋에 포함
+- 검증: validate PASS. eval mono 세션 3회(--model claude-sonnet-5-5): clean working tree 3/3 ok, 점수 8/8·8/8·7/8, 실행당 약 $0.21 — 비용 상승이 기본 모델 탓임을 확인

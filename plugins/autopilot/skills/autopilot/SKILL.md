@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.54.4
+  version: 1.55.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.54.4** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.55.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -144,7 +144,8 @@ Check this before leaving Phase 1. If anything is missing, discovery is not fini
 - The ROADMAP feature map has a row per feature (no template placeholder left).
 - "Observations" records at least one command you actually ran and what it did, or why nothing could be run.
 - "Scenarios" has three scenarios with where each got stuck (or "no friction").
-- Every `scan.sh` line is a BACKLOG task (a code marker becomes a `todo` task, or a `feature` task if it describes a feature) or has a one-line reason under "Not doing". Writing it only under "Missing" or "Weak" does not count, and neither does a proposal unless 1-F requires one (it would change or remove an existing interface). A marker asking for something new, such as an option or a command, is a `feature` task: interfaces may grow.
+- Every `scan.sh` line is a BACKLOG task (a code marker becomes a `todo` task, or a `feature` task if it describes a feature), a PROPOSALS row when 1-F requires one (it would change or remove an existing interface, …), or has a one-line reason under "Not doing". Writing it only under "Missing" or "Weak" does not count. A marker asking for something new, such as an option or a command, is a `feature` task: interfaces may grow.
+- An idea 1-F sends to proposals gets its PROPOSALS row in this cycle, written in `.autopilot/PROPOSALS.md`. "Not doing" is for what nobody should do; a "Not doing" line for it, or one that only says "see PROPOSALS", drops it and does not count.
 - `last_scan` is today.
 
 #### 1-B. Discovery sources
@@ -201,7 +202,7 @@ When selecting (Phase 2), pick issue-sourced tasks first within the same priorit
 
 #### 1-F. Proposals (PROPOSALS)
 
-Discovery turns up ideas that are valuable but that this skill's rules do not allow it to carry out alone. Do not drop them; hand them to people with evidence. This is not a question, so the loop does not wait for an answer.
+Discovery turns up ideas that are valuable but that this skill's rules do not allow it to carry out alone. Do not drop them; hand them to people with evidence, as a row in `.autopilot/PROPOSALS.md` (create it from `assets/PROPOSALS.md` if missing). A mention under ROADMAP "Not doing" is not a proposal. This is not a question, so the loop does not wait for an answer.
 
 Send these to proposals (never to the BACKLOG):
 - Anything that changes or removes an existing public interface
@@ -294,7 +295,7 @@ Claim it with `bash <skill folder>/scripts/task.sh start <ID>`: it refuses while
 1. Run every test, lint and build command found in Phase 0 again, the same way (non-interactive, with the time limit). A timeout counts as worse than the baseline.
 2. If anything is worse than the baseline: **failure**.
 3. If the task's completion criteria are not met: **failure**.
-4. On failure: undo only the task's changes with `git checkout -- . ':!.autopilot' && git clean -fd -e .autopilot`. Reverting `.autopilot/` too would erase the `attempts` increase from Phase 2 and retry the same task forever, so it must be excluded. Run `bash <skill folder>/scripts/task.sh fail <ID>` (back to `open` with attempts kept, or `blocked` from the third attempt) and record the failure reason in the LOG. If the integration mode is `local`, commit only the state change (add only `.autopilot/`, message `autopilot(<task ID>): record failure` or the repository's commit convention). In driver mode exit; in session mode go back to Phase 0.
+4. On failure: undo only the task's changes with `git checkout -- . ':!.autopilot' && git clean -fd -e .autopilot`. Reverting `.autopilot/` too would erase the `attempts` increase from Phase 2 and retry the same task forever, so it must be excluded. Run `bash <skill folder>/scripts/task.sh fail <ID>` (back to `open` with attempts kept, or `blocked` from the third attempt) and record the failure reason in the LOG. If the integration mode is `local`, commit only the state change (add only `.autopilot/` and `.gitignore`, message `autopilot(<task ID>): record failure` or the repository's commit convention). In driver mode exit; in session mode go back to Phase 0.
 
 ### Phase 5 — record
 
@@ -306,7 +307,7 @@ On success:
 4. Append to the LOG with `scripts/log.sh` (see "LOG format").
    Never commit generated files (`__pycache__`, build output, coverage, logs); `task.sh done` refuses a task that adds the well-known ones. If the task created them, add them to `.gitignore` instead; if they were already tracked, queue a `cleanup` task rather than deleting them in this one.
 5. If the integration mode is `pr` and `release: auto`, check the "Release" conditions below.
-6. Commit `.autopilot/` alone, in every mode (message `autopilot: record state` or the repository's convention; in `branch`/`pr` modes on the task branch before publishing). The `done` row and the LOG entry are written after the task's commit; without this they stay uncommitted, are lost with the working tree, and are missing when the loop stops (task budget, a person's STOP, the driver's run limit). Every task ends with a clean working tree.
+6. Commit `.autopilot/` and `.gitignore` alone, in every mode (`.gitignore` holds the run-artifact lines `runlock.sh start` and `task.sh start` add; message `autopilot: record state` or the repository's convention; in `branch`/`pr` modes on the task branch before publishing). The `done` row and the LOG entry are written after the task's commit; without this they stay uncommitted, are lost with the working tree, and are missing when the loop stops (task budget, a person's STOP, the driver's run limit). Every task ends with a clean working tree.
 7. **Driver mode**: exit. **Session mode**: drop what you remember about the task and go back to Phase 0. No summary, no report, no "next I will …". Go straight to the next task.
 
 ## Integration policy
@@ -349,7 +350,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30Z | T-042 | done | skill 1.54.4
+## 2026-10-01T14:30Z | T-042 | done | skill 1.55.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
