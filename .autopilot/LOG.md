@@ -900,3 +900,7 @@
 - 발굴: 심화 발굴 3단계 품질 속성(업그레이드 경로). T-111 이후 1.54 이전에 정당하게 끝난 레포(표시 없는 STOP)에서 드라이버가 STOP을 치우고 다시 작업
 - 변경: assets/autopilot-stop.sh·.claude/hooks 사본·autopilot.sh(표시가 없어도 LOG에 같은 첫 줄의 stop 항목이 있으면 인정), 테스트(hook +2, driver +1), CHANGELOG
 - 검증: test_hook 47, test_driver 98 통과, validate PASS
+
+## 2026-11-10T04:09Z | - | release | skill 1.56.1
+- 1.56.1 (patch): 표시 전 finalstop.sh가 쓴 최종 정지 인정(T-123). PR #328 → main, #329 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
