@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.58.0
+  version: 1.59.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.58.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.59.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -73,7 +73,7 @@ In session mode, also run `bash <skill folder>/scripts/runlock.sh touch` at the 
    - If `git config user.name` or `git config user.email` is empty, every commit would fail and the loop could only burn attempts. Write STOP with the reason and the fix (`git config user.name "…"` and `git config user.email …`), tell the person, and stop. Never set an identity yourself: the commits would carry a made-up author.
    - If `CLAUDE_CODE_REMOTE` is `true` (a cloud session), the container and every unpushed commit are reclaimed later. When CONFIG sets no `integration`, the loop runs in `local` mode and also pushes its work branch (`autopilot/<date>`) after every task (Phase 5 step 6): never a default branch, no PR, no merge. Tell the person once, in one line at the start (a notice, not a question), and that `integration: local` in CONFIG keeps the commits here only. When CONFIG sets `integration: local` explicitly, push nothing and say once that the commits are lost when the container is reclaimed. Write the notice in the LOG. Never change CONFIG yourself.
    - The Stop hook comes with this skill (see "The Stop hook" below); nothing needs installing. If an older version left a copy at `.claude/hooks/autopilot-stop.sh`, refresh it with `bash <skill folder>/scripts/hook.sh install` and commit what it changed.
-1. If the three core files are missing, create them from the templates (never create CONFIG). If the integration mode is not `local`, update the base branch as described in "Integration policy". If CONFIG names a `base_branch` that exists neither locally nor on origin after the fetch (a typo), no task can start from it: write STOP with the name and the fix (correct `base_branch:` or set it to `auto`), tell the person, and stop. Do the same for a `branch_prefix` that git rejects as a branch name (`git check-ref-format --branch <prefix>T-1-x` fails: a space, `~`, `..`).
+1. If the three core files are missing, create them from the templates (never create CONFIG). If the integration mode is not `local`, update the base branch as described in `references/integration.md`. If CONFIG names a `base_branch` that exists neither locally nor on origin after the fetch (a typo), no task can start from it: write STOP with the name and the fix (correct `base_branch:` or set it to `auto`), tell the person, and stop. Do the same for a `branch_prefix` that git rejects as a branch name (`git check-ref-format --branch <prefix>T-1-x` fails: a space, `~`, `..`).
    Read the state. Keep the amount read constant even in long runs:
    - ROADMAP, CONFIG, PROPOSALS: all of it.
    - BACKLOG: the header, `open` and `in_progress` rows, and the 10 most recent completed rows. Find anything else with grep when needed.
@@ -302,7 +302,7 @@ Claim it with `bash <skill folder>/scripts/task.sh start <ID>`: it refuses while
 On success:
 1. Commit: in the repository's commit convention (CONTRIBUTING, CLAUDE.md, …) if it has one, else `autopilot(<task ID>): <one-line summary>`. For issue-sourced tasks put `Refs #N` in the body. The repository's commit hooks (pre-commit formatters, linters, commit-msg checks) are part of verification: if a hook rewrote files, stage them and commit again; if it rejects the commit, fix the cause or treat it as a Phase 4 failure. Never bypass hooks (`--no-verify`, `-n`, disabling `core.hooksPath`). If the integration mode is not `local`, commit on the task branch. **Do not push yet.**
 2. Run `bash <skill folder>/scripts/task.sh done <ID>`. It sets `done` with the date only if the task has its own commit since `start` that changes files outside `.autopilot/` (and, with CONFIG `scope`, only inside it) and names no other task. If it refuses, fix the cause instead of editing the row by hand: commit the change, or, when the commit also covers another task, undo that unpushed commit with `git reset --soft HEAD~1` (the changes stay) and commit each task on its own.
-   - Only after `done` accepts, publish as described in "Integration policy" (push, PR, merge). Publishing first would push or merge a commit the check then refuses.
+   - Only after `done` accepts, publish as described in `references/integration.md` (push, PR, merge). Publishing first would push or merge a commit the check then refuses.
 3. Add follow-up tasks found during implementation to the BACKLOG.
 4. Append to the LOG with `scripts/log.sh` (see "LOG format").
    Never commit generated files (`__pycache__`, build output, coverage, logs); `task.sh done` refuses a task that adds the well-known ones. If the task created them, add them to `.gitignore` instead; if they were already tracked, queue a `cleanup` task rather than deleting them in this one.
@@ -316,32 +316,7 @@ On success:
 
 **The repository's conventions come first.** If CONTRIBUTING, CLAUDE.md or similar define a branching strategy (git flow, …), commit format, PR rules or a release procedure, follow them. CONFIG `auto` values are taken from those conventions.
 
-| Step | `local` | `branch` | `pr` |
-|---|---|---|---|
-| Phase 0 | leave a default branch for `autopilot/<date>` (`workbranch.sh`), otherwise stay | fetch the base and start from its latest commit | same |
-| Phase 3 start | - | create branch `<prefix><task ID>-<slug>` | same |
-| Phase 4 failure | roll back | roll back, return to the base, delete the local task branch | same |
-| Phase 5 success | commit (cloud session without `integration` in CONFIG: also push the work branch, `workbranch.sh --push`) | commit → `git push -u origin <branch>` | push → open a PR (`gh`; `glab mr create` for a GitLab origin; or MCP) → merge if `merge: auto` |
-
-Handling the state files (`.autopilot/`):
-- While running, the `.autopilot/` in the working directory is the only truth. When switching branches, copy `.autopilot/` somewhere temporary and copy it back after switching. That way attempts and done records survive even when PRs are not merged yet.
-- Commit state changes together with the task branch commit. State only accumulates, so when PRs conflict on `.autopilot/`, take the version from the later task.
-- Do not select task IDs that appear in the branch name of an open PR.
-
-PR rules:
-- The body gives the task ID, a summary of the change, the verification result (Phase 4 commands and numbers) and `Refs #N` for issue-sourced tasks. Follow the repository's PR template if it has one.
-- `merge: auto` merges only when Phase 4 passed, the repository's CI (if any) passed and there are no conflicts. Use the repository's merge method, else a merge commit. If the conditions are not met, leave the PR open and move to the next task.
-- While unmerged PRs exist, the next task starts fresh from the base. Do not select tasks touching the same files as an open PR until it is merged.
-- Read review comments on your own PRs in 1-E like issues and turn them into fix tasks.
-- **Revisit your own open PRs** (head branch starts with `branch_prefix`) at the start of every task, right after 1-E. Do not wait for checks that are still running; look again on the next task.
-  - CI now passed, no conflicts, `merge: auto` → merge it now (this is how a PR left open for pending CI gets merged).
-  - CI failed → a `fix` task on that PR's branch, source `PR #N CI`, with the failing check's name and log summary as evidence. Fix it on the same branch and push; do not open a second PR.
-  - Conflicts with the base → a `fix` task: merge the base into that branch (never rebase or force push), re-run Phase 4, push.
-  - Never create a second task for the same PR while one is open. If the same PR fails 3 tasks in a row, leave it open and record it in the LOG and the STOP summary for a person.
-
-Release (`pr` + `release: auto`):
-- Only if the repository documents a release procedure (how to bump the version, CHANGELOG, tags). Otherwise do not release; leave a proposal (1-F).
-- When unreleased changes include at least one substantive task, choose the version kind and proceed exactly as documented. Never invent steps the documentation does not have. Record it as a `release` LOG entry (version, what was merged, and any step that was blocked, such as a tag push).
+**In `branch` or `pr` mode, read `references/integration.md` (in this skill's folder) before Phase 0 step 1 and follow it on every task**: what each phase does per mode, handling `.autopilot/` across task branches, PR rules, revisiting your own open PRs, and releases. In `local` mode it does not apply: Phase 0 (`workbranch.sh`) and Phase 5 (the cloud push) say all that local mode needs.
 
 Always:
 - Never push directly to the base or default branch. Never force push, delete remote branches, delete or rewrite tags, or rewrite the history of shared branches.
@@ -350,7 +325,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30Z | T-042 | done | skill 1.58.0
+## 2026-10-01T14:30Z | T-042 | done | skill 1.59.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
@@ -373,19 +348,11 @@ The third column (status) is one of `done` / `failed` / `blocked` / `retro` / `d
 
 When Claude tries to end the session on its own while there is no STOP file, the hook blocks it and asks for the next task. Rules alone sometimes let a long session decide "that's enough", so the hook is insurance.
 
-The hook is declared in this skill's frontmatter, so Claude Code runs it **only in sessions that invoked this skill**, from the skill's own folder (`assets/autopilot-stop.sh`). Nothing is copied into the repository and `.claude/settings.json` is not touched. Claude Code asks once for permission to run a skill that declares hooks; the driver's allowlist already includes `Skill`.
-
-Inside such a session, the hook acts only while `.autopilot/RUN` exists and only for the session that owns it (the `session:` line written by `runlock.sh`). After 3 consecutive blocks with no change to the LOG or commits (no way to make progress, e.g. permission denials), it writes STOP itself and lets the session end.
+The hook comes with this skill and runs only in sessions that invoked it. There it acts only while `.autopilot/RUN` exists and only for the session that owns it (the `session:` line written by `runlock.sh`). After 3 consecutive blocks with no change to the LOG or commits (no way to make progress, e.g. permission denials), it writes STOP itself and lets the session end.
 
 To release it: create `.autopilot/STOP` (or `/autopilot:stop`) or delete `.autopilot/RUN`.
 
-**Fallback for environments that ignore skill hooks**: `bash <skill folder>/scripts/hook.sh install` copies the hook to `.claude/hooks/autopilot-stop.sh` and merges this into `.claude/settings.json` (keeping other hooks), then commit both files:
-
-```json
-{"hooks":{"Stop":[{"hooks":[{"type":"command","command":"bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/autopilot-stop.sh\""}]}]}}
-```
-
-It also refreshes such a copy whenever it differs from this skill's version. `hook.sh uninstall` removes the copy and only its settings entry. If a permission check blocks it, record that in the LOG and rely on the rules alone.
+How the hook is installed, the fallback for environments that ignore skill hooks, the driver, `status.sh`, and repositories with their own Stop hook are in `references/operations.md` (in this skill's folder): read it when one of those comes up.
 
 ## Never
 
@@ -404,28 +371,6 @@ It also refreshes such a copy whenever it differs from this skill's version. `ho
 
 Start by copying `assets/ROADMAP.md`, `assets/BACKLOG.md`, `assets/LOG.md` and `assets/PROPOSALS.md` as they are. `assets/CONFIG.md` is a sample people copy and edit when they enable an integration policy, set the language or limit the `scope`; Claude never copies it.
 
-## Driver (only with a terminal, optional)
-
-With a terminal you can use the driver instead of session mode. Every task starts with a fresh context, which keeps judgment steady over long loops. The driver sets `AUTOPILOT_DRIVER=1`, so the skill runs in driver mode automatically.
-
-```
-cd <repository root>
-bash <skill folder>/scripts/autopilot.sh          # unlimited
-bash <skill folder>/scripts/autopilot.sh 20       # 20 runs at most
-```
-
-The default is an `--allowedTools` allowlist. In a dedicated container, `AUTOPILOT_PERMISSION=skip`. `AUTOPILOT_MODEL` picks the model for every run, and `AUTOPILOT_MAX_COST` stops the driver once the runs together cost that many USD.
-
-The driver only gives Claude Bash and file tools, not MCP servers, so in `pr` mode PRs are opened with the `gh` CLI (merge requests with `glab` when `origin` is on GitLab). Before the loop starts, the driver checks the integration mode and warns if `origin` is missing (`branch`/`pr`) or if `gh` (`glab`) is missing or cannot push to the repository (`pr`).
-
 ## Checking status (for people)
 
-```
-bash <skill folder>/scripts/status.sh [repository path]
-```
-
-Shows on one screen whether the loop is running or stopped and why (and which session owns the run and when it was last active), the integration settings, task counts (open, in progress, done, blocked), the task in progress and how long ago it started, the success rate of the last 10 runs, open tasks, blocked tasks that need a person, proposals awaiting a decision and the latest LOG entries, plus the installed skill version with a warning when the LOG was written by a newer one. It only reads the state files. When someone asks "what is autopilot doing" or "autopilot status", run it and show the output. With the plugin installed, people can also type `/autopilot:run [N]` to start the loop (for N tasks), `/autopilot:status`, and `/autopilot:stop` to stop the loop after its current task (`runlock.sh stop` writes `.autopilot/STOP`).
-
-## When the repository has its own Stop hook
-
-If the repository has a Stop hook that demands committing untracked files, this skill's Phase 4 rollback (`git clean`) and Phase 5 commit satisfy it naturally. The `.autopilot/` run artifacts (STOP, STOP.refused, RUN, .hook-state, .task, driver-logs, driver.lock) are added to `.gitignore` by `runlock.sh start` (session mode) and by the driver.
+When someone asks "what is autopilot doing" or "autopilot status", run `bash <skill folder>/scripts/status.sh` and show the output. People can also type `/autopilot:run [N]`, `/autopilot:status` and `/autopilot:stop`. Details: `references/operations.md`.

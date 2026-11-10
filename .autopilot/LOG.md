@@ -936,3 +936,23 @@
 - 기능 cloud-push 2/2(P-002 완료). 변경: autopilot.sh(클라우드·integration 없음이면 시작 때 push 안내), README 2종, docs/skill-design.md(CONFIG 원칙의 예외와 이유), tests/test_workbranch.sh(+3 흐름 테스트: 작업 브랜치가 origin에, main은 그대로), tests/test_driver.sh(+2, 클라우드 여부에 의존하지 않게 고침), CHANGELOG
 - 검증: workbranch 32 통과, validate PASS(클라우드 세션과 CLAUDE_CODE_REMOTE 없는 환경 둘 다)
 - features/cloud-push.md done, PROPOSALS P-002 done
+
+## 2026-11-10T05:20Z | - | release | skill 1.58.0
+- 1.58.0 (minor): 클라우드 세션의 작업 브랜치 push(P-002, T-125·T-126). PR #339 → main, #340 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type"
+
+## 2026-11-10T05:23Z | T-127 | done | skill 1.58.0
+- 기능 skill-split 1/3(P-001 채택). 변경: SKILL.md의 branch·pr 규칙(모드별 표, 작업 브랜치 간 상태, PR 규칙, 열린 PR 재방문, 릴리스)을 그대로 references/integration.md로, SKILL.md에는 "branch·pr 모드면 Phase 0 1 전에 읽는다" 한 줄과 모든 모드 규칙(CONFIG·관례·Always) 유지, tests/test_skill_rules.sh(SKILL.md+references 함께 검사, +3), CHANGELOG
+- 검증: SKILL.md 48,528 → 45,755바이트(약 -6%), test_skill_rules 64 통과, validate PASS(0 warnings, 참조 파일 언급 검사 포함)
+- 후속: T-128(2/3) open
+
+## 2026-11-10T05:29Z | T-128 | done | skill 1.58.0
+- 기능 skill-split 2/3. 변경: Stop 훅 설치·대체 설치, 드라이버, status.sh 상세, 레포 자체 Stop 훅을 그대로 references/operations.md로, SKILL.md에는 훅이 막는 때·해제 방법·상태 요청 시 status.sh 실행만 유지, validate.sh(SKILL.md+references 함께 검사, references 파일이 SKILL.md에 없으면 실패), 테스트(skill_rules +3, scripts +2), CHANGELOG
+- 검증: SKILL.md 45,755 → 42,941바이트(분리 전 48,528 대비 -11.5%), validate PASS(0 warnings), test_scripts 78 통과
+- 후속: T-129(3/3, eval 전후 비교) open
+
+## 2026-11-10T05:43Z | T-129 | done | skill 1.58.0
+- 기능 skill-split 3/3(P-001 완료). eval --fixture all --model claude-sonnet-5-5 전(main 1.58.0 worktree)·후(develop) 동시 실행: 둘 다 8개 예제 100%, 규칙 위반 0, 합계 $1.64 → $1.48(-10%). 드라이버 모드 todo 2회 8/8
+- 변경: docs/skill-design.md(분리 이유·위험·안전장치 3가지), README 2종 레이아웃에 references/, CHANGELOG
+- 한계: pr 모드로 도는 eval 예제가 없어 references/integration.md는 규칙 테스트로만 확인
+- features/skill-split.md done, PROPOSALS P-001 done
