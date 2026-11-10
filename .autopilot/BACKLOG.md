@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 133
+next_id: 138
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -139,3 +139,8 @@ next_id: 133
 | T-130 | test | done | 1 | branch 모드를 재는 eval 예제가 없음(P-001로 references/integration.md를 규칙 테스트로만 확인): fixture-branch(.setup이 bare origin과 CONFIG integration: branch를 만듦), 작업 브랜치가 origin에 push되고 base는 그대로인지 채점하는 기대값 | eval --fixture branch 세션 실행에서 작업 브랜치 push·base 불변 발견, test_eval 가짜 실행 검사 | T-129 한계(2026-11-10) | 2026-11-10 |
 | T-131 | feature | done | 1 | [feat:subagents 1/2] 서브에이전트 활용: CONFIG subagents: on/off(기본 on, 오타는 off), references/subagents.md(Phase 1 발굴 분담·Phase 4 diff 검토, 구현·커밋·상태 파일은 맡기지 않음), SKILL.md 안내·Never, 드라이버·eval 허용 도구에 Agent, status.sh | test_driver·test_status·test_skill_rules·test_eval 추가 검사, validate PASS | 사람의 요청(2026-11-10 대화) | 2026-11-10 |
 | T-132 | test | done | 1 | [feat:subagents 2/2] eval --fixture all 전(1.59.1)·후 비교(--model claude-sonnet-5-5), 세션 기록으로 서브에이전트 사용 확인, subagents: off 실행도 1회, README 2종·docs/skill-design.md | 점수 유지 이상·규칙 위반 0, 서브에이전트가 상태 파일·커밋을 건드리지 않음, README·설계 문서 갱신 | 사람의 요청(2026-11-10 대화) | 2026-11-10 |
+| T-133 | fix | done | 1 | runlock.sh start가 실행 중인 드라이버(.autopilot/driver.lock)를 보지 않아, 드라이버가 도는 레포에서 세션 루프가 거절 없이 시작됨(README: "두 번째 세션이나 드라이버는 거절"). 살아 있는 driver.lock이면 exit 2 | 살아 있는 pid의 driver.lock → start exit 2·안내, 죽은 pid → 시작; test_runlock 추가 | 심화 발굴 정적 검토 서브에이전트(2026-11-10) | 2026-11-10 |
+| T-134 | fix | open | 0 | 서브에이전트 기록 검사의 구멍: log.sh - done이 .scan-required를 지움, git 밖에서 scan은 required인데 log.sh는 0개로 셈, '- Subagents: 0'은 none으로 안 봄, scope에 작은따옴표가 있으면 xargs 오류로 레포 전체로 셈(scan·log·task) | 각 경우 재현 테스트가 수정 전 실패·후 통과, test_log·test_scan·test_task | 심화 발굴 서브에이전트 2개(2026-11-10) | |
+| T-135 | fix | open | 0 | status.sh CONFIG 해석이 다른 스크립트와 어긋남: 빈 값이면 다음 줄을 값으로 읽음(\s*), 같은 키가 두 번이면 마지막 것을 씀(다른 스크립트는 첫 것), scope는 첫 경로만 표시, AUTOPILOT_RUN_STALE_MIN을 무시하고 120분 고정 | 각 경우 status가 다른 스크립트와 같은 값·같은 판단, test_status 추가 | 심화 발굴 서브에이전트 2개(2026-11-10) | |
+| T-136 | enhance | open | 0 | workbranch.sh --push 실패가 늘 "blocked or offline": git 오류를 버려서 non-fast-forward·커밋 없는 브랜치 등 실제 원인과 고칠 방법을 모름. git의 오류 줄을 함께 보여 줌 | 갈라진 원격·커밋 없는 브랜치에서 실제 원인 표시, test_workbranch 추가 | 심화 발굴 탐색 실행 서브에이전트(2026-11-10) | |
+| T-137 | docs | open | 0 | README 안전 안내가 "기본으로 push하지 않음"인데 클라우드 세션은 작업 브랜치를 push함(P-002), "모든 LOG 항목"이 아니라 done 항목만 Subagents 줄, subagents.md가 log.sh가 diff 크기를 확인하는 것처럼 씀 | README 2종·subagents.md가 스크립트와 일치, validate PASS | 심화 발굴 정적 검토 서브에이전트(2026-11-10) | |

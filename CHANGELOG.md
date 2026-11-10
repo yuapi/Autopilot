@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- `runlock.sh start` refuses (exit 2) while a driver runs in the repository (a live pid in `.autopilot/driver.lock`): a session loop used to start next to a running driver, though one loop per repository is the rule
 
 ## 1.60.0 — 2026-11-10
 - Subagents are used, not only allowed: required for discovery in a repository with more than 20 tracked files and for a diff over 50 lines (`references/subagents.md`). `scan.sh` says at the start of every discovery cycle whether they are required, `log.sh` needs a `- Subagents:` line in every done entry and refuses "none" over 20 tracked files (counted inside `scope`) unless the session has no Agent tool or the task ran no discovery; while `scan.sh`'s demand is open (`.autopilot/.scan-required`), "no discovery" is refused too. New eval fixture `large` (26 files) and `subagents=N` expectation; the eval prints the main model, a subagent's model apart, and the subagent count

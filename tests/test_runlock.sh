@@ -76,4 +76,14 @@ check "STOP exists, other session's RUN → still refused (exit 2)" test "$rc" -
 check "STOP exists → says it was asked to stop and how to resume" bash -c "grep -q 'was asked to stop' <<<\"\$1\" && grep -q 'delete .autopilot/RUN and invoke autopilot again' <<<\"\$1\"" _ "$out"
 check_not "STOP exists → no advice to create STOP" grep -q 'create .autopilot/STOP to stop it' <<<"$out"
 
+# a running driver (live pid in driver.lock) refuses a session loop; a stale lock does not
+d="$(newrepo)"; sleep 30 & live=$!
+echo "$live" > "$d/.autopilot/driver.lock"
+out="$(as A start "$d" 2>&1)"; rc=$?
+check "live driver.lock → refused (exit 2)" test "$rc" -eq 2
+check "live driver.lock → says a driver is running" grep -q "an autopilot driver is running in this repository (pid $live" <<<"$out"
+check "refused → no RUN written" test ! -e "$d/.autopilot/RUN"
+kill "$live" 2>/dev/null; wait "$live" 2>/dev/null
+check "dead pid in driver.lock → start goes on" as A start "$d"
+
 finish
