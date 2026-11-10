@@ -936,3 +936,7 @@
 - 기능 cloud-push 2/2(P-002 완료). 변경: autopilot.sh(클라우드·integration 없음이면 시작 때 push 안내), README 2종, docs/skill-design.md(CONFIG 원칙의 예외와 이유), tests/test_workbranch.sh(+3 흐름 테스트: 작업 브랜치가 origin에, main은 그대로), tests/test_driver.sh(+2, 클라우드 여부에 의존하지 않게 고침), CHANGELOG
 - 검증: workbranch 32 통과, validate PASS(클라우드 세션과 CLAUDE_CODE_REMOTE 없는 환경 둘 다)
 - features/cloud-push.md done, PROPOSALS P-002 done
+
+## 2026-11-10T05:20Z | - | release | skill 1.58.0
+- 1.58.0 (minor): 클라우드 세션의 작업 브랜치 push(P-002, T-125·T-126). PR #339 → main, #340 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type"
