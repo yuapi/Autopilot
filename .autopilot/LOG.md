@@ -900,3 +900,12 @@
 - 발굴: 심화 발굴 3단계 품질 속성(업그레이드 경로). T-111 이후 1.54 이전에 정당하게 끝난 레포(표시 없는 STOP)에서 드라이버가 STOP을 치우고 다시 작업
 - 변경: assets/autopilot-stop.sh·.claude/hooks 사본·autopilot.sh(표시가 없어도 LOG에 같은 첫 줄의 stop 항목이 있으면 인정), 테스트(hook +2, driver +1), CHANGELOG
 - 검증: test_hook 47, test_driver 98 통과, validate PASS
+
+## 2026-11-10T04:09Z | - | release | skill 1.56.1
+- 1.56.1 (patch): 표시 전 finalstop.sh가 쓴 최종 정지 인정(T-123). PR #328 → main, #329 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-11-10T04:12Z | T-124 | done | skill 1.56.1
+- 발굴: 심화 발굴 2단계 새 시나리오 language: ja. STOP 요약을 번역하면 finalstop.sh가 거절하는데, 언어 절의 번역하지 않는 토큰 목록에 "Final stop"이 없음
+- 변경: SKILL.md 언어 절(최종 정지 요약의 첫 단어 Final stop은 번역하지 않음), finalstop.sh 거절 메시지("untranslated"), 테스트(finalstop +1·1 갱신, skill_rules +1), CHANGELOG
+- 검증: test_finalstop 24, test_skill_rules 60 통과, validate PASS

@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.56.1
+  version: 1.57.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.56.1** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.57.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -37,7 +37,7 @@ These rules are written in English. Follow them exactly whatever language you wr
 
 - **Output language** for everything people read (ROADMAP, BACKLOG and LOG text, PROPOSALS, feature docs, the STOP summary) is `language` in `.autopilot/CONFIG.md`. If it is missing or `auto`, use, in order: the language already used in existing `.autopilot/` files; else the main language of the repository's README and docs; else the language the person used when invoking the skill; else English.
 - **Commit messages and PR text** follow the repository's convention first (CONTRIBUTING, CLAUDE.md, the language of recent commits), then the output language.
-- **Never translate machine-readable tokens.** Scripts parse them: file names, CONFIG keys and values, header keys such as `last_scan:`, task IDs, task types (`fix`, `feature`, …), BACKLOG status (`open`, `in_progress`, `done`, `blocked`), the LOG status column, PROPOSALS status (`proposed`, `adopted`, `rejected`, `deferred`, `in_progress`, `done`) and `skill x.y.z`.
+- **Never translate machine-readable tokens.** Scripts parse them: file names, CONFIG keys and values, header keys such as `last_scan:`, task IDs, task types (`fix`, `feature`, …), BACKLOG status (`open`, `in_progress`, `done`, `blocked`), the LOG status column, PROPOSALS status (`proposed`, `adopted`, `rejected`, `deferred`, `in_progress`, `done`), `skill x.y.z`, and the words `Final stop` that begin a final-stop summary (`finalstop.sh` checks them; the rest of the summary is in the output language).
 - **Older Korean state files** may use Korean PROPOSALS statuses: `제안` = proposed, `채택` = adopted, `거절` = rejected, `보류` = deferred, `진행` = in_progress, `완료` = done. Treat them as identical. Write the English value when you add or change a row.
 - Template section headings are English. Existing files keep the headings they already have; match sections by meaning, not by exact text.
 
@@ -350,7 +350,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30Z | T-042 | done | skill 1.56.1
+## 2026-10-01T14:30Z | T-042 | done | skill 1.57.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)

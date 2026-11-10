@@ -1,6 +1,6 @@
 # BACKLOG (autopilot 작업 큐)
 
-next_id: 124
+next_id: 125
 
 상태: open | in_progress | done | blocked
 유형: fix | security | feature | enhance | perf | todo | test | cleanup | lint | docs | refactor
@@ -130,3 +130,4 @@ next_id: 124
 | T-121 | enhance | done | 1 | /autopilot:stop 후 이전 세션이 훅 없이 끝나면(닫힘·중단) RUN이 남아, 2시간 안의 재개가 "STOP을 만들어 멈추라"며 거절됨 — STOP은 이미 있음. 자동 인수는 진행 중일 수 있는 이전 루프와 겹쳐 위험하므로, STOP이 있을 때는 "멈추라는 요청을 받은 세션이 현재 작업 뒤 멈춤, 그 세션이 없으면 .autopilot/RUN을 지우고 다시 호출"로 안내 | STOP+다른 세션 RUN에서 start가 exit 2와 새 안내, STOP 없을 때 기존 안내 유지; test_runlock 추가 검사 | 심화 발굴 2단계 새 시나리오(2026-11-10, 멈춘 뒤 다른 세션에서 재개) | 2026-11-10 |
 | T-122 | enhance | done | 1 | status.sh가 STOP.refused(훅·드라이버가 치운 손으로 쓴 최종 정지)를 보여 주지 않아, 사람은 루프가 멈추려다 거절된 것을 모름. 첫 줄과 경과 시간을 Note로 표시 | STOP.refused가 있으면 status에 Note·첫 줄·분 단위 경과, 없으면 아무것도 없음; test_status 추가 검사 | 심화 발굴 2단계 새 시나리오(2026-11-10, 거절된 최종 정지 뒤 상태 확인) | 2026-11-10 |
 | T-123 | fix | done | 1 | 업그레이드 경로 회귀(T-111): 1.54 이전 finalstop.sh가 쓴 정당한 최종 정지 STOP에는 표시가 없어, 업그레이드 후 드라이버가 끝난 레포를 STOP.refused로 치우고 다시 작업함. 표시가 없어도 LOG에 같은 첫 줄의 stop 항목이 있으면(모든 finalstop.sh 버전이 씀) 인정 | 표시 없는 최종 정지 + 맞는 stop LOG 항목 → 훅·드라이버가 그대로 멈춤, LOG 항목 없음 → 여전히 거절; test_hook·test_driver 추가 검사 | 심화 발굴 3단계 품질 속성(업그레이드 경로, 2026-11-10) | 2026-11-10 |
+| T-124 | fix | done | 1 | language: ja 등에서 STOP 요약을 번역하면 finalstop.sh가 "Final stop"(또는 "최종 정지")으로 시작하지 않는다며 거절 — SKILL.md 언어 절의 번역하지 않는 토큰 목록에 없음. 목록에 STOP 요약의 첫 단어 "Final stop" 추가, 거절 메시지에 "번역하지 말 것" | SKILL.md 토큰 목록·finalstop 메시지에 반영, test_skill_rules·test_finalstop 검사 | 심화 발굴 2단계 새 시나리오(2026-11-10, language: ja) | 2026-11-10 |
