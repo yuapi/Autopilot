@@ -1025,3 +1025,8 @@
 - 변경: workbranch.sh(--push 실패 시 git 메시지와 원인별 고칠 방법: 갈라진 브랜치는 merge·force push 금지, 커밋 없는 브랜치는 먼저 커밋, 그 밖은 LOG에 기록), tests/test_workbranch.sh(+3), CHANGELOG
 - 검증: test_workbranch 35 통과, validate PASS
 - Subagents: none, no discovery this task, diff 30 lines
+
+## 2026-11-10T10:11Z | T-137 | done | skill 1.60.0
+- 변경: README.md·README.ko.md(안전 안내와 "내보내기는 직접 켜야 한다"에 클라우드 세션 작업 브랜치 push 예외, Subagents 줄은 done 항목), references/subagents.md(50줄 검토는 log.sh가 확인 못 함), CHANGELOG
+- 검증: validate PASS
+- Subagents: none, no discovery this task, diff 12 lines
