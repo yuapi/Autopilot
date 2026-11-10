@@ -846,3 +846,10 @@
 - 변경: tests/eval/fixture-api(geo.py: parse_point None→ValueError TODO, distance_km b[0] 결함, test_geo.py, README), fixture-api.expected, scripts/eval.sh(proposal=·nodiff= 기대값), tests/test_eval.sh(+4), README 2종 예제 목록, CHANGELOG
 - 검증: test_eval 106 통과, validate PASS. 실제 eval api 세션 4회: distance·api-kept 4/4, proposal 1/4 — 보존 실행에서 Not doing에 "PROPOSALS 참고"라고만 쓰고 제안 행이 없음
 - 후속: T-118 추가(제안이 Not doing으로 사라지는 문제)
+
+## 2026-11-10T03:33Z | T-118 | done | skill 1.54.4
+- 원인: 모든 줄 규칙이 scan 표식을 "하지 않기로 한 것" 한 줄로 닫게 해 줘서, 모델이 "public API 변경, PROPOSALS 참고"라고만 쓰고 제안을 안 만듦
+- 변경: SKILL.md 1-A "발굴 완료 조건"(1-F 대상은 이번 사이클에 PROPOSALS 행, Not doing 줄은 안 셈), 1-F 첫 문단(Not doing 언급은 제안이 아님), tests/test_skill_rules.sh(두 규칙 검사; 첫 커밋 때 옛 문장 검사로 validate가 실패했는데 `| tail -1`이 종료 코드를 가려 커밋됨 → 다음 커밋에서 고침), CHANGELOG
+- 검증: validate PASS. eval api 세션: proposal 전 1/4 → 후 4/4(9/9). --fixture all: 8개 예제 모두 100%, mono만 규칙 위반(끝에 .gitignore 미커밋 — 이번 변경과 무관, T-119로 큐). 첫 --fixture all 실행은 워커 재시작 중 claude 호출이 0턴으로 끝나 무효, 다시 실행
+- 관찰: eval 실행당 비용이 약 $0.18 → $0.87(같은 턴 수). claude -p 기본 모델이 바뀐 것으로 보임 — 이후 eval은 --model을 지정
+- 후속: T-119 추가
