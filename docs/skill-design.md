@@ -125,3 +125,10 @@ The same repository is often worked on from a laptop in one time zone and a clou
 - After 3 consecutive blocks with no change to the LOG or commits, the hook writes STOP itself. Blocking forever in a state where Claude cannot make progress (such as permission denials) only spends money and improves nothing. "Never stop" is a principle for while progress is being made.
 - The driver applies the same no-progress limit to its runs: a run that exits normally but changes neither the LOG nor the commits counts, and 3 in a row write STOP. The crash limit alone missed this case, since a run stuck on permission denials still exits 0 and the shell loop would pay for it forever.
 - The driver defaults to an allowlist because unattended repeated runs must not bypass permissions by default.
+
+## Why SKILL.md is split into a core and reference files
+
+SKILL.md is loaded whole every time the skill is invoked, and it had grown to 431 lines (48.5 KB, roughly 12–15k tokens per invocation). Much of it applied only in some situations: the `branch`/`pr` rules, how the Stop hook is installed, the driver, status details. Adopted proposal P-001 moved those, unchanged, to `references/integration.md` and `references/operations.md`; SKILL.md keeps the core loop (run modes, Phases 0–5, the Never list) and says when to read each reference file.
+
+The risk was a new kind of skipped rule: a reference file the loop never opens. Three things limit it. The core loop and every rule that applies in all modes (CONFIG is the person's, the Always list, when the hook blocks) stayed in SKILL.md. Each pointer names its condition ("in `branch` or `pr` mode, read … before Phase 0 step 1"). And `validate.sh` fails when a reference file is not named in SKILL.md. The eval was compared before and after with the model fixed (`--model claude-sonnet-5-5`): all eight fixtures 100% both times, no broken rule, the full run $1.64 → $1.48. No fixture runs in `pr` mode, so the integration reference is checked by the rule tests only.
+
