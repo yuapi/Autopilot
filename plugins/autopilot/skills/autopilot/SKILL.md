@@ -348,19 +348,11 @@ The third column (status) is one of `done` / `failed` / `blocked` / `retro` / `d
 
 When Claude tries to end the session on its own while there is no STOP file, the hook blocks it and asks for the next task. Rules alone sometimes let a long session decide "that's enough", so the hook is insurance.
 
-The hook is declared in this skill's frontmatter, so Claude Code runs it **only in sessions that invoked this skill**, from the skill's own folder (`assets/autopilot-stop.sh`). Nothing is copied into the repository and `.claude/settings.json` is not touched. Claude Code asks once for permission to run a skill that declares hooks; the driver's allowlist already includes `Skill`.
-
-Inside such a session, the hook acts only while `.autopilot/RUN` exists and only for the session that owns it (the `session:` line written by `runlock.sh`). After 3 consecutive blocks with no change to the LOG or commits (no way to make progress, e.g. permission denials), it writes STOP itself and lets the session end.
+The hook comes with this skill and runs only in sessions that invoked it. There it acts only while `.autopilot/RUN` exists and only for the session that owns it (the `session:` line written by `runlock.sh`). After 3 consecutive blocks with no change to the LOG or commits (no way to make progress, e.g. permission denials), it writes STOP itself and lets the session end.
 
 To release it: create `.autopilot/STOP` (or `/autopilot:stop`) or delete `.autopilot/RUN`.
 
-**Fallback for environments that ignore skill hooks**: `bash <skill folder>/scripts/hook.sh install` copies the hook to `.claude/hooks/autopilot-stop.sh` and merges this into `.claude/settings.json` (keeping other hooks), then commit both files:
-
-```json
-{"hooks":{"Stop":[{"hooks":[{"type":"command","command":"bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/autopilot-stop.sh\""}]}]}}
-```
-
-It also refreshes such a copy whenever it differs from this skill's version. `hook.sh uninstall` removes the copy and only its settings entry. If a permission check blocks it, record that in the LOG and rely on the rules alone.
+How the hook is installed, the fallback for environments that ignore skill hooks, the driver, `status.sh`, and repositories with their own Stop hook are in `references/operations.md` (in this skill's folder): read it when one of those comes up.
 
 ## Never
 
@@ -379,28 +371,6 @@ It also refreshes such a copy whenever it differs from this skill's version. `ho
 
 Start by copying `assets/ROADMAP.md`, `assets/BACKLOG.md`, `assets/LOG.md` and `assets/PROPOSALS.md` as they are. `assets/CONFIG.md` is a sample people copy and edit when they enable an integration policy, set the language or limit the `scope`; Claude never copies it.
 
-## Driver (only with a terminal, optional)
-
-With a terminal you can use the driver instead of session mode. Every task starts with a fresh context, which keeps judgment steady over long loops. The driver sets `AUTOPILOT_DRIVER=1`, so the skill runs in driver mode automatically.
-
-```
-cd <repository root>
-bash <skill folder>/scripts/autopilot.sh          # unlimited
-bash <skill folder>/scripts/autopilot.sh 20       # 20 runs at most
-```
-
-The default is an `--allowedTools` allowlist. In a dedicated container, `AUTOPILOT_PERMISSION=skip`. `AUTOPILOT_MODEL` picks the model for every run, and `AUTOPILOT_MAX_COST` stops the driver once the runs together cost that many USD.
-
-The driver only gives Claude Bash and file tools, not MCP servers, so in `pr` mode PRs are opened with the `gh` CLI (merge requests with `glab` when `origin` is on GitLab). Before the loop starts, the driver checks the integration mode and warns if `origin` is missing (`branch`/`pr`) or if `gh` (`glab`) is missing or cannot push to the repository (`pr`).
-
 ## Checking status (for people)
 
-```
-bash <skill folder>/scripts/status.sh [repository path]
-```
-
-Shows on one screen whether the loop is running or stopped and why (and which session owns the run and when it was last active), the integration settings, task counts (open, in progress, done, blocked), the task in progress and how long ago it started, the success rate of the last 10 runs, open tasks, blocked tasks that need a person, proposals awaiting a decision and the latest LOG entries, plus the installed skill version with a warning when the LOG was written by a newer one. It only reads the state files. When someone asks "what is autopilot doing" or "autopilot status", run it and show the output. With the plugin installed, people can also type `/autopilot:run [N]` to start the loop (for N tasks), `/autopilot:status`, and `/autopilot:stop` to stop the loop after its current task (`runlock.sh stop` writes `.autopilot/STOP`).
-
-## When the repository has its own Stop hook
-
-If the repository has a Stop hook that demands committing untracked files, this skill's Phase 4 rollback (`git clean`) and Phase 5 commit satisfy it naturally. The `.autopilot/` run artifacts (STOP, STOP.refused, RUN, .hook-state, .task, driver-logs, driver.lock) are added to `.gitignore` by `runlock.sh start` (session mode) and by the driver.
+When someone asks "what is autopilot doing" or "autopilot status", run `bash <skill folder>/scripts/status.sh` and show the output. People can also type `/autopilot:run [N]`, `/autopilot:status` and `/autopilot:stop`. Details: `references/operations.md`.

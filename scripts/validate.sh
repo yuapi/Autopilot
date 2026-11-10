@@ -56,14 +56,19 @@ else
 fi
 
 echo "[2b] Skill files referenced by SKILL.md"
-refs="$(grep -oE '(assets|scripts)/[A-Za-z0-9_.-]+\.(md|sh)' "$SKILL_MD" | sort -u)"
+# SKILL.md and the reference files it points to (references/*.md) together; each reference file itself
+# must be named in SKILL.md, or the loop would never read it
+refs="$( { grep -oE '(assets|scripts|references)/[A-Za-z0-9_.-]+\.(md|sh)' "$SKILL_MD"; cat "$SKILL_DIR"/references/*.md 2>/dev/null | grep -oE '(assets|scripts)/[A-Za-z0-9_.-]+\.(md|sh)'; } | sort -u)"
+for r in $(cd "$SKILL_DIR" && find references -type f -name '*.md' 2>/dev/null | sort); do
+  grep -qF "$r" "$SKILL_MD" || bad "reference file not named in SKILL.md (the loop would never read it): $r"
+done
 missing=0
 for r in $refs; do
   [ -f "$SKILL_DIR/$r" ] || { bad "references a missing file: $r"; missing=1; }
 done
 [ "$missing" -eq 0 ] && ok "all $(printf '%s\n' "$refs" | grep -c .) references exist"
 for f in $(cd "$SKILL_DIR" && find assets scripts -type f | sort); do
-  printf '%s\n' "$refs" | grep -qxF "$f" || wrn "skill file not mentioned in SKILL.md: $f"
+  printf '%s\n' "$refs" | grep -qxF "$f" || wrn "skill file not mentioned in SKILL.md or references/: $f"
 done
 
 echo "[3] Versions match"
