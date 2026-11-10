@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.55.2 — 2026-11-10
 - `runlock.sh start` explains how to resume when the running loop was already asked to stop: it said "create .autopilot/STOP to stop it" although STOP existed, which left a person whose old session had closed with no way forward for two hours
 
 ## 1.55.1 — 2026-11-10
