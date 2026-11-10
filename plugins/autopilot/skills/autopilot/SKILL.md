@@ -1,7 +1,7 @@
 ---
 name: autopilot
 metadata:
-  version: 1.59.1
+  version: 1.60.0
 hooks:
   Stop:
     - hooks:
@@ -12,7 +12,7 @@ description: Autonomous development loop that finds, selects, implements, verifi
 
 # Autopilot — autonomous development loop
 
-**Version 1.59.1** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
+**Version 1.60.0** — changes are listed in `CHANGELOG.md` at the repository root. Write this version on the first line of every LOG entry.
 
 ## Run mode — decide this first
 
@@ -48,7 +48,7 @@ These rules are written in English. Follow them exactly whatever language you wr
 | `.autopilot/ROADMAP.md` | Direction document Claude writes and updates from code analysis |
 | `.autopilot/BACKLOG.md` | Task queue with status, attempts and completion criteria |
 | `.autopilot/LOG.md` | Record of every run (append only) |
-| `.autopilot/CONFIG.md` | Integration policy (push, PR, merge, release), output language and `scope`. **People set it; Claude only reads it.** Missing means `local` (in a cloud session, `local` plus pushing the work branch after every task: Phase 5); a value that is not one of the documented ones (a typo) counts as the safest: `local`, `off`, `local_branch: auto` |
+| `.autopilot/CONFIG.md` | Integration policy (push, PR, merge, release), output language and `scope`. **People set it; Claude only reads it.** Missing means `local` (in a cloud session, `local` plus pushing the work branch after every task: Phase 5); a value that is not one of the documented ones (a typo) counts as the safest: `local`, `off`, `local_branch: auto`, `subagents: off` |
 | `.autopilot/PROPOSALS.md` | Proposals for large changes the loop does not make on its own. People decide by changing the status |
 | `.autopilot/features/<slug>.md` | Design and stage document for a feature that spans several tasks |
 | `.autopilot/STOP` | If present, the loop stops (created by Claude or a person) |
@@ -66,7 +66,7 @@ In session mode, also run `bash <skill folder>/scripts/runlock.sh touch` at the 
 
 0. **Only on first entry in session mode**:
    - If a person invoked the skill again while `.autopilot/STOP` exists, treat it as a request to resume: move the STOP content into the LOG and delete STOP.
-   - Claim the run marker with `bash <skill folder>/scripts/runlock.sh start`. It writes this session's ID (`CLAUDE_CODE_SESSION_ID`) into `.autopilot/RUN` and adds the run artifacts (`.autopilot/STOP`, `STOP.refused`, `RUN`, `.hook-state`, `driver-logs/`, `driver.lock`, `.task`) to `.gitignore`; if the script cannot run, add those lines yourself. **If it exits with 2, another loop is already running in this repository**: tell the person what it printed and stop without changing any state; two loops on one repository corrupt the BACKLOG and fight over commits. A marker idle for 2 hours counts as abandoned and is taken over.
+   - Claim the run marker with `bash <skill folder>/scripts/runlock.sh start`. It writes this session's ID (`CLAUDE_CODE_SESSION_ID`) into `.autopilot/RUN` and adds the run artifacts (`.autopilot/STOP`, `STOP.refused`, `.scan-required`, `RUN`, `.hook-state`, `driver-logs/`, `driver.lock`, `.task`) to `.gitignore`; if the script cannot run, add those lines yourself. **If it exits with 2, another loop is already running in this repository**: tell the person what it printed and stop without changing any state; two loops on one repository corrupt the BACKLOG and fight over commits. A marker idle for 2 hours counts as abandoned and is taken over.
    - If the person asked for a number of tasks ("do 3 tasks", `/autopilot:run 3`), add `--tasks 3` to that call: `task.sh done` then writes STOP after the third completed task and the loop ends normally. Only a person sets a budget; never add one on your own to end early.
    - If the repository has no commit yet (`git rev-parse --verify HEAD` fails) and has files outside `.autopilot/`, no task can start (they count as uncommitted) and nothing can be stashed. Write STOP with the fix (commit the existing files first), tell the person, and stop. Do not commit their files for them.
    - If CONFIG `scope` names a path that does not exist, discovery would find nothing and `task.sh done` would refuse every change, ending in a final stop that is not true. Write STOP with the path and the fix (correct `scope:` in `.autopilot/CONFIG.md`), tell the person, and stop. Never change CONFIG yourself.
@@ -104,6 +104,8 @@ Every later phase follows "Learned" with the same weight as these rules.
 
 ### Phase 1 — discovery (conditional)
 
+**Subagents**: unless CONFIG sets `subagents: off` (missing means `on`), use them. Claude Code sessions have an `Agent` tool by default; if yours lists one, read `references/subagents.md` (in this skill's folder) now and start the discovery subagents it requires (repositories over 20 tracked files) before doing the rest of Phase 1 yourself. It also says what to hand them in Phase 4 and what they must never do. Only with `subagents: off`, or with no `Agent` tool, do all of it yourself.
+
 Run discovery if any of these holds:
 - BACKLOG has no `open` task (an empty queue **always** triggers rediscovery, with no limit on how often)
 - ROADMAP `last_scan` is 7 or more days old
@@ -115,7 +117,7 @@ If CONFIG sets `scope` (paths other than `.`), discovery covers only those paths
 
 Discovery runs on two axes. Running only the **maintenance axis** piles up tests and lint. The **product axis** must always run too.
 
-Start every discovery cycle with `bash <skill folder>/scripts/scan.sh`. It lists code markers and risky patterns (shell built from strings, `eval`/`exec`, unsafe deserialization, disabled TLS checks, hard-coded secrets) with file and line, deterministically. **Every line it prints becomes a task or gets a one-line reason under ROADMAP "Not doing".** Lines marked `autopilot-scan: ignore` and fixture/testdata folders are skipped. A section with more than 50 lines is cut off with `… N more line(s)` and the hits per folder: it is too large for one cycle, so group it instead. Queue at most 10 tasks for it this cycle, each for one file or one folder from that list (run `scan.sh <folder>` for the folder's full list). Give whole folders that should stay as they are (vendored, generated, legacy kept on purpose) one "Not doing" reason each. The rest stays in the scan output for later cycles; that does not break the every-line rule.
+Start every discovery cycle with `bash <skill folder>/scripts/scan.sh`. It lists code markers and risky patterns (shell built from strings, `eval`/`exec`, unsafe deserialization, disabled TLS checks, hard-coded secrets) with file and line, deterministically. **Every finding it prints becomes a task or gets a one-line reason under ROADMAP "Not doing".** Lines starting with `#` are headers, not findings; the last ones say whether subagents are required this cycle. Lines marked `autopilot-scan: ignore` and fixture/testdata folders are skipped. A section with more than 50 lines is cut off with `… N more line(s)` and the hits per folder: it is too large for one cycle, so group it instead. Queue at most 10 tasks for it this cycle, each for one file or one folder from that list (run `scan.sh <folder>` for the folder's full list). Give whole folders that should stay as they are (vendored, generated, legacy kept on purpose) one "Not doing" reason each. The rest stays in the scan output for later cycles; that does not break the every-line rule.
 
 #### 1-A. Understand the product (first step of every discovery cycle)
 
@@ -147,6 +149,7 @@ Check this before leaving Phase 1. If anything is missing, discovery is not fini
 - Every `scan.sh` line is a BACKLOG task (a code marker becomes a `todo` task, or a `feature` task if it describes a feature), a PROPOSALS row when 1-F requires one (it would change or remove an existing interface, …), or has a one-line reason under "Not doing". Writing it only under "Missing" or "Weak" does not count. A marker asking for something new, such as an option or a command, is a `feature` task: interfaces may grow.
 - An idea 1-F sends to proposals gets its PROPOSALS row in this cycle, written in `.autopilot/PROPOSALS.md`. "Not doing" is for what nobody should do; a "Not doing" line for it, or one that only says "see PROPOSALS", drops it and does not count.
 - `last_scan` is today.
+- With subagents on and an `Agent` tool, in a repository with more than 20 tracked files: at least one discovery subagent ran. The LOG entry for this task says how many ran and for what, or why none (`references/subagents.md`).
 
 #### 1-B. Discovery sources
 
@@ -292,7 +295,7 @@ Claim it with `bash <skill folder>/scripts/task.sh start <ID>`: it refuses while
 
 ### Phase 4 — verify
 
-1. Run every test, lint and build command found in Phase 0 again, the same way (non-interactive, with the time limit). A timeout counts as worse than the baseline.
+1. Run every test, lint and build command found in Phase 0 again, the same way (non-interactive, with the time limit). A timeout counts as worse than the baseline. With subagents on, also have one review the uncommitted diff as `references/subagents.md` describes, and check what it reports before acting on it.
 2. If anything is worse than the baseline: **failure**.
 3. If the task's completion criteria are not met: **failure**.
 4. On failure: undo only the task's changes with `git checkout -- . ':!.autopilot' && git clean -fd -e .autopilot`. Reverting `.autopilot/` too would erase the `attempts` increase from Phase 2 and retry the same task forever, so it must be excluded. Run `bash <skill folder>/scripts/task.sh fail <ID>` (back to `open` with attempts kept, or `blocked` from the third attempt) and record the failure reason in the LOG. If the integration mode is `local`, commit only the state change (add only `.autopilot/` and `.gitignore`, message `autopilot(<task ID>): record failure` or the repository's commit convention). In driver mode exit; in session mode go back to Phase 0.
@@ -325,7 +328,7 @@ Always:
 ## LOG format
 
 ```
-## 2026-10-01T14:30Z | T-042 | done | skill 1.59.1
+## 2026-10-01T14:30Z | T-042 | done | skill 1.60.0
 - Changed: src/auth/token.py, tests/test_token.py
 - Verified: test 128→131 pass, lint 0 err
 - Follow-up: added T-051 (retry when refresh fails)
@@ -340,7 +343,7 @@ bash <skill folder>/scripts/log.sh T-042 done <<'EOF'
 EOF
 ```
 
-It appends at the end of the file with the current UTC time and this skill's version (use `-` as the ID for entries without a task). A task entry must agree with its BACKLOG row, so run `task.sh` first: `done` after `task.sh done`, `failed` after `task.sh fail`, `blocked` after `task.sh drop` (or a third failure); otherwise it refuses and says which step is missing. Writing entries by hand produced entries inserted above earlier ones and times that were made up, which breaks "the last N runs" and every rule that reads the LOG in order. If the script cannot run, append at the very end and take the time from `date -u +%Y-%m-%dT%H:%MZ`.
+It appends at the end of the file with the current UTC time and this skill's version (use `-` as the ID for entries without a task). A task entry must agree with its BACKLOG row, so run `task.sh` first: `done` after `task.sh done`, `failed` after `task.sh fail`, `blocked` after `task.sh drop` (or a third failure); otherwise it refuses and says which step is missing. With subagents on (the default), a `done` entry also has a line `- Subagents: <how many>, <for what>`; `log.sh` refuses one without it. `- Subagents: none, <why>` only when this session has no `Agent` tool, or the work is below the sizes in `references/subagents.md` (say the numbers). Writing entries by hand produced entries inserted above earlier ones and times that were made up, which breaks "the last N runs" and every rule that reads the LOG in order. If the script cannot run, append at the very end and take the time from `date -u +%Y-%m-%dT%H:%MZ`.
 
 The third column (status) is one of `done` / `failed` / `blocked` / `retro` / `discover` / `release` / `stop`. "The last N runs" in the repeat-failure and same-file rules count only `done`, `failed` and `blocked`. The bullet text is in the output language.
 
@@ -365,6 +368,7 @@ How the hook is installed, the fallback for environments that ignore skill hooks
 - Delete things outside `.autopilot/` (except under the cleanup rules)
 - Upgrade a dependency's major version (`task.sh done` refuses a major bump in `package.json`, `requirements*.txt`, `pyproject.toml` or `Cargo.toml`; propose it instead)
 - Change or remove an existing public interface (except within an adopted proposal)
+- Hand a subagent implementation, commits, pushes or the state files: it reads, runs in temporary directories and reports; you decide and write
 - Create or modify secrets, tokens or keys (`task.sh done` refuses added lines that match `scan.sh`'s secret pattern; a deliberate fake value in a test carries `autopilot-scan: ignore`)
 
 ## Templates

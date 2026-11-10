@@ -12,6 +12,7 @@ release: off            # off | auto = follow the repository's documented releas
 local_branch: auto      # local mode: auto = never commit on a default branch (main, master, develop, …); start autopilot/<date> instead | current = commit on whatever is checked out
 language: auto          # language of notes people read (ROADMAP, LOG, proposals): auto | en | ko | ja | ... (BCP 47)
 scope: .                # paths autopilot may work in, space-separated, relative to the repository root (. = all). For one package of a monorepo: scope: packages/api
+subagents: on           # on | off: hand parts of discovery and the pre-commit review to subagents (Agent tool) when the session has one; off = the loop does everything itself (fewer tokens)
 ```
 
 - `local`: only commit locally, no push (default, safest). On a default branch it first switches to a new `autopilot/<date>` branch
@@ -19,3 +20,4 @@ scope: .                # paths autopilot may work in, space-separated, relative
 - `pr`: like `branch`, plus open a PR to base_branch. With `merge: auto`, merge after verification
 - `language: auto`: the language already used in `.autopilot/`, else the README's language, else the language you used, else English
 - `scope`: discovery reads and runs only these paths and tasks change only files under them (plus `.autopilot/`); `task.sh done` refuses a commit that changes anything else
+- `subagents`: on by default. The loop never hands a subagent implementation, commits, pushes or the state files; it checks what they report before acting on it

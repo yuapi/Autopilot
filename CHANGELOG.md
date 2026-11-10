@@ -7,6 +7,10 @@ Versioning: MAJOR.MINOR.PATCH
 
 ## Unreleased
 
+## 1.60.0 — 2026-11-10
+- Subagents are used, not only allowed: required for discovery in a repository with more than 20 tracked files and for a diff over 50 lines (`references/subagents.md`). `scan.sh` says at the start of every discovery cycle whether they are required, `log.sh` needs a `- Subagents:` line in every done entry and refuses "none" over 20 tracked files (counted inside `scope`) unless the session has no Agent tool or the task ran no discovery; while `scan.sh`'s demand is open (`.autopilot/.scan-required`), "no discovery" is refused too. New eval fixture `large` (26 files) and `subagents=N` expectation; the eval prints the main model, a subagent's model apart, and the subagent count
+- Subagents (asked for by a person): with CONFIG `subagents: on` (the default) the loop hands parts of Phase 1 discovery (exploratory runs, scenarios, a static read; at most 3) and a pre-commit review of the diff (1) to subagents when the session has an `Agent` tool, and checks what they report before acting on it. They never implement, commit, push or write `.autopilot/`. Rules in `references/subagents.md`; the driver's and the eval's allowlists include `Agent` unless `subagents: off`; `status.sh` shows the value and warns about a typo (treated as off)
+
 ## 1.59.1 — 2026-11-10
 - Ninth eval fixture `branch`: `integration: branch` against a bare origin, graded by new `remote=` (a branch on origin) and `basekept=` (the base on origin untouched) expectations; the eval now counts commits on every local branch, since HEAD may be back on the base in branch and pr modes. Both real runs read `references/integration.md` and scored 9/9
 

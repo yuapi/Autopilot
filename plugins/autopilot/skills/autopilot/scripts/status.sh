@@ -78,15 +78,15 @@ if os.path.exists(hook):
         print("Note: the installed Stop hook is a copy from another skill version. The next run updates it (or run scripts/hook.sh install).")
     print("Note: the skill declares its own Stop hook since 1.16; the copy in .claude/hooks is only needed where skill hooks are ignored. Remove it with scripts/hook.sh uninstall.")
 
-cfg = dict(re.findall(r"^(integration|merge|release|language|scope):\s*([^\s#]+)", read("CONFIG.md"), re.M))
+cfg = dict(re.findall(r"^(integration|merge|release|language|scope|subagents):\s*([^\s#]+)", read("CONFIG.md"), re.M))
 refused = os.path.join(A, "STOP.refused")
 if os.path.exists(refused):
     mins = int((time.time() - os.path.getmtime(refused)) // 60)
     first = (read("STOP.refused").splitlines() or [""])[0]
     print(f"Note: a final stop not written by finalstop.sh was set aside {mins} min ago (.autopilot/STOP.refused: {first!r}); the loop went on. finalstop.sh decides when the work is done.")
 print("Integration: " + (", ".join(f"{k}={v}" for k, v in cfg.items()) if cfg else "local (no CONFIG)"))
-allowed = {"integration": ("local", "branch", "pr"), "merge": ("off", "auto"), "release": ("off", "auto"), "local_branch": ("auto", "current")}
-for k, v in re.findall(r"^(integration|merge|release|local_branch):\s*([^\s#]+)", read("CONFIG.md"), re.M):
+allowed = {"integration": ("local", "branch", "pr"), "merge": ("off", "auto"), "release": ("off", "auto"), "local_branch": ("auto", "current"), "subagents": ("off", "on")}
+for k, v in re.findall(r"^(integration|merge|release|local_branch|subagents):\s*([^\s#]+)", read("CONFIG.md"), re.M):
     if v not in allowed[k]:
         safe = allowed[k][0]
         print(f"Warning: CONFIG {k}: {v} is not one of {' | '.join(allowed[k])}; autopilot treats it as {safe}. Fix .autopilot/CONFIG.md.")

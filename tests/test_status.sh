@@ -134,6 +134,13 @@ check_not "no STOP.refused → no note" bash -c "bash '$ST' '$d' | grep -q 'set 
 printf 'Final stop: nothing left\n' > "$d/.autopilot/STOP.refused"
 check "STOP.refused → note with its first line" bash -c "bash '$ST' '$d' | grep -q \"^Note: a final stop not written by finalstop.sh was set aside 0 min ago (.autopilot/STOP.refused: 'Final stop: nothing left')\""
 
+# subagents: shown, a typo warned about as off
+d="$(mktemp -d "$TMPROOT/sa.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
+printf 'subagents: maybe\n' > "$d/.autopilot/CONFIG.md"
+check "subagents typo → warning, treated as off" bash -c "bash '$ST' '$d' | grep -q '^Warning: CONFIG subagents: maybe is not one of off | on; autopilot treats it as off'"
+printf 'subagents: off\n' > "$d/.autopilot/CONFIG.md"
+check "subagents value shown" bash -c "bash '$ST' '$d' | grep -q 'subagents=off'"
+
 # the task in progress is shown with its start time
 d="$(mktemp -d "$TMPROOT/n.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
 printf '| T-007 | fix | in_progress | 2 | fix the parser | t | s | |\n| T-008 | fix | open | 0 | other | t | s | |\n' > "$d/.autopilot/BACKLOG.md"

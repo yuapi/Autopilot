@@ -20,7 +20,8 @@
 # run's commits added outside .autopilot/ (e.g. a public interface change that belongs in a proposal).
 # tests/eval/fixture-<name>.setup, if present, runs in the new repository after the fixture commit
 # (for what files cannot carry, such as git hooks, or a bare origin). One starting with remote= must match
-# a branch on origin; basekept=<branch> checks that origin's <branch> still holds the fixture commit.
+# a branch on origin; basekept=<branch> checks that origin's <branch> still holds the fixture commit;
+# subagents=N needs at least N subagents (claude's subagent_stats) over the runs.
 # Needs the claude CLI and spends real model usage (one driver run). Not part of validate.sh.
 # Rule checks (one commit per task, LOG only appended, deep discovery before a final stop) are reported
 # separately; any broken rule fails the eval whatever the score.
@@ -80,10 +81,11 @@ if [ "$fixture" = all ]; then   # every fixture with the same options, then one 
 import re, sys
 lines = [l for l in sys.stdin.read().splitlines() if l]
 total = sum(float(re.match(r"Cost: \$([0-9.]+)", l).group(1)) for l in lines if re.match(r"Cost: \$[0-9.]+", l))
-models = sorted({m.strip() for l in lines for m in (l.split(", model: ", 1)[1].split(",") if ", model: " in l else [])})
-print(f"  total cost ${total:.2f}" + (f", model: {chr(44).join(models)}" if models else ""))
+models = sorted({m.group(1) for l in lines for m in [re.search(r", model: ([^ ,()]+)", l)] if m})
+spawned = sum(int(m.group(1)) for l in lines for m in [re.search(r"subagents: ([0-9]+)", l)] if m)
+print(f"  total cost ${total:.2f}" + (f", model: {chr(44).join(models)}" if models else "") + f", subagents: {spawned}")
 if len(models) > 1:
-    print("  warning: the fixtures ran on different models; pass --model to compare scores and costs")'
+    print("  warning: the fixtures ran on different main models; pass --model to compare scores and costs")'
   fi
   exit "$rc_all"
 fi
@@ -141,7 +143,7 @@ else
     echo "[eval] fixture $fixture: one session-mode run asked for $iterations task(s), in $work (timeout $((timeout_s * iterations))s)…"
     # the run should stop itself on its task budget; the watcher only steps in one task later
     run_claude $((timeout_s * iterations)) "$((iterations + 1))" env -u AUTOPILOT_DRIVER "$CLAUDE_BIN" -p "$prompt" ${model_args[@]+"${model_args[@]}"} \
-      --plugin-dir "$REPO/plugins/autopilot" --allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,TodoWrite,Skill" --output-format json
+      --plugin-dir "$REPO/plugins/autopilot" --allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,TodoWrite,Skill,Agent" --output-format json
   else
     # the real driver's prompt and allowlist, with the working copy loaded as a plugin, so the eval
     # measures what autopilot.sh does (its own prompt once hid a driver-only bug)
@@ -233,6 +235,15 @@ for ident, what, rx in items:
         hit = bool(line) and line[0] == root
         if not hit:
             what = what.strip() + (" (origin " + rx[9:] + " moved)" if line else " (no such branch on origin)")
+    elif rx.startswith("subagents="):
+        spawned = 0
+        if runlog_path and os.path.exists(runlog_path):
+            for line in open(runlog_path, encoding="utf-8", errors="replace"):
+                if line.startswith("{") and '"subagent_stats"' in line:
+                    try: spawned += int((__import__("json").loads(line).get("subagent_stats") or {}).get("spawned") or 0)
+                    except (ValueError, AttributeError, TypeError): pass
+        hit = spawned >= int(rx[10:])
+        what = what.strip() + f" ({spawned} ran)"
     elif rx.startswith("first="):
         # files changed by the first completed task's own commits (named by its ID; else the first commit
         # that changes anything outside .autopilot/)
@@ -284,9 +295,17 @@ if runlog_path and os.path.exists(runlog_path):
 if results:
     cost = sum(float(r.get("total_cost_usd") or 0) for r in results)
     turns = sum(int(r.get("num_turns") or 0) for r in results)
-    models = sorted({m for r in results for m in (r.get("modelUsage") or {})})
-    # scores and costs are comparable only for the same model: say which one ran
-    print(f"Cost: ${cost:.2f} over {len(results)} run(s), {turns} turns" + (f", model: {', '.join(models)}" if models else ""))
+    # scores and costs are comparable only for the same model: name the main one (the largest cost; a
+    # subagent may run on another model, listed separately) and count the subagents
+    usage = {}
+    for r in results:
+        for m, u in (r.get("modelUsage") or {}).items():
+            usage[m] = usage.get(m, 0.0) + float((u or {}).get("costUSD") or 0)
+    main = max(usage, key=lambda m: usage[m]) if usage else ""
+    others = sorted(m for m in usage if m != main)
+    spawned = sum(int((r.get("subagent_stats") or {}).get("spawned") or 0) for r in results)
+    print(f"Cost: ${cost:.2f} over {len(results)} run(s), {turns} turns" + (f", model: {main}" if main else "")
+          + (f" (also {', '.join(others)})" if others else "") + f", subagents: {spawned}")
 elif runlog_path:
     print("Cost: unknown (no JSON result in the claude output)")
 

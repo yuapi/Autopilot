@@ -2,8 +2,10 @@
 # Tests for scripts/log.sh (appends LOG entries in time order)
 . "$(dirname "$0")/lib.sh"
 LG="$REPO/$SKILL_REL/scripts/log.sh"
+subagents_off() { mkdir -p "$1/.autopilot"; printf 'subagents: off\n' > "$1/.autopilot/CONFIG.md"; }
 ver="$(sed -n 's/^  version: //p' "$REPO/$SKILL_REL/SKILL.md")"
 d="$(mktemp -d "$TMPROOT/l.XXXX")"; git -C "$d" init -q
+subagents_off "$d"   # these tests are not about the Subagents line
 
 out="$(printf -- '- Changed: a\nVerified: b\n\n' | bash "$LG" T-042 done "$d")"
 check "prints the header it wrote" grep -qE "^## [0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}Z \| T-042 \| done \| skill $ver\$" <<<"$out"
@@ -43,12 +45,14 @@ check "SKILL.md status list was found" test -n "$(sed -n 's/^The third column (s
 
 # a CRLF LOG (Windows checkout) gets CRLF lines
 d="$(mktemp -d "$TMPROOT/c.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"; printf '# LOG\r\n' > "$d/.autopilot/LOG.md"
+subagents_off "$d"   # these tests are not about the Subagents line
 printf -- '- one\n- two\n' | bash "$LG" T-001 done "$d" >/dev/null
 check "CRLF LOG: every line ends in CRLF after appending" bash -c "! grep -qv \$'\\r\$' '$d/.autopilot/LOG.md'"
 check "CRLF LOG: body lines kept" grep -q "^- two" "$d/.autopilot/LOG.md"
 
 # the same moment gives the same time in any time zone
 d="$(mktemp -d "$TMPROOT/z.XXXX")"; git -C "$d" init -q
+subagents_off "$d"   # these tests are not about the Subagents line
 a="$(echo '- x' | TZ=Asia/Seoul bash "$LG" - discover "$d" | cut -c4-20)"; b="$(echo '- y' | TZ=America/Los_Angeles bash "$LG" - discover "$d" | cut -c4-20)"
 check "Seoul and Los Angeles write the same UTC time" test "$a" = "$b"
 
@@ -62,6 +66,7 @@ done
 
 # a task entry must agree with the BACKLOG row (task.sh first, then log.sh)
 d="$(mktemp -d "$TMPROOT/b.XXXX")"; mkdir -p "$d/.autopilot"
+subagents_off "$d"   # these tests are not about the Subagents line
 printf '| ID | Type | Status | Attempts | Task | Done when | Source | Completed |\r\n| T-001 | fix | in_progress | 1 | a | t | s | |\r\n| T-002 | fix | done | 1 | b | t | s | 2026-01-01 |\r\n| T-003 | fix | open | 1 | c | t | s | |\r\n| T-004 | fix | blocked | 3 | d | t | s | |\r\n' > "$d/.autopilot/BACKLOG.md"
 printf '| T-010 | fix | done | 1 | old | t | s | 2026-01-01 |\n' > "$d/.autopilot/BACKLOG.archive.md"
 err="$(echo "- x" | bash "$LG" T-001 done "$d" 2>&1 >/dev/null)"; rc=$?
@@ -76,5 +81,39 @@ check "failed entry for a task blocked at the 3rd attempt" bash -c "echo '- x' |
 check "blocked entry for a blocked task" bash -c "echo '- x' | bash '$LG' T-004 blocked '$d' >/dev/null"
 check_not "blocked entry for an open task → refused" bash -c "echo '- x' | bash '$LG' T-003 blocked '$d' >/dev/null 2>&1"
 check "'-' entries are not checked" bash -c "echo '- x' | bash '$LG' - discover '$d' >/dev/null"
+
+# subagents on (the default): a done entry needs a "- Subagents:" line
+d="$(mktemp -d "$TMPROOT/s.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
+err="$(echo "- Changed: a" | bash "$LG" T-001 done "$d" 2>&1 >/dev/null)"; rc=$?
+check "subagents on, no Subagents line → refused" test "$rc" -ne 0
+check "the refusal says which line to add" grep -q "needs a line '- Subagents: <how many>, <for what>'" <<<"$err"
+check "with the line → written" bash -c "printf -- '- Changed: a\n- Subagents: 2, exploratory runs and the diff review\n' | bash '$LG' T-001 done '$d' >/dev/null"
+check "other statuses need no Subagents line" bash -c "echo '- x' | bash '$LG' - discover '$d' >/dev/null"
+printf 'subagents: off\r\n' > "$d/.autopilot/CONFIG.md"
+check "subagents: off (CRLF CONFIG) → no Subagents line needed" bash -c "echo '- x' | bash '$LG' T-002 done '$d' >/dev/null"
+
+# "none" in a repository over 20 files is refused, unless the session has no Agent tool
+d="$(mktemp -d "$TMPROOT/sb.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
+for i in $(seq 1 21); do echo "$i" > "$d/f$i"; done; git -C "$d" add -A >/dev/null
+err="$(printf -- '- x\n- Subagents: none, small repo\n' | bash "$LG" T-001 done "$d" 2>&1 >/dev/null)"; rc=$?
+check "none with 21 tracked files → refused, count named" bash -c "test $rc -ne 0 && grep -q 'has 21 tracked files (over 20)' <<<\"\$1\"" _ "$err"
+check "none, no Agent tool → written" bash -c "printf -- '- x\n- Subagents: none, no Agent tool in this session\n' | bash '$LG' T-001 done '$d' >/dev/null"
+check "a count with 21 files → written" bash -c "printf -- '- x\n- Subagents: 2, exploratory runs and scenarios\n' | bash '$LG' T-002 done '$d' >/dev/null"
+check "none, no discovery this task (21 files) → written" bash -c "printf -- '- x\n- Subagents: none, no discovery this task, diff 8 lines\n' | bash '$LG' T-003 done '$d' >/dev/null"
+check "none, no \`Agent\` tool (backticks) → written" bash -c "printf -- '- x\n- Subagents: none, no \`Agent\` tool\n' | bash '$LG' T-004 done '$d' >/dev/null"
+check "a lowercase subagents line counts" bash -c "printf -- '- x\n- subagents: 1, review\n' | bash '$LG' T-005 done '$d' >/dev/null"
+printf 'scope: f1 f2\n' > "$d/.autopilot/CONFIG.md"
+check "CONFIG scope limits the count (2 files) → none accepted" bash -c "printf -- '- x\n- Subagents: none, small (2 files)\n' | bash '$LG' T-006 done '$d' >/dev/null"
+
+# scan.sh's "required" is remembered: "no discovery" is refused until a done entry records the subagents
+SC="$REPO/$SKILL_REL/scripts/scan.sh"
+d="$(mktemp -d "$TMPROOT/sm.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
+for i in $(seq 1 21); do echo "$i" > "$d/f$i"; done; git -C "$d" add -A >/dev/null
+bash "$SC" "$d" >/dev/null
+check "scan.sh over 20 files leaves .autopilot/.scan-required" test -f "$d/.autopilot/.scan-required"
+err="$(printf -- '- x\n- Subagents: none, no discovery this task, diff 1 lines\n' | bash "$LG" T-001 done "$d" 2>&1 >/dev/null)"; rc=$?
+check "no discovery while scan.sh asked for subagents → refused" bash -c "test $rc -ne 0 && grep -q 'scan.sh said this discovery cycle needs subagents' <<<\"\$1\"" _ "$err"
+check "a recorded count → written, marker removed" bash -c "printf -- '- x\n- Subagents: 2, exploratory runs\n' | bash '$LG' T-001 done '$d' >/dev/null && test ! -e '$d/.autopilot/.scan-required'"
+check "next task without discovery → no discovery accepted" bash -c "printf -- '- x\n- Subagents: none, no discovery this task, diff 3 lines\n' | bash '$LG' T-002 done '$d' >/dev/null"
 
 finish

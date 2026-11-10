@@ -24,7 +24,7 @@ bash <skill folder>/scripts/autopilot.sh          # unlimited
 bash <skill folder>/scripts/autopilot.sh 20       # 20 runs at most
 ```
 
-The default is an `--allowedTools` allowlist. In a dedicated container, `AUTOPILOT_PERMISSION=skip`. `AUTOPILOT_MODEL` picks the model for every run, and `AUTOPILOT_MAX_COST` stops the driver once the runs together cost that many USD.
+The default is an `--allowedTools` allowlist (with `Agent` for subagents unless CONFIG sets `subagents: off`). In a dedicated container, `AUTOPILOT_PERMISSION=skip`. `AUTOPILOT_MODEL` picks the model for every run, and `AUTOPILOT_MAX_COST` stops the driver once the runs together cost that many USD.
 
 The driver only gives Claude Bash and file tools, not MCP servers, so in `pr` mode PRs are opened with the `gh` CLI (merge requests with `glab` when `origin` is on GitLab). Before the loop starts, the driver checks the integration mode and warns if `origin` is missing (`branch`/`pr`) or if `gh` (`glab`) is missing or cannot push to the repository (`pr`).
 
@@ -38,4 +38,4 @@ Shows on one screen whether the loop is running or stopped and why (and which se
 
 ## When the repository has its own Stop hook
 
-If the repository has a Stop hook that demands committing untracked files, this skill's Phase 4 rollback (`git clean`) and Phase 5 commit satisfy it naturally. The `.autopilot/` run artifacts (STOP, STOP.refused, RUN, .hook-state, .task, driver-logs, driver.lock) are added to `.gitignore` by `runlock.sh start` (session mode) and by the driver.
+If the repository has a Stop hook that demands committing untracked files, this skill's Phase 4 rollback (`git clean`) and Phase 5 commit satisfy it naturally. The `.autopilot/` run artifacts (STOP, STOP.refused, .scan-required, RUN, .hook-state, .task, driver-logs, driver.lock) are added to `.gitignore` by `runlock.sh start` (session mode) and by the driver.

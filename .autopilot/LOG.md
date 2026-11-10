@@ -965,3 +965,34 @@
 - 변경: tests/eval/fixture-branch(temp.py c_to_f +23 결함, CONFIG integration: branch), fixture-branch.setup(bare origin), .expected(remote=·basekept=), scripts/eval.sh(커밋을 모든 로컬 브랜치에서 수집, remote=·basekept= 채점), tests/test_eval.sh(+4, 합계 비용 기대값을 예제 수로 계산), README 2종 예제 목록, CHANGELOG
 - 검증: test_eval 116 통과, validate PASS. 실제 eval branch 세션 2회(--model claude-sonnet-5-5): 9/9·9/9, origin에 autopilot/T-001-fix-c-to-f, main 그대로. 세션 기록에서 두 실행 모두 references/integration.md를 cat으로 읽음 — P-001 분리 안내가 실제로 따라짐
 - 과정: 테스트 파일 편집 셸 명령이 안전 검사(따옴표 해석 불가)에 막힘 → 삭제가 아닌 편집이라 Edit 도구로 같은 편집
+
+## 2026-11-10T05:59Z | - | release | skill 1.59.1
+- 1.59.1 (patch): eval branch 예제(T-130). PR #350 → main, #351 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type"
+
+## 2026-11-10T05:59Z | - | retro | skill 1.59.1
+- 범위: T-121~T-130, 10건 done·0 failed·0 blocked(성공률 100%). 유형: fix 3, enhance 2, feature 2, refactor 2, test 1(+docs 없음). 출처: 심화 발굴 4, 채택된 제안 5(P-002 2·P-001 3), T-129 한계 1
+- 실패 원인: 없음. 과정 실수 1건 — 셸 따옴표가 복잡한 편집이 안전 검사에 막힘(Edit 도구로 해결)
+- 관찰: 사람이 제안 둘을 채택하자 기능 문서·단계 작업으로 바꿔 둘 다 완료(1.58.0, 1.59.0). 분리 후 eval 비용 -10%, 점수 그대로. branch 예제로 references/integration.md를 실제로 읽는 것을 확인
+- 배운 것: 편집은 Edit 도구로, 실행 기록 확인 방법, 옮긴 규칙에는 eval 예제 필요 추가(줄 수 15 이내). last_retro 갱신
+
+## 2026-11-10T06:00Z | - | discover | skill 1.59.1
+- 심화 발굴(이번 사이클): 4단계 모두 기록, 새 실질 작업 0건
+
+## 2026-11-10T06:00Z | - | stop | skill 1.59.1
+- Final stop: no substantive work left (실질 작업 없음)
+
+## 2026-11-10T06:01Z | - | discover | skill 1.59.1
+- STOP: Final stop: no substantive work left (실질 작업 없음)
+- 재개: 사람이 2026-11-10 대화에서 "오토파일럿이 서브에이전트를 활용할 수 있게, 사용자 옵션으로 끌 수 있게 기본값 켬"을 요청. STOP 삭제
+
+## 2026-11-10T06:07Z | T-131 | done | skill 1.59.1
+- 기능 subagents 1/2(사람의 요청). 변경: references/subagents.md(Phase 1 발굴 최대 3·Phase 4 diff 검토 1, 결과는 확인할 주장, 구현·커밋·push·상태 파일은 맡기지 않음), SKILL.md(Phase 1 안내·Phase 4 1·Never·CONFIG 오타 규칙), assets/CONFIG.md(subagents: on), autopilot.sh(허용 도구에 Agent, off·오타면 뺌), eval.sh(세션 허용 도구에 Agent), status.sh(값 표시·오타 경고), references/operations.md, 테스트(driver +4, status +2, skill_rules +5, eval +1), CHANGELOG
+- 검증: driver 104·status 55·skill_rules 72·eval 117 통과, validate PASS(클라우드·비클라우드 둘 다)
+- 후속: T-132(2/2, eval 전후 비교) open
+
+## 2026-11-10T07:31Z | T-132 | done | skill 1.59.1
+- 기능 subagents 2/2(사람의 요청 완료). 첫 eval: 기능 전후 점수 같고 서브에이전트 0회 — 안내를 모델이 건너뜀. log.sh에 Subagents 줄 요구 → 작은 예제는 "none, small", 26파일 large 예제에서도 "20개 미만"이라고 적음 → 크기 기준(파일 20·diff 50줄), scan.sh 알림·.scan-required 표시, log.sh가 20개 넘는데 none이면 거절(Agent 도구 없음·발굴 없음만 예외, 표시가 있으면 발굴 없음도 거절)
+- 변경: references/subagents.md, SKILL.md, scripts/scan.sh·log.sh·autopilot.sh(CRLF)·runlock.sh, scripts/eval.sh(주 모델·서브에이전트 모델 구분, 서브에이전트 수, subagents= 기대값), tests/eval/fixture-large(26파일, pound 10배 결함), 테스트(log +16, scan +6, eval +6, driver +1, skill_rules +4), README 2종, docs/skill-design.md, CHANGELOG
+- 검증: validate PASS(클라우드·비클라우드), eval --fixture all(--model claude-sonnet-5-5) 10개 예제 100%, 규칙 위반 0, $2.15. large 3/3 서브에이전트 사용·8/8
+- Subagents: 1, 커밋 전 diff 검토(결함 6건 보고 — 개수 불일치, 경로 지정 scan의 CONFIG 위치, 너무 엄격·느슨한 none, 드라이버 CRLF, 약한 테스트 2 — 모두 확인 후 수정)
