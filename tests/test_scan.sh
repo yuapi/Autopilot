@@ -54,7 +54,10 @@ check "a clean directory prints only the frame" test "$(grep -c '^## ' <<<"$out"
 check "works outside a git repository" grep -q "^# end of scan" <<<"$out"
 check "scanning the fixture directly finds its seeded defects" bash -c "bash '$SC' '$REPO/tests/eval/fixture-todo' | grep -q 'todo.py:38'"
 check_not "fails cleanly on a missing directory" bash "$SC" "$TMPROOT/nope"
+# a test run is not a discovery cycle: keep the subagent demand marker as it was before (scan.sh writes one)
+had_marker=0; [ -f "$REPO/.autopilot/.scan-required" ] && had_marker=1
 check "this repository scans clean" bash -c "cd '$REPO' && test \"\$(bash '$SC' | grep -c '^## ')\" -eq 0"
+[ "$had_marker" = 1 ] || rm -f "$REPO/.autopilot/.scan-required"
 
 # a repository with a single matching file still prints file:line; non-ASCII and spaced names are kept
 d="$(mktemp -d "$TMPROOT/s1.XXXX")"; git -C "$d" init -q; echo "# TODO: only one" > "$d/한글 name.py"

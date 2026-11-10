@@ -116,4 +116,19 @@ check "no discovery while scan.sh asked for subagents → refused" bash -c "test
 check "a recorded count → written, marker removed" bash -c "printf -- '- x\n- Subagents: 2, exploratory runs\n' | bash '$LG' T-001 done '$d' >/dev/null && test ! -e '$d/.autopilot/.scan-required'"
 check "next task without discovery → no discovery accepted" bash -c "printf -- '- x\n- Subagents: none, no discovery this task, diff 3 lines\n' | bash '$LG' T-002 done '$d' >/dev/null"
 
+# gaps closed: "- done" leaves the demand, outside git the demand still counts, "0" is "none"
+d="$(mktemp -d "$TMPROOT/g.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
+for i in $(seq 1 21); do echo "$i" > "$d/f$i"; done; git -C "$d" add -A >/dev/null
+printf '| ID | Type | Status | Attempts | Task | Done when | Source | Completed |\n| T-001 | fix | done | 1 | a | t | s | 2026-01-01 |\n' > "$d/.autopilot/BACKLOG.md"
+bash "$SC" "$d" >/dev/null
+echo "- x" | bash "$LG" - done "$d" >/dev/null 2>&1
+check "a '- done' entry leaves scan.sh's demand in place" test -f "$d/.autopilot/.scan-required"
+check_not "'- Subagents: 0' counts as none → refused" bash -c "printf -- '- x\n- Subagents: 0\n' | bash '$LG' T-001 done '$d' >/dev/null 2>&1"
+check "'- Subagents: 10, …' is a count, not none" bash -c "printf -- '- x\n- Subagents: 10, scenarios\n' | bash '$LG' T-001 done '$d' >/dev/null"
+n="$(mktemp -d "$TMPROOT/ng.XXXX")"; mkdir -p "$n/.autopilot"; for i in $(seq 1 25); do echo "$i" > "$n/f$i.txt"; done
+bash "$SC" "$n" >/dev/null
+check_not "outside git with scan.sh's demand open → none refused" bash -c "printf -- '- Subagents: none\n' | bash '$LG' T-001 done '$n' >/dev/null 2>&1"
+printf "scope: it's\n" > "$d/.autopilot/CONFIG.md"
+check "a quote in scope does not break the count" bash -c "! bash '$SC' '$d' 2>&1 >/dev/null | grep -q 'unmatched'"
+
 finish

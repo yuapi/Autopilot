@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- The subagent record is harder to dodge: only a task's done entry clears `scan.sh`'s demand (`log.sh - done` no longer does), the demand counts outside git too, `- Subagents: 0` is read as none, and a quote in CONFIG `scope` no longer breaks the file count (`xargs` dropped from scope parsing in `scan.sh`, `log.sh`, `task.sh` and the driver)
 - `runlock.sh start` refuses (exit 2) while a driver runs in the repository (a live pid in `.autopilot/driver.lock`): a session loop used to start next to a running driver, though one loop per repository is the rule
 
 ## 1.60.0 — 2026-11-10
