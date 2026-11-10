@@ -87,7 +87,10 @@ check "LOG from an older skill → noted, no warning" bash -c "grep -q 'LOG writ
 
 # cloud session + local integration → warning that commits are lost with the container
 d="$(mktemp -d "$TMPROOT/c.XXXX")"; git -C "$d" init -q; mkdir -p "$d/.autopilot"
-check "cloud session, no CONFIG → warning" bash -c "CLAUDE_CODE_REMOTE=true bash '$ST' '$d' | grep -q 'lost when it is reclaimed'"
+check "cloud session, no CONFIG → note that the work branch is pushed" bash -c "CLAUDE_CODE_REMOTE=true bash '$ST' '$d' | grep -q '^Note: cloud session with no integration in CONFIG: after every task the work branch'"
+printf 'integration: local\n' > "$d/.autopilot/CONFIG.md"
+check "cloud session, integration: local set → warning that commits are lost" bash -c "CLAUDE_CODE_REMOTE=true bash '$ST' '$d' | grep -q 'lost when it is reclaimed'"
+rm -f "$d/.autopilot/CONFIG.md"
 check_not "not a cloud session → no warning" bash -c "CLAUDE_CODE_REMOTE= bash '$ST' '$d' | grep -q 'lost when it is reclaimed'"
 printf 'integration: pr\n' > "$d/.autopilot/CONFIG.md"
 check_not "cloud session with integration: pr → no warning" bash -c "CLAUDE_CODE_REMOTE=true bash '$ST' '$d' | grep -q 'lost when it is reclaimed'"

@@ -48,7 +48,7 @@ These rules are written in English. Follow them exactly whatever language you wr
 | `.autopilot/ROADMAP.md` | Direction document Claude writes and updates from code analysis |
 | `.autopilot/BACKLOG.md` | Task queue with status, attempts and completion criteria |
 | `.autopilot/LOG.md` | Record of every run (append only) |
-| `.autopilot/CONFIG.md` | Integration policy (push, PR, merge, release), output language and `scope`. **People set it; Claude only reads it.** Missing means `local`; a value that is not one of the documented ones (a typo) counts as the safest: `local`, `off`, `local_branch: auto` |
+| `.autopilot/CONFIG.md` | Integration policy (push, PR, merge, release), output language and `scope`. **People set it; Claude only reads it.** Missing means `local` (in a cloud session, `local` plus pushing the work branch after every task: Phase 5); a value that is not one of the documented ones (a typo) counts as the safest: `local`, `off`, `local_branch: auto` |
 | `.autopilot/PROPOSALS.md` | Proposals for large changes the loop does not make on its own. People decide by changing the status |
 | `.autopilot/features/<slug>.md` | Design and stage document for a feature that spans several tasks |
 | `.autopilot/STOP` | If present, the loop stops (created by Claude or a person) |
@@ -60,7 +60,7 @@ Create missing files from the `assets/` templates.
 
 ### Phase 0 — load state
 
-Before anything else, on every task in both modes: run `bash <skill folder>/scripts/workbranch.sh`. In `local` mode it moves you off a default branch (`main`, `master`, `develop`, `trunk`, the remote's default, or a detached HEAD) onto a new `autopilot/<YYYYMMDD-HHMM>` branch, so the loop never commits straight onto a branch people share. On any other branch it does nothing, so it is safe to run every time. It never pushes. `local_branch: current` in CONFIG turns this off. If the script cannot run, do the same by hand with `git switch -c`.
+Before anything else, on every task in both modes: run `bash <skill folder>/scripts/workbranch.sh`. In `local` mode it moves you off a default branch (`main`, `master`, `develop`, `trunk`, the remote's default, or a detached HEAD) onto a new `autopilot/<YYYYMMDD-HHMM>` branch, so the loop never commits straight onto a branch people share. On any other branch it does nothing, so it is safe to run every time. It pushes only when asked with `--push` (Phase 5). `local_branch: current` in CONFIG turns this off. If the script cannot run, do the same by hand with `git switch -c`.
 
 In session mode, also run `bash <skill folder>/scripts/runlock.sh touch` at the start of every task so the run marker shows the loop is alive.
 
@@ -71,7 +71,7 @@ In session mode, also run `bash <skill folder>/scripts/runlock.sh touch` at the 
    - If the repository has no commit yet (`git rev-parse --verify HEAD` fails) and has files outside `.autopilot/`, no task can start (they count as uncommitted) and nothing can be stashed. Write STOP with the fix (commit the existing files first), tell the person, and stop. Do not commit their files for them.
    - If CONFIG `scope` names a path that does not exist, discovery would find nothing and `task.sh done` would refuse every change, ending in a final stop that is not true. Write STOP with the path and the fix (correct `scope:` in `.autopilot/CONFIG.md`), tell the person, and stop. Never change CONFIG yourself.
    - If `git config user.name` or `git config user.email` is empty, every commit would fail and the loop could only burn attempts. Write STOP with the reason and the fix (`git config user.name "…"` and `git config user.email …`), tell the person, and stop. Never set an identity yourself: the commits would carry a made-up author.
-   - If `CLAUDE_CODE_REMOTE` is `true` (a cloud session) and the integration mode is `local`, the commits exist only in this container and are lost when it is reclaimed. Tell the person once, in one line at the start (a notice, not a question): set `integration: branch` or `pr` in `.autopilot/CONFIG.md` to keep them. Write it in the LOG and continue in `local` mode. Never change CONFIG yourself.
+   - If `CLAUDE_CODE_REMOTE` is `true` (a cloud session), the container and every unpushed commit are reclaimed later. When CONFIG sets no `integration`, the loop runs in `local` mode and also pushes its work branch (`autopilot/<date>`) after every task (Phase 5 step 6): never a default branch, no PR, no merge. Tell the person once, in one line at the start (a notice, not a question), and that `integration: local` in CONFIG keeps the commits here only. When CONFIG sets `integration: local` explicitly, push nothing and say once that the commits are lost when the container is reclaimed. Write the notice in the LOG. Never change CONFIG yourself.
    - The Stop hook comes with this skill (see "The Stop hook" below); nothing needs installing. If an older version left a copy at `.claude/hooks/autopilot-stop.sh`, refresh it with `bash <skill folder>/scripts/hook.sh install` and commit what it changed.
 1. If the three core files are missing, create them from the templates (never create CONFIG). If the integration mode is not `local`, update the base branch as described in "Integration policy". If CONFIG names a `base_branch` that exists neither locally nor on origin after the fetch (a typo), no task can start from it: write STOP with the name and the fix (correct `base_branch:` or set it to `auto`), tell the person, and stop. Do the same for a `branch_prefix` that git rejects as a branch name (`git check-ref-format --branch <prefix>T-1-x` fails: a space, `~`, `..`).
    Read the state. Keep the amount read constant even in long runs:
@@ -307,7 +307,7 @@ On success:
 4. Append to the LOG with `scripts/log.sh` (see "LOG format").
    Never commit generated files (`__pycache__`, build output, coverage, logs); `task.sh done` refuses a task that adds the well-known ones. If the task created them, add them to `.gitignore` instead; if they were already tracked, queue a `cleanup` task rather than deleting them in this one.
 5. If the integration mode is `pr` and `release: auto`, check the "Release" conditions below.
-6. Commit `.autopilot/` and `.gitignore` alone, in every mode (`.gitignore` holds the run-artifact lines `runlock.sh start` and `task.sh start` add; message `autopilot: record state` or the repository's convention; in `branch`/`pr` modes on the task branch before publishing). The `done` row and the LOG entry are written after the task's commit; without this they stay uncommitted, are lost with the working tree, and are missing when the loop stops (task budget, a person's STOP, the driver's run limit). Every task ends with a clean working tree.
+6. Commit `.autopilot/` and `.gitignore` alone, in every mode (`.gitignore` holds the run-artifact lines `runlock.sh start` and `task.sh start` add; message `autopilot: record state` or the repository's convention; in `branch`/`pr` modes on the task branch before publishing). The `done` row and the LOG entry are written after the task's commit; without this they stay uncommitted, are lost with the working tree, and are missing when the loop stops (task budget, a person's STOP, the driver's run limit). Every task ends with a clean working tree. Then run `bash <skill folder>/scripts/workbranch.sh --push`: in a cloud session whose CONFIG sets no `integration` it pushes the work branch (never a default branch), and elsewhere it does nothing. If it fails (blocked or offline), write it in the LOG and go on; never work around it.
 7. **Driver mode**: exit. **Session mode**: drop what you remember about the task and go back to Phase 0. No summary, no report, no "next I will …". Go straight to the next task.
 
 ## Integration policy
@@ -321,7 +321,7 @@ On success:
 | Phase 0 | leave a default branch for `autopilot/<date>` (`workbranch.sh`), otherwise stay | fetch the base and start from its latest commit | same |
 | Phase 3 start | - | create branch `<prefix><task ID>-<slug>` | same |
 | Phase 4 failure | roll back | roll back, return to the base, delete the local task branch | same |
-| Phase 5 success | commit | commit → `git push -u origin <branch>` | push → open a PR (`gh`; `glab mr create` for a GitLab origin; or MCP) → merge if `merge: auto` |
+| Phase 5 success | commit (cloud session without `integration` in CONFIG: also push the work branch, `workbranch.sh --push`) | commit → `git push -u origin <branch>` | push → open a PR (`gh`; `glab mr create` for a GitLab origin; or MCP) → merge if `merge: auto` |
 
 Handling the state files (`.autopilot/`):
 - While running, the `.autopilot/` in the working directory is the only truth. When switching branches, copy `.autopilot/` somewhere temporary and copy it back after switching. That way attempts and done records survive even when PRs are not merged yet.
