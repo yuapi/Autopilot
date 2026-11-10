@@ -55,6 +55,15 @@ case "$cmd" in
       echo "[runlock] driver mode (AUTOPILOT_DRIVER=1): no run marker and no task budget; do one task and exit."
       exit 0
     fi
+    # a driver running here (live pid in driver.lock) is a loop too: two loops corrupt the BACKLOG
+    if [ -f .autopilot/driver.lock ]; then
+      dp="$(head -1 .autopilot/driver.lock 2>/dev/null | tr -cd '0-9')"
+      if [ -n "$dp" ] && kill -0 "$dp" 2>/dev/null; then
+        echo "[runlock] an autopilot driver is running in this repository (pid $dp, .autopilot/driver.lock)." >&2
+        echo "[runlock] Let it finish, or create .autopilot/STOP to stop it after its current run." >&2
+        exit 2
+      fi
+    fi
     if [ -f "$RUN" ]; then
       o="$(owner)"; a="$(age_min)"
       if [ -n "$o" ] && [ "$o" != "$me" ] && [ "$o" != unknown ] && [ "$me" != unknown ] && [ "$a" -lt "$stale_min" ]; then
