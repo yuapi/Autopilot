@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- `eval.sh` prints the model each run used next to its cost, and `--fixture all` lists the cost per fixture, the total, and warns when fixtures ran on different models (the default model changed and a full run cost 5× more with nothing saying why)
 
 ## 1.55.0 — 2026-11-10
 - The state commit at the end of every task (and after a failure) includes `.gitignore`: `runlock.sh start` and `task.sh start` add run-artifact lines to it, and "commit `.autopilot/` alone" left it uncommitted (the `mono` eval ended with a dirty tree)
