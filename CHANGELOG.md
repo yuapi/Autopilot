@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.55.1 — 2026-11-10
 - `eval.sh` prints the model each run used next to its cost, and `--fixture all` lists the cost per fixture, the total, and warns when fixtures ran on different models (the default model changed and a full run cost 5× more with nothing saying why)
 
 ## 1.55.0 — 2026-11-10
