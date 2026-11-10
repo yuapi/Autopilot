@@ -950,3 +950,9 @@
 - 기능 skill-split 2/3. 변경: Stop 훅 설치·대체 설치, 드라이버, status.sh 상세, 레포 자체 Stop 훅을 그대로 references/operations.md로, SKILL.md에는 훅이 막는 때·해제 방법·상태 요청 시 status.sh 실행만 유지, validate.sh(SKILL.md+references 함께 검사, references 파일이 SKILL.md에 없으면 실패), 테스트(skill_rules +3, scripts +2), CHANGELOG
 - 검증: SKILL.md 45,755 → 42,941바이트(분리 전 48,528 대비 -11.5%), validate PASS(0 warnings), test_scripts 78 통과
 - 후속: T-129(3/3, eval 전후 비교) open
+
+## 2026-11-10T05:43Z | T-129 | done | skill 1.58.0
+- 기능 skill-split 3/3(P-001 완료). eval --fixture all --model claude-sonnet-5-5 전(main 1.58.0 worktree)·후(develop) 동시 실행: 둘 다 8개 예제 100%, 규칙 위반 0, 합계 $1.64 → $1.48(-10%). 드라이버 모드 todo 2회 8/8
+- 변경: docs/skill-design.md(분리 이유·위험·안전장치 3가지), README 2종 레이아웃에 references/, CHANGELOG
+- 한계: pr 모드로 도는 eval 예제가 없어 references/integration.md는 규칙 테스트로만 확인
+- features/skill-split.md done, PROPOSALS P-001 done
