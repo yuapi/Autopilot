@@ -1,7 +1,7 @@
 # 서브에이전트 활용 (사람의 요청)
 
 slug: subagents
-status: in progress
+status: done
 started: 2026-11-10
 
 ## Purpose
@@ -21,8 +21,9 @@ Phase 4: 커밋 전 서브에이전트 1개가 diff를 완료 기준·Never 목�
 | Stage | Task ID | Content | Done when | Status |
 |---|---|---|---|---|
 | 1/2 | T-131 | CONFIG 키, references/subagents.md, SKILL.md 안내·Never, 드라이버·eval 허용 도구, status.sh, 테스트 | validate PASS, 테스트 추가 | done |
-| 2/2 | T-132 | eval --fixture all 전후 비교(--model 고정), 서브에이전트 사용 확인(세션 기록), README·설계 문서 | 점수 유지 이상·규칙 위반 0, README·skill-design 갱신 | open |
+| 2/2 | T-132 | eval --fixture all 전후 비교(--model 고정), 서브에이전트 사용 확인(세션 기록), README·설계 문서 | 점수 유지 이상·규칙 위반 0, README·skill-design 갱신 | done |
 
 ## Decisions
 - 구현은 맡기지 않음: 한 작업 = 한 커밋, task.sh 검사, 상태 파일 정합성이 주 에이전트 하나에 기대고 있어서
 - 모르는 값은 off: 서브에이전트는 비용을 늘리므로 오타일 때 덜 쓰는 쪽이 안전
+- 규칙을 안내만 하면 실제 실행이 서브에이전트를 매번 건너뜀(26파일 레포에서도 "20개 미만"이라고 적음). 크기 기준 + scan.sh 알림 + log.sh 확인으로 강제하자 large 3/3 사용

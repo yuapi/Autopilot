@@ -990,3 +990,9 @@
 - 기능 subagents 1/2(사람의 요청). 변경: references/subagents.md(Phase 1 발굴 최대 3·Phase 4 diff 검토 1, 결과는 확인할 주장, 구현·커밋·push·상태 파일은 맡기지 않음), SKILL.md(Phase 1 안내·Phase 4 1·Never·CONFIG 오타 규칙), assets/CONFIG.md(subagents: on), autopilot.sh(허용 도구에 Agent, off·오타면 뺌), eval.sh(세션 허용 도구에 Agent), status.sh(값 표시·오타 경고), references/operations.md, 테스트(driver +4, status +2, skill_rules +5, eval +1), CHANGELOG
 - 검증: driver 104·status 55·skill_rules 72·eval 117 통과, validate PASS(클라우드·비클라우드 둘 다)
 - 후속: T-132(2/2, eval 전후 비교) open
+
+## 2026-11-10T07:31Z | T-132 | done | skill 1.59.1
+- 기능 subagents 2/2(사람의 요청 완료). 첫 eval: 기능 전후 점수 같고 서브에이전트 0회 — 안내를 모델이 건너뜀. log.sh에 Subagents 줄 요구 → 작은 예제는 "none, small", 26파일 large 예제에서도 "20개 미만"이라고 적음 → 크기 기준(파일 20·diff 50줄), scan.sh 알림·.scan-required 표시, log.sh가 20개 넘는데 none이면 거절(Agent 도구 없음·발굴 없음만 예외, 표시가 있으면 발굴 없음도 거절)
+- 변경: references/subagents.md, SKILL.md, scripts/scan.sh·log.sh·autopilot.sh(CRLF)·runlock.sh, scripts/eval.sh(주 모델·서브에이전트 모델 구분, 서브에이전트 수, subagents= 기대값), tests/eval/fixture-large(26파일, pound 10배 결함), 테스트(log +16, scan +6, eval +6, driver +1, skill_rules +4), README 2종, docs/skill-design.md, CHANGELOG
+- 검증: validate PASS(클라우드·비클라우드), eval --fixture all(--model claude-sonnet-5-5) 10개 예제 100%, 규칙 위반 0, $2.15. large 3/3 서브에이전트 사용·8/8
+- Subagents: 1, 커밋 전 diff 검토(결함 6건 보고 — 개수 불일치, 경로 지정 scan의 CONFIG 위치, 너무 엄격·느슨한 none, 드라이버 CRLF, 약한 테스트 2 — 모두 확인 후 수정)
