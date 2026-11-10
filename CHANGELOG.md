@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- An idea that 1-F sends to proposals must get its PROPOSALS row in the same cycle; a "Not doing" line that only says "see PROPOSALS" no longer counts (the `api` eval found the proposal written in 1 of 4 runs: the model noted it under "Not doing" and never wrote it)
 - Eighth eval fixture `api`: a library whose obvious improvement (`parse_point` raising instead of returning `None`) changes its public API, so it must go to PROPOSALS; new `proposal=` (matched against PROPOSALS.md) and `nodiff=` (no added line may match) expectations
 - README (EN/KO): "The rules are checked, not only written" lists what `task.sh done`, `log.sh`, `finalstop.sh` and the Stop hook refuse
 
