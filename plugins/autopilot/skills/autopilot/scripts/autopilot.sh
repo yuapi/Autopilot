@@ -169,8 +169,15 @@ case "${AUTOPILOT_PERMISSION:-allowlist}" in
       allowlist) ;;
       *) echo "[driver] unknown AUTOPILOT_PERMISSION value: $AUTOPILOT_PERMISSION (expected allowlist or skip); using the allowlist." >&2 ;;
     esac
-    PERM_ARGS=(--allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,Skill,TodoWrite")
-    echo "[driver] permissions: allowlist (Bash, file tools, Skill)"
+    PERM_ARGS=(--allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,Skill,TodoWrite,Agent")
+    # CONFIG subagents: on (default) lets the skill start subagents; off, or a typo, keeps them out
+    sub="$( { [ -f .autopilot/CONFIG.md ] && sed -n 's/^subagents:[[:space:]]*\([^[:space:]#]*\).*/\1/p' .autopilot/CONFIG.md | head -1; } || true)"
+    case "${sub:-on}" in
+      on) echo "[driver] permissions: allowlist (Bash, file tools, Skill, Agent for subagents)" ;;
+      *) [ "$sub" = off ] || echo "[driver] CONFIG subagents: $sub is not on or off; treating it as off" >&2
+         PERM_ARGS=(--allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,Skill,TodoWrite")
+         echo "[driver] permissions: allowlist (Bash, file tools, Skill; subagents off)" ;;
+    esac
     ;;
 esac
 if [ -n "${AUTOPILOT_MODEL:-}" ]; then

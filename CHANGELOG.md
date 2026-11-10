@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- Subagents (asked for by a person): with CONFIG `subagents: on` (the default) the loop hands parts of Phase 1 discovery (exploratory runs, scenarios, a static read; at most 3) and a pre-commit review of the diff (1) to subagents when the session has an `Agent` tool, and checks what they report before acting on it. They never implement, commit, push or write `.autopilot/`. Rules in `references/subagents.md`; the driver's and the eval's allowlists include `Agent` unless `subagents: off`; `status.sh` shows the value and warns about a typo (treated as off)
 
 ## 1.59.1 — 2026-11-10
 - Ninth eval fixture `branch`: `integration: branch` against a bare origin, graded by new `remote=` (a branch on origin) and `basekept=` (the base on origin untouched) expectations; the eval now counts commits on every local branch, since HEAD may be back on the base in branch and pr modes. Both real runs read `references/integration.md` and scored 9/9
