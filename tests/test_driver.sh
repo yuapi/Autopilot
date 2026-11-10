@@ -190,6 +190,15 @@ out="$(AUTOPILOT_PERMISSION=skp FAKE_MODE=ok drive "$d" 1 2>&1)"
 check "typo → unknown value warning" grep -q "unknown AUTOPILOT_PERMISSION value: skp" <<<"$out"
 check "typo → still the allowlist" grep -q -- "--allowedTools" "$d/.autopilot/args"
 
+# CONFIG subagents: on by default (Agent allowed), off or a typo keeps subagents out
+d="$(newrepo)"; FAKE_MODE=ok drive "$d" 1 >/dev/null 2>&1
+check "subagents default → Agent in the allowlist" grep -q -- "--allowedTools .*,Agent" "$d/.autopilot/args"
+printf 'subagents: off\n' > "$d/.autopilot/CONFIG.md"; out="$(FAKE_MODE=ok drive "$d" 1 2>&1)"
+check_not "subagents: off → no Agent" grep -q "Agent" "$d/.autopilot/args"
+check "subagents: off → the driver says so" grep -q "subagents off" <<<"$out"
+printf 'subagents: of\n' > "$d/.autopilot/CONFIG.md"; out="$(FAKE_MODE=ok drive "$d" 1 2>&1)"
+check "subagents typo → treated as off, with a warning" bash -c "grep -q 'subagents: of is not on or off; treating it as off' <<<\"\$1\" && ! grep -q Agent '$d/.autopilot/args'" _ "$out"
+
 # no git identity: every commit would fail, so the driver stops before the first run
 d="$(mktemp -d "$TMPROOT/noid.XXXX")"; (cd "$d" && git init -q && mkdir .autopilot)
 out="$(cd "$d" && GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null PATH="$FAKEBIN:$PATH" bash "$DRIVER" 1 2>&1)"; rc=$?

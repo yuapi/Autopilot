@@ -141,7 +141,7 @@ else
     echo "[eval] fixture $fixture: one session-mode run asked for $iterations task(s), in $work (timeout $((timeout_s * iterations))s)…"
     # the run should stop itself on its task budget; the watcher only steps in one task later
     run_claude $((timeout_s * iterations)) "$((iterations + 1))" env -u AUTOPILOT_DRIVER "$CLAUDE_BIN" -p "$prompt" ${model_args[@]+"${model_args[@]}"} \
-      --plugin-dir "$REPO/plugins/autopilot" --allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,TodoWrite,Skill" --output-format json
+      --plugin-dir "$REPO/plugins/autopilot" --allowedTools "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,TodoWrite,Skill,Agent" --output-format json
   else
     # the real driver's prompt and allowlist, with the working copy loaded as a plugin, so the eval
     # measures what autopilot.sh does (its own prompt once hid a driver-only bug)

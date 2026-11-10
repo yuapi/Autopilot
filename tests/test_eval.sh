@@ -332,6 +332,7 @@ kept="$(sed -n 's/^\[eval\] kept the run in \([^ ]*\).*/\1/p' <<<"$out" | head -
 real_prompt="$(sed -n "s/^PROMPT='\(.*\)'\$/\1/p" "$REPO/$SKILL_REL/scripts/autopilot.sh")"
 check "driver eval sends autopilot.sh's PROMPT" grep -qF -- "$real_prompt" "$kept/.autopilot/args"
 check "driver eval loads the working copy as a plugin" grep -q -- "--plugin-dir $REPO/plugins/autopilot" "$kept/.autopilot/args"
+check "session eval allows Agent for subagents" grep -q 'TodoWrite,Skill,Agent" --output-format json' "$EV"
 check "driver eval uses the driver's allowlist (with Skill)" grep -q -- "--allowedTools Bash,Read,Write,Edit,MultiEdit,Glob,Grep,LS,Skill,TodoWrite" "$kept/.autopilot/args"
 rm -rf "$kept"
 

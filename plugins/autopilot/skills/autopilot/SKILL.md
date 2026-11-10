@@ -48,7 +48,7 @@ These rules are written in English. Follow them exactly whatever language you wr
 | `.autopilot/ROADMAP.md` | Direction document Claude writes and updates from code analysis |
 | `.autopilot/BACKLOG.md` | Task queue with status, attempts and completion criteria |
 | `.autopilot/LOG.md` | Record of every run (append only) |
-| `.autopilot/CONFIG.md` | Integration policy (push, PR, merge, release), output language and `scope`. **People set it; Claude only reads it.** Missing means `local` (in a cloud session, `local` plus pushing the work branch after every task: Phase 5); a value that is not one of the documented ones (a typo) counts as the safest: `local`, `off`, `local_branch: auto` |
+| `.autopilot/CONFIG.md` | Integration policy (push, PR, merge, release), output language and `scope`. **People set it; Claude only reads it.** Missing means `local` (in a cloud session, `local` plus pushing the work branch after every task: Phase 5); a value that is not one of the documented ones (a typo) counts as the safest: `local`, `off`, `local_branch: auto`, `subagents: off` |
 | `.autopilot/PROPOSALS.md` | Proposals for large changes the loop does not make on its own. People decide by changing the status |
 | `.autopilot/features/<slug>.md` | Design and stage document for a feature that spans several tasks |
 | `.autopilot/STOP` | If present, the loop stops (created by Claude or a person) |
@@ -103,6 +103,8 @@ If there are 10 or more LOG entries (done, failed, blocked) since ROADMAP `last_
 Every later phase follows "Learned" with the same weight as these rules.
 
 ### Phase 1 — discovery (conditional)
+
+**Subagents**: if CONFIG `subagents` is not `off` (missing means `on`) and this session can start subagents (an `Agent` tool), read `references/subagents.md` (in this skill's folder) now: it says which parts of discovery, and of the Phase 4 review, to hand to subagents and what they must never do. Otherwise do all of it yourself.
 
 Run discovery if any of these holds:
 - BACKLOG has no `open` task (an empty queue **always** triggers rediscovery, with no limit on how often)
@@ -292,7 +294,7 @@ Claim it with `bash <skill folder>/scripts/task.sh start <ID>`: it refuses while
 
 ### Phase 4 — verify
 
-1. Run every test, lint and build command found in Phase 0 again, the same way (non-interactive, with the time limit). A timeout counts as worse than the baseline.
+1. Run every test, lint and build command found in Phase 0 again, the same way (non-interactive, with the time limit). A timeout counts as worse than the baseline. With subagents on, also have one review the uncommitted diff as `references/subagents.md` describes, and check what it reports before acting on it.
 2. If anything is worse than the baseline: **failure**.
 3. If the task's completion criteria are not met: **failure**.
 4. On failure: undo only the task's changes with `git checkout -- . ':!.autopilot' && git clean -fd -e .autopilot`. Reverting `.autopilot/` too would erase the `attempts` increase from Phase 2 and retry the same task forever, so it must be excluded. Run `bash <skill folder>/scripts/task.sh fail <ID>` (back to `open` with attempts kept, or `blocked` from the third attempt) and record the failure reason in the LOG. If the integration mode is `local`, commit only the state change (add only `.autopilot/` and `.gitignore`, message `autopilot(<task ID>): record failure` or the repository's commit convention). In driver mode exit; in session mode go back to Phase 0.
@@ -365,6 +367,7 @@ How the hook is installed, the fallback for environments that ignore skill hooks
 - Delete things outside `.autopilot/` (except under the cleanup rules)
 - Upgrade a dependency's major version (`task.sh done` refuses a major bump in `package.json`, `requirements*.txt`, `pyproject.toml` or `Cargo.toml`; propose it instead)
 - Change or remove an existing public interface (except within an adopted proposal)
+- Hand a subagent implementation, commits, pushes or the state files: it reads, runs in temporary directories and reports; you decide and write
 - Create or modify secrets, tokens or keys (`task.sh done` refuses added lines that match `scan.sh`'s secret pattern; a deliberate fake value in a test carries `autopilot-scan: ignore`)
 
 ## Templates
