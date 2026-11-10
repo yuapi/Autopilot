@@ -931,3 +931,8 @@
 - 기능 cloud-push 1/2(P-002 채택). 변경: workbranch.sh --push(클라우드·CONFIG에 integration 없음일 때만 작업 브랜치 push, 기본 브랜치·분리된 HEAD 거절, origin 없으면 안내, 실패는 exit 1), SKILL.md(상태 파일 표·Phase 0 클라우드 안내·Phase 5 6·통합 표), status.sh(Note/Warning 구분), 테스트(workbranch +8, status +1·1 갱신, skill_rules +1), CHANGELOG
 - 검증: workbranch 29·status 53·skill_rules 61 통과, validate PASS
 - 후속: T-126(2/2) open
+
+## 2026-11-10T05:16Z | T-126 | done | skill 1.57.0
+- 기능 cloud-push 2/2(P-002 완료). 변경: autopilot.sh(클라우드·integration 없음이면 시작 때 push 안내), README 2종, docs/skill-design.md(CONFIG 원칙의 예외와 이유), tests/test_workbranch.sh(+3 흐름 테스트: 작업 브랜치가 origin에, main은 그대로), tests/test_driver.sh(+2, 클라우드 여부에 의존하지 않게 고침), CHANGELOG
+- 검증: workbranch 32 통과, validate PASS(클라우드 세션과 CLAUDE_CODE_REMOTE 없는 환경 둘 다)
+- features/cloud-push.md done, PROPOSALS P-002 done
