@@ -869,7 +869,7 @@
 - 검증: test_eval 110 통과, validate PASS. 실제 eval hooks(--model claude-sonnet-5-5): "Cost: $0.22 … model: claude-sonnet-5-5", 8/8
 
 ## 2026-11-10T03:46Z | - | retro | skill 1.55.0
-- 범위: T-111~T-120, 10건 done·0 failed·0 blocked(성공률 100%). 유형: fix 6, security 1(T-114 제외 집계 시 fix 5), test 1, docs 1, enhance 1. 출처: 배운 것 적용(규칙 강제 확인) 5, eval 관찰 2, 직접 겪음 1, eval 범위 점검 1, 문서 대조 1
+- 범위: T-111~T-120, 10건 done·0 failed·0 blocked(성공률 100%). 유형: fix 6, security 1, test 1, docs 1, enhance 1. 출처: 배운 것 적용(규칙 강제 확인) 5, eval 관찰 2, 직접 겪음 1, eval 범위 점검 1, 문서 대조 1
 - 실패 원인: 없음. 과정 실수 2건 — T-111 구현을 task.sh start보다 먼저 함(stash로 순서 바로잡음), T-118 validate 실패를 `| tail -1`이 가려 커밋(다음 커밋에서 고침)
 - 관찰: 지난 회고의 "규칙 강제 확인" 규칙이 결함 5건을 바로 찾음. 새 eval 예제(api)가 1-F 결함을 찾음. 기본 모델 변경으로 eval 비용 5배
-- 배운 것: 강제 확인 줄에 Never 목록 결과 반영, eval --model 지정, 파이프 종료 코드 규칙 추가(15줄). last_retro·last_scan·last_issue_check 갱신
+- 배운 것: 강제 확인 줄에 Never 목록 결과 반영, eval --model 지정, 파이프 종료 코드 규칙 추가, 표식 단어 줄은 경계 입력 줄에 합침(15줄). last_retro·last_scan·last_issue_check 갱신
