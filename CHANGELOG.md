@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- Ninth eval fixture `branch`: `integration: branch` against a bare origin, graded by new `remote=` (a branch on origin) and `basekept=` (the base on origin untouched) expectations; the eval now counts commits on every local branch, since HEAD may be back on the base in branch and pr modes. Both real runs read `references/integration.md` and scored 9/9
 
 ## 1.59.0 — 2026-11-10
 - P-001 finished: docs/skill-design.md explains the split and its safeguards, the README layout lists `references/`; eval before and after with `--model claude-sonnet-5-5`: 8/8 fixtures 100% both times, no broken rule, full run $1.64 → $1.48, SKILL.md 48.5 KB → 42.9 KB
