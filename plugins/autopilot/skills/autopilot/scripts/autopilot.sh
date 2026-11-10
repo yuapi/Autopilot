@@ -211,10 +211,12 @@ stall=0
 while :; do
   # a final stop finalstop.sh did not write skipped its checks: move it aside and run again
   if [ -f .autopilot/STOP ]; then
-    case "$(head -1 .autopilot/STOP | tr -d '\r')" in
+    first="$(head -1 .autopilot/STOP | tr -d '\r')"; A=.autopilot
+    case "$first" in
       "Final stop: no progress"*) ;;
       "Final stop"*|"최종 정지"*)
-        if ! grep -qF "(checked by finalstop.sh)" .autopilot/STOP; then
+        # marked by finalstop.sh, or (before 1.54, unmarked) logged by it as a stop entry with the same first line
+        if ! { grep -qF "(checked by finalstop.sh)" "$A/STOP" || tr -d '\r' < "$A/LOG.md" 2>/dev/null | awk -v f="- $first" '/^## / { s = ($0 ~ /\| - \| stop \|/); next } s && $0 == f { ok = 1 } END { exit !ok }'; }; then
           mv -f .autopilot/STOP .autopilot/STOP.refused
           echo "[driver] .autopilot/STOP was a final stop not written by finalstop.sh (its conditions were never checked). Moved it to STOP.refused; the next run goes on." >&2
         fi;;

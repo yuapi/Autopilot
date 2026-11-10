@@ -891,3 +891,12 @@
 - 발굴: 심화 발굴 2단계 새 시나리오 — 손으로 쓴 최종 정지가 거절된 뒤 /autopilot:status. STOP.refused가 상태에 안 나옴
 - 변경: status.sh(STOP.refused가 있으면 Note·첫 줄·경과 분), tests/test_status.sh(+2), CHANGELOG
 - 검증: test_status 52 통과, validate PASS
+
+## 2026-11-10T04:03Z | - | release | skill 1.56.0
+- 1.56.0 (minor): status가 치운 최종 정지(STOP.refused)를 보여 줌(T-122). PR #324 → main, #325 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-11-10T04:05Z | T-123 | done | skill 1.56.0
+- 발굴: 심화 발굴 3단계 품질 속성(업그레이드 경로). T-111 이후 1.54 이전에 정당하게 끝난 레포(표시 없는 STOP)에서 드라이버가 STOP을 치우고 다시 작업
+- 변경: assets/autopilot-stop.sh·.claude/hooks 사본·autopilot.sh(표시가 없어도 LOG에 같은 첫 줄의 stop 항목이 있으면 인정), 테스트(hook +2, driver +1), CHANGELOG
+- 검증: test_hook 47, test_driver 98 통과, validate PASS

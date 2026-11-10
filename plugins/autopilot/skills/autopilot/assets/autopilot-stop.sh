@@ -32,7 +32,8 @@ if [ -f "$A/STOP" ]; then
   case "$first" in
     "Final stop: no progress"*) ;;
     "Final stop"*|"최종 정지"*)
-      grep -qF "(checked by finalstop.sh)" "$A/STOP" || { mv -f "$A/STOP" "$A/STOP.refused"; refused=1; } ;;
+      # finalstop.sh marks it; one from before 1.54 has no mark, but finalstop.sh always logged its first line as a stop entry
+      { grep -qF "(checked by finalstop.sh)" "$A/STOP" || tr -d '\r' < "$A/LOG.md" 2>/dev/null | awk -v f="- $first" '/^## / { s = ($0 ~ /\| - \| stop \|/); next } s && $0 == f { ok = 1 } END { exit !ok }'; } || { mv -f "$A/STOP" "$A/STOP.refused"; refused=1; } ;;
   esac
 fi
 if [ -f "$A/STOP" ]; then
