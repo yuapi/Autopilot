@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- The state commit at the end of every task (and after a failure) includes `.gitignore`: `runlock.sh start` and `task.sh start` add run-artifact lines to it, and "commit `.autopilot/` alone" left it uncommitted (the `mono` eval ended with a dirty tree)
 - An idea that 1-F sends to proposals must get its PROPOSALS row in the same cycle; a "Not doing" line that only says "see PROPOSALS" no longer counts (the `api` eval found the proposal written in 1 of 4 runs: the model noted it under "Not doing" and never wrote it)
 - Eighth eval fixture `api`: a library whose obvious improvement (`parse_point` raising instead of returning `None`) changes its public API, so it must go to PROPOSALS; new `proposal=` (matched against PROPOSALS.md) and `nodiff=` (no added line may match) expectations
 - README (EN/KO): "The rules are checked, not only written" lists what `task.sh done`, `log.sh`, `finalstop.sh` and the Stop hook refuse

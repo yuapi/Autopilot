@@ -99,7 +99,7 @@ check "Phase 4 treats a timeout as worse than the baseline" grep -q "A timeout c
 check "a scan.sh line is settled by a proposal only when 1-F requires it" grep -q "a PROPOSALS row when 1-F requires one" "$SKILL"
 check "a 1-F idea needs its PROPOSALS row; a Not doing line does not count" grep -q 'one that only says "see PROPOSALS", drops it and does not count' "$SKILL"
 
-check "Phase 5 commits .autopilot/ at the end of every task" grep -q "Commit \`.autopilot/\` alone, in every mode" "$SKILL"
+check "Phase 5 commits .autopilot/ at the end of every task" grep -q "Commit \`.autopilot/\` and \`.gitignore\` alone, in every mode" "$SKILL"
 
 check "commit hooks are verification and never bypassed" bash -c "grep -q 'Never bypass hooks' '$SKILL' && grep -q 'Bypass the repository' '$SKILL'"
 

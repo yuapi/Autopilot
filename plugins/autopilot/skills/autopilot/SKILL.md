@@ -295,7 +295,7 @@ Claim it with `bash <skill folder>/scripts/task.sh start <ID>`: it refuses while
 1. Run every test, lint and build command found in Phase 0 again, the same way (non-interactive, with the time limit). A timeout counts as worse than the baseline.
 2. If anything is worse than the baseline: **failure**.
 3. If the task's completion criteria are not met: **failure**.
-4. On failure: undo only the task's changes with `git checkout -- . ':!.autopilot' && git clean -fd -e .autopilot`. Reverting `.autopilot/` too would erase the `attempts` increase from Phase 2 and retry the same task forever, so it must be excluded. Run `bash <skill folder>/scripts/task.sh fail <ID>` (back to `open` with attempts kept, or `blocked` from the third attempt) and record the failure reason in the LOG. If the integration mode is `local`, commit only the state change (add only `.autopilot/`, message `autopilot(<task ID>): record failure` or the repository's commit convention). In driver mode exit; in session mode go back to Phase 0.
+4. On failure: undo only the task's changes with `git checkout -- . ':!.autopilot' && git clean -fd -e .autopilot`. Reverting `.autopilot/` too would erase the `attempts` increase from Phase 2 and retry the same task forever, so it must be excluded. Run `bash <skill folder>/scripts/task.sh fail <ID>` (back to `open` with attempts kept, or `blocked` from the third attempt) and record the failure reason in the LOG. If the integration mode is `local`, commit only the state change (add only `.autopilot/` and `.gitignore`, message `autopilot(<task ID>): record failure` or the repository's commit convention). In driver mode exit; in session mode go back to Phase 0.
 
 ### Phase 5 — record
 
@@ -307,7 +307,7 @@ On success:
 4. Append to the LOG with `scripts/log.sh` (see "LOG format").
    Never commit generated files (`__pycache__`, build output, coverage, logs); `task.sh done` refuses a task that adds the well-known ones. If the task created them, add them to `.gitignore` instead; if they were already tracked, queue a `cleanup` task rather than deleting them in this one.
 5. If the integration mode is `pr` and `release: auto`, check the "Release" conditions below.
-6. Commit `.autopilot/` alone, in every mode (message `autopilot: record state` or the repository's convention; in `branch`/`pr` modes on the task branch before publishing). The `done` row and the LOG entry are written after the task's commit; without this they stay uncommitted, are lost with the working tree, and are missing when the loop stops (task budget, a person's STOP, the driver's run limit). Every task ends with a clean working tree.
+6. Commit `.autopilot/` and `.gitignore` alone, in every mode (`.gitignore` holds the run-artifact lines `runlock.sh start` and `task.sh start` add; message `autopilot: record state` or the repository's convention; in `branch`/`pr` modes on the task branch before publishing). The `done` row and the LOG entry are written after the task's commit; without this they stay uncommitted, are lost with the working tree, and are missing when the loop stops (task budget, a person's STOP, the driver's run limit). Every task ends with a clean working tree.
 7. **Driver mode**: exit. **Session mode**: drop what you remember about the task and go back to Phase 0. No summary, no report, no "next I will …". Go straight to the next task.
 
 ## Integration policy
