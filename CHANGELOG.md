@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.59.0 — 2026-11-10
 - P-001 finished: docs/skill-design.md explains the split and its safeguards, the README layout lists `references/`; eval before and after with `--model claude-sonnet-5-5`: 8/8 fixtures 100% both times, no broken rule, full run $1.64 → $1.48, SKILL.md 48.5 KB → 42.9 KB
 - SKILL.md is shorter again (P-001, 2/3): how the Stop hook is installed and its fallback, the driver, `status.sh` details and repositories with their own Stop hook moved unchanged to `references/operations.md`; SKILL.md keeps when the hook blocks, how to release it, and the status trigger
 - SKILL.md is shorter (P-001, 1/3): the `branch`/`pr` rules (per-phase table, state across task branches, PR rules, revisiting open PRs, releases) moved unchanged to `references/integration.md`, which SKILL.md says to read in those modes; the rules for every mode stay in SKILL.md
