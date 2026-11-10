@@ -72,4 +72,22 @@ d="$(newrepo main)"; printf 'integration: pr\n' > "$d/.autopilot/CONFIG.md"
 out="$(bash "$WB" "$d" 2>&1)"
 check "integration: pr → stays, no warning" bash -c "test '$(branch "$d")' = main && ! grep -q 'is not' <<<'$out'"
 
+# --push: in a cloud session without integration in CONFIG, push the work branch, never a default branch
+origin="$(mktemp -d "$TMPROOT/o.XXXX")"; git init -q --bare "$origin"
+d="$(newrepo main)"; git -C "$d" remote add origin "$origin"
+out="$(CLAUDE_CODE_REMOTE=true bash "$WB" --push "$d" 2>&1)"; rc=$?
+check "--push on main → refused (exit 1)" test "$rc" -eq 1
+check "--push on main → nothing pushed" test -z "$(git -C "$origin" branch --list)"
+b="$(bash "$WB" "$d" 2>/dev/null | tail -1)"
+out="$(CLAUDE_CODE_REMOTE=true bash "$WB" --push "$d" 2>&1)"
+check "--push on the work branch in a cloud session → pushed" bash -c "grep -q 'pushed $b to origin' <<<\"\$1\" && git -C '$origin' show-ref -q --verify 'refs/heads/$b'" _ "$out"
+check "--push sets the upstream" test "$(git -C "$d" rev-parse --abbrev-ref '@{u}')" = "origin/$b"
+check "--push outside a cloud session → does nothing" bash -c "CLAUDE_CODE_REMOTE= bash '$WB' --push '$d' | grep -q 'not a cloud session'"
+printf 'integration: local\n' > "$d/.autopilot/CONFIG.md"
+check "--push with integration: local in CONFIG → does nothing" bash -c "CLAUDE_CODE_REMOTE=true bash '$WB' --push '$d' | grep -q 'CONFIG sets integration: local; not pushing'"
+rm "$d/.autopilot/CONFIG.md"; git -C "$d" remote remove origin
+check "--push without origin → says the commits stay here (exit 0)" bash -c "CLAUDE_CODE_REMOTE=true bash '$WB' --push '$d' 2>&1 | grep -q 'no remote named origin'"
+git -C "$d" remote add origin "$TMPROOT/no-such-remote"
+check_not "--push that fails → exit 1" bash -c "CLAUDE_CODE_REMOTE=true bash '$WB' --push '$d' >/dev/null 2>&1"
+
 finish

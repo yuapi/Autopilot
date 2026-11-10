@@ -926,3 +926,8 @@
 - STOP: - 완료: 124건 (fix 51, enhance 33, feature 14, test 14, docs 7, perf 3, security 2)
 - 재개: 사람이 2026-11-10 대화에서 P-001·P-002를 둘 다 채택하고 루프 재개를 요청. STOP 삭제
 - 태그·Release: 사람이 로컬 실행 불가(클라우드 세션)라고 함. 세션에 태그·Release를 만드는 도구가 없고 git·API는 정책으로 막혀 계속 tag pending(우회하지 않음)
+
+## 2026-11-10T05:10Z | T-125 | done | skill 1.57.0
+- 기능 cloud-push 1/2(P-002 채택). 변경: workbranch.sh --push(클라우드·CONFIG에 integration 없음일 때만 작업 브랜치 push, 기본 브랜치·분리된 HEAD 거절, origin 없으면 안내, 실패는 exit 1), SKILL.md(상태 파일 표·Phase 0 클라우드 안내·Phase 5 6·통합 표), status.sh(Note/Warning 구분), 테스트(workbranch +8, status +1·1 갱신, skill_rules +1), CHANGELOG
+- 검증: workbranch 29·status 53·skill_rules 61 통과, validate PASS
+- 후속: T-126(2/2) open

@@ -19,8 +19,8 @@ Phase 5 6(상태 커밋) 뒤 → 조건 확인 → workbranch.sh --push → 막�
 ## Stages
 | Stage | Task ID | Content | Done when | Status |
 |---|---|---|---|---|
-| 1/2 | T-125 | workbranch.sh --push(기본 브랜치 거절, origin 없으면 안내), SKILL.md Phase 0·5와 상태 파일 표, status.sh 클라우드 경고 문구 | test_workbranch·test_status·test_skill_rules 추가 검사, validate PASS | open |
-| 2/2 | T-126 | 드라이버 안내, README 2종, docs/skill-design.md("CONFIG로만 권한을 넓힌다" 원칙의 예외와 이유), 전체 통합 확인 | 가짜 origin 레포로 세션 흐름 통합 테스트, README·설계 문서 갱신 | 대기 |
+| 1/2 | T-125 | workbranch.sh --push(기본 브랜치 거절, origin 없으면 안내), SKILL.md Phase 0·5와 상태 파일 표, status.sh 클라우드 경고 문구 | test_workbranch·test_status·test_skill_rules 추가 검사, validate PASS | done |
+| 2/2 | T-126 | 드라이버 안내, README 2종, docs/skill-design.md("CONFIG로만 권한을 넓힌다" 원칙의 예외와 이유), 전체 통합 확인 | 가짜 origin 레포로 세션 흐름 통합 테스트, README·설계 문서 갱신 | open |
 
 ## Decisions
 - 브랜치 방식(작업마다 브랜치·PR)이 아니라 local 모드의 작업 브랜치 하나만 push: 원격에 생기는 것이 가장 적고, 기본 브랜치·PR·병합은 그대로 금지

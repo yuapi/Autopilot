@@ -105,4 +105,6 @@ check "commit hooks are verification and never bypassed" bash -c "grep -q 'Never
 
 check "Final stop is a token kept untranslated" grep -q "the words \`Final stop\` that begin a final-stop summary" "$SKILL"
 
+check "Phase 5 pushes the work branch in a cloud session without integration" grep -q "Then run \`bash <skill folder>/scripts/workbranch.sh --push\`" "$SKILL"
+
 finish
