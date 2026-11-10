@@ -25,6 +25,11 @@ d="$(sandbox)"
 rm "$d/$SKILL_REL/scripts/archive.sh"
 check_not "validate: fails when a skill file SKILL.md references is missing" bash "$d/scripts/validate.sh"
 
+d="$(sandbox)"; echo "# orphan" > "$d/$SKILL_REL/references/orphan.md"
+check_not "validate: fails when a reference file is not named in SKILL.md" bash "$d/scripts/validate.sh"
+d="$(sandbox)"; rm "$d/$SKILL_REL/scripts/autopilot.sh"   # named only in references/operations.md
+check "validate: a file named only in references/ is checked too" bash -c "! bash '$d/scripts/validate.sh' >'$d/v.txt' 2>&1 && grep -q 'references a missing file: scripts/autopilot.sh' '$d/v.txt'"
+
 # --- bump: Unreleased items become the version section
 d="$(sandbox)"; cur="$(ver_of "$d")"; new="$(next_minor "$cur")"
 python3 - "$d/CHANGELOG.md" <<'PY'

@@ -112,4 +112,8 @@ check "SKILL.md points to references/integration.md for branch and pr modes" gre
 check "references/integration.md holds the PR rules" grep -q "Revisit your own open PRs" "$REPO/$SKILL_REL/references/integration.md"
 check "the rules that apply in every mode stay in SKILL.md" grep -q "Never push directly to the base or default branch" "$REPO/$SKILL_REL/SKILL.md"
 
+check "SKILL.md points to references/operations.md" grep -q "are in \`references/operations.md\`" "$REPO/$SKILL_REL/SKILL.md"
+check "references/operations.md holds the hook fallback and the driver" bash -c "grep -q 'Fallback for environments that ignore skill hooks' '$REPO/$SKILL_REL/references/operations.md' && grep -q 'bash <skill folder>/scripts/autopilot.sh 20' '$REPO/$SKILL_REL/references/operations.md'"
+check "SKILL.md keeps when the hook blocks and how to release it" grep -q "To release it: create \`.autopilot/STOP\`" "$REPO/$SKILL_REL/SKILL.md"
+
 finish
