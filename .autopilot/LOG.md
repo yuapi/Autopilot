@@ -1020,3 +1020,8 @@
 - 변경: status.sh(config_values: 한 줄만 읽음, 첫 번째 값 사용, scope 전체 경로, AUTOPILOT_RUN_STALE_MIN 반영), tests/test_status.sh(+6), CHANGELOG
 - 검증: test_status 61 통과, validate PASS(이번엔 레포에 .scan-required 남지 않음)
 - Subagents: none, no discovery this task, diff 45 lines
+
+## 2026-11-10T10:09Z | T-136 | done | skill 1.60.0
+- 변경: workbranch.sh(--push 실패 시 git 메시지와 원인별 고칠 방법: 갈라진 브랜치는 merge·force push 금지, 커밋 없는 브랜치는 먼저 커밋, 그 밖은 LOG에 기록), tests/test_workbranch.sh(+3), CHANGELOG
+- 검증: test_workbranch 35 통과, validate PASS
+- Subagents: none, no discovery this task, diff 30 lines
