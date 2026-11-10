@@ -134,8 +134,13 @@ d="$(newrepo)"; cfg "$d" prr
 out="$(FAKE_MODE=ok drive_gh "$d" 1 2>&1)"
 check "unknown integration value → warns" grep -q "unknown integration value.*treats it as local" <<<"$out"
 d="$(newrepo)"
-out="$(FAKE_MODE=ok drive_gh "$d" 1 2>&1)"
+out="$(CLAUDE_CODE_REMOTE= FAKE_MODE=ok drive_gh "$d" 1 2>&1)"
 check_not "local mode (no CONFIG) → no integration message" grep -q "integration" <<<"$out"
+out="$(CLAUDE_CODE_REMOTE=true FAKE_MODE=ok drive_gh "$d" 1 2>&1)"
+check "cloud session, no CONFIG → says the work branch is pushed" grep -q "cloud session with no integration.*work branch is pushed" <<<"$out"
+printf 'integration: local\n' > "$d/.autopilot/CONFIG.md"
+out="$(CLAUDE_CODE_REMOTE=true FAKE_MODE=ok drive_gh "$d" 1 2>&1)"
+check_not "cloud session, integration: local → no push notice" grep -q "work branch is pushed" <<<"$out"
 
 # no progress: runs that change neither LOG.md nor commits stop the driver
 d="$(newrepo)"
