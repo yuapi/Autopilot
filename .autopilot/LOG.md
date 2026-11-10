@@ -1015,3 +1015,8 @@
 - 검증: 새 테스트 4건이 수정 전 스크립트에서 실패(61/65)·수정 후 65 통과, scan 39·task 78·driver 105 통과, validate PASS
 - 직접 겪음: 기록하려다 log.sh가 거절 — validate의 "레포 scan 깨끗" 테스트가 실제 레포에 .scan-required를 남겼음. 테스트를 고치고 그 표시를 지움(발굴이 만든 것이 아님)
 - Subagents: none, no discovery this task, diff 40 lines
+
+## 2026-11-10T10:06Z | T-135 | done | skill 1.60.0
+- 변경: status.sh(config_values: 한 줄만 읽음, 첫 번째 값 사용, scope 전체 경로, AUTOPILOT_RUN_STALE_MIN 반영), tests/test_status.sh(+6), CHANGELOG
+- 검증: test_status 61 통과, validate PASS(이번엔 레포에 .scan-required 남지 않음)
+- Subagents: none, no discovery this task, diff 45 lines
