@@ -940,3 +940,8 @@
 ## 2026-11-10T05:20Z | - | release | skill 1.58.0
 - 1.58.0 (minor): 클라우드 세션의 작업 브랜치 push(P-002, T-125·T-126). PR #339 → main, #340 → develop
 - tag pending: git 태그 push 403, Release API "not permitted for this session type"
+
+## 2026-11-10T05:23Z | T-127 | done | skill 1.58.0
+- 기능 skill-split 1/3(P-001 채택). 변경: SKILL.md의 branch·pr 규칙(모드별 표, 작업 브랜치 간 상태, PR 규칙, 열린 PR 재방문, 릴리스)을 그대로 references/integration.md로, SKILL.md에는 "branch·pr 모드면 Phase 0 1 전에 읽는다" 한 줄과 모든 모드 규칙(CONFIG·관례·Always) 유지, tests/test_skill_rules.sh(SKILL.md+references 함께 검사, +3), CHANGELOG
+- 검증: SKILL.md 48,528 → 45,755바이트(약 -6%), test_skill_rules 64 통과, validate PASS(0 warnings, 참조 파일 언급 검사 포함)
+- 후속: T-128(2/3) open

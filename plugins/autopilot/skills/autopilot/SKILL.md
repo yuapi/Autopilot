@@ -73,7 +73,7 @@ In session mode, also run `bash <skill folder>/scripts/runlock.sh touch` at the 
    - If `git config user.name` or `git config user.email` is empty, every commit would fail and the loop could only burn attempts. Write STOP with the reason and the fix (`git config user.name "…"` and `git config user.email …`), tell the person, and stop. Never set an identity yourself: the commits would carry a made-up author.
    - If `CLAUDE_CODE_REMOTE` is `true` (a cloud session), the container and every unpushed commit are reclaimed later. When CONFIG sets no `integration`, the loop runs in `local` mode and also pushes its work branch (`autopilot/<date>`) after every task (Phase 5 step 6): never a default branch, no PR, no merge. Tell the person once, in one line at the start (a notice, not a question), and that `integration: local` in CONFIG keeps the commits here only. When CONFIG sets `integration: local` explicitly, push nothing and say once that the commits are lost when the container is reclaimed. Write the notice in the LOG. Never change CONFIG yourself.
    - The Stop hook comes with this skill (see "The Stop hook" below); nothing needs installing. If an older version left a copy at `.claude/hooks/autopilot-stop.sh`, refresh it with `bash <skill folder>/scripts/hook.sh install` and commit what it changed.
-1. If the three core files are missing, create them from the templates (never create CONFIG). If the integration mode is not `local`, update the base branch as described in "Integration policy". If CONFIG names a `base_branch` that exists neither locally nor on origin after the fetch (a typo), no task can start from it: write STOP with the name and the fix (correct `base_branch:` or set it to `auto`), tell the person, and stop. Do the same for a `branch_prefix` that git rejects as a branch name (`git check-ref-format --branch <prefix>T-1-x` fails: a space, `~`, `..`).
+1. If the three core files are missing, create them from the templates (never create CONFIG). If the integration mode is not `local`, update the base branch as described in `references/integration.md`. If CONFIG names a `base_branch` that exists neither locally nor on origin after the fetch (a typo), no task can start from it: write STOP with the name and the fix (correct `base_branch:` or set it to `auto`), tell the person, and stop. Do the same for a `branch_prefix` that git rejects as a branch name (`git check-ref-format --branch <prefix>T-1-x` fails: a space, `~`, `..`).
    Read the state. Keep the amount read constant even in long runs:
    - ROADMAP, CONFIG, PROPOSALS: all of it.
    - BACKLOG: the header, `open` and `in_progress` rows, and the 10 most recent completed rows. Find anything else with grep when needed.
@@ -302,7 +302,7 @@ Claim it with `bash <skill folder>/scripts/task.sh start <ID>`: it refuses while
 On success:
 1. Commit: in the repository's commit convention (CONTRIBUTING, CLAUDE.md, …) if it has one, else `autopilot(<task ID>): <one-line summary>`. For issue-sourced tasks put `Refs #N` in the body. The repository's commit hooks (pre-commit formatters, linters, commit-msg checks) are part of verification: if a hook rewrote files, stage them and commit again; if it rejects the commit, fix the cause or treat it as a Phase 4 failure. Never bypass hooks (`--no-verify`, `-n`, disabling `core.hooksPath`). If the integration mode is not `local`, commit on the task branch. **Do not push yet.**
 2. Run `bash <skill folder>/scripts/task.sh done <ID>`. It sets `done` with the date only if the task has its own commit since `start` that changes files outside `.autopilot/` (and, with CONFIG `scope`, only inside it) and names no other task. If it refuses, fix the cause instead of editing the row by hand: commit the change, or, when the commit also covers another task, undo that unpushed commit with `git reset --soft HEAD~1` (the changes stay) and commit each task on its own.
-   - Only after `done` accepts, publish as described in "Integration policy" (push, PR, merge). Publishing first would push or merge a commit the check then refuses.
+   - Only after `done` accepts, publish as described in `references/integration.md` (push, PR, merge). Publishing first would push or merge a commit the check then refuses.
 3. Add follow-up tasks found during implementation to the BACKLOG.
 4. Append to the LOG with `scripts/log.sh` (see "LOG format").
    Never commit generated files (`__pycache__`, build output, coverage, logs); `task.sh done` refuses a task that adds the well-known ones. If the task created them, add them to `.gitignore` instead; if they were already tracked, queue a `cleanup` task rather than deleting them in this one.
@@ -316,32 +316,7 @@ On success:
 
 **The repository's conventions come first.** If CONTRIBUTING, CLAUDE.md or similar define a branching strategy (git flow, …), commit format, PR rules or a release procedure, follow them. CONFIG `auto` values are taken from those conventions.
 
-| Step | `local` | `branch` | `pr` |
-|---|---|---|---|
-| Phase 0 | leave a default branch for `autopilot/<date>` (`workbranch.sh`), otherwise stay | fetch the base and start from its latest commit | same |
-| Phase 3 start | - | create branch `<prefix><task ID>-<slug>` | same |
-| Phase 4 failure | roll back | roll back, return to the base, delete the local task branch | same |
-| Phase 5 success | commit (cloud session without `integration` in CONFIG: also push the work branch, `workbranch.sh --push`) | commit → `git push -u origin <branch>` | push → open a PR (`gh`; `glab mr create` for a GitLab origin; or MCP) → merge if `merge: auto` |
-
-Handling the state files (`.autopilot/`):
-- While running, the `.autopilot/` in the working directory is the only truth. When switching branches, copy `.autopilot/` somewhere temporary and copy it back after switching. That way attempts and done records survive even when PRs are not merged yet.
-- Commit state changes together with the task branch commit. State only accumulates, so when PRs conflict on `.autopilot/`, take the version from the later task.
-- Do not select task IDs that appear in the branch name of an open PR.
-
-PR rules:
-- The body gives the task ID, a summary of the change, the verification result (Phase 4 commands and numbers) and `Refs #N` for issue-sourced tasks. Follow the repository's PR template if it has one.
-- `merge: auto` merges only when Phase 4 passed, the repository's CI (if any) passed and there are no conflicts. Use the repository's merge method, else a merge commit. If the conditions are not met, leave the PR open and move to the next task.
-- While unmerged PRs exist, the next task starts fresh from the base. Do not select tasks touching the same files as an open PR until it is merged.
-- Read review comments on your own PRs in 1-E like issues and turn them into fix tasks.
-- **Revisit your own open PRs** (head branch starts with `branch_prefix`) at the start of every task, right after 1-E. Do not wait for checks that are still running; look again on the next task.
-  - CI now passed, no conflicts, `merge: auto` → merge it now (this is how a PR left open for pending CI gets merged).
-  - CI failed → a `fix` task on that PR's branch, source `PR #N CI`, with the failing check's name and log summary as evidence. Fix it on the same branch and push; do not open a second PR.
-  - Conflicts with the base → a `fix` task: merge the base into that branch (never rebase or force push), re-run Phase 4, push.
-  - Never create a second task for the same PR while one is open. If the same PR fails 3 tasks in a row, leave it open and record it in the LOG and the STOP summary for a person.
-
-Release (`pr` + `release: auto`):
-- Only if the repository documents a release procedure (how to bump the version, CHANGELOG, tags). Otherwise do not release; leave a proposal (1-F).
-- When unreleased changes include at least one substantive task, choose the version kind and proceed exactly as documented. Never invent steps the documentation does not have. Record it as a `release` LOG entry (version, what was merged, and any step that was blocked, such as a tag push).
+**In `branch` or `pr` mode, read `references/integration.md` (in this skill's folder) before Phase 0 step 1 and follow it on every task**: what each phase does per mode, handling `.autopilot/` across task branches, PR rules, revisiting your own open PRs, and releases. In `local` mode it does not apply: Phase 0 (`workbranch.sh`) and Phase 5 (the cloud push) say all that local mode needs.
 
 Always:
 - Never push directly to the base or default branch. Never force push, delete remote branches, delete or rewrite tags, or rewrite the history of shared branches.

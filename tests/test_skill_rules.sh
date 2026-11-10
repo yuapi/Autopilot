@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Commands written in SKILL.md must do what they claim
 . "$(dirname "$0")/lib.sh"
-SKILL="$REPO/$SKILL_REL/SKILL.md"
+# the rules live in SKILL.md and the reference files it points to (references/*.md)
+SKILL="$TMPROOT/skill-rules.md"; cat "$REPO/$SKILL_REL/SKILL.md" "$REPO/$SKILL_REL"/references/*.md > "$SKILL"
 
 # Phase 4 rollback command: the first `...` code on the "On failure:" line
 rollback="$(grep -m1 'On failure:' "$SKILL" | sed -n 's/^[^`]*`\([^`]*\)`.*/\1/p')"
@@ -106,5 +107,9 @@ check "commit hooks are verification and never bypassed" bash -c "grep -q 'Never
 check "Final stop is a token kept untranslated" grep -q "the words \`Final stop\` that begin a final-stop summary" "$SKILL"
 
 check "Phase 5 pushes the work branch in a cloud session without integration" grep -q "Then run \`bash <skill folder>/scripts/workbranch.sh --push\`" "$SKILL"
+
+check "SKILL.md points to references/integration.md for branch and pr modes" grep -q "In \`branch\` or \`pr\` mode, read \`references/integration.md\`" "$REPO/$SKILL_REL/SKILL.md"
+check "references/integration.md holds the PR rules" grep -q "Revisit your own open PRs" "$REPO/$SKILL_REL/references/integration.md"
+check "the rules that apply in every mode stay in SKILL.md" grep -q "Never push directly to the base or default branch" "$REPO/$SKILL_REL/SKILL.md"
 
 finish
