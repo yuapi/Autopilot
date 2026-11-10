@@ -886,3 +886,8 @@
 ## 2026-11-10T03:57Z | - | release | skill 1.55.2
 - 1.55.2 (patch): 멈춘 루프를 재개하는 안내(T-121). PR #320 → main, #321 → develop
 - tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-11-10T03:59Z | T-122 | done | skill 1.55.2
+- 발굴: 심화 발굴 2단계 새 시나리오 — 손으로 쓴 최종 정지가 거절된 뒤 /autopilot:status. STOP.refused가 상태에 안 나옴
+- 변경: status.sh(STOP.refused가 있으면 Note·첫 줄·경과 분), tests/test_status.sh(+2), CHANGELOG
+- 검증: test_status 52 통과, validate PASS
