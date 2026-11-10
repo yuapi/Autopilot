@@ -985,3 +985,8 @@
 ## 2026-11-10T06:01Z | - | discover | skill 1.59.1
 - STOP: Final stop: no substantive work left (실질 작업 없음)
 - 재개: 사람이 2026-11-10 대화에서 "오토파일럿이 서브에이전트를 활용할 수 있게, 사용자 옵션으로 끌 수 있게 기본값 켬"을 요청. STOP 삭제
+
+## 2026-11-10T06:07Z | T-131 | done | skill 1.59.1
+- 기능 subagents 1/2(사람의 요청). 변경: references/subagents.md(Phase 1 발굴 최대 3·Phase 4 diff 검토 1, 결과는 확인할 주장, 구현·커밋·push·상태 파일은 맡기지 않음), SKILL.md(Phase 1 안내·Phase 4 1·Never·CONFIG 오타 규칙), assets/CONFIG.md(subagents: on), autopilot.sh(허용 도구에 Agent, off·오타면 뺌), eval.sh(세션 허용 도구에 Agent), status.sh(값 표시·오타 경고), references/operations.md, 테스트(driver +4, status +2, skill_rules +5, eval +1), CHANGELOG
+- 검증: driver 104·status 55·skill_rules 72·eval 117 통과, validate PASS(클라우드·비클라우드 둘 다)
+- 후속: T-132(2/2, eval 전후 비교) open

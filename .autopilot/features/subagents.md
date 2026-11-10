@@ -20,8 +20,8 @@ Phase 4: 커밋 전 서브에이전트 1개가 diff를 완료 기준·Never 목�
 ## Stages
 | Stage | Task ID | Content | Done when | Status |
 |---|---|---|---|---|
-| 1/2 | T-131 | CONFIG 키, references/subagents.md, SKILL.md 안내·Never, 드라이버·eval 허용 도구, status.sh, 테스트 | validate PASS, 테스트 추가 | open |
-| 2/2 | T-132 | eval --fixture all 전후 비교(--model 고정), 서브에이전트 사용 확인(세션 기록), README·설계 문서 | 점수 유지 이상·규칙 위반 0, README·skill-design 갱신 | 대기 |
+| 1/2 | T-131 | CONFIG 키, references/subagents.md, SKILL.md 안내·Never, 드라이버·eval 허용 도구, status.sh, 테스트 | validate PASS, 테스트 추가 | done |
+| 2/2 | T-132 | eval --fixture all 전후 비교(--model 고정), 서브에이전트 사용 확인(세션 기록), README·설계 문서 | 점수 유지 이상·규칙 위반 0, README·skill-design 갱신 | open |
 
 ## Decisions
 - 구현은 맡기지 않음: 한 작업 = 한 커밋, task.sh 검사, 상태 파일 정합성이 주 에이전트 하나에 기대고 있어서
