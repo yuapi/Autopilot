@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- SKILL.md is shorter (P-001, 1/3): the `branch`/`pr` rules (per-phase table, state across task branches, PR rules, revisiting open PRs, releases) moved unchanged to `references/integration.md`, which SKILL.md says to read in those modes; the rules for every mode stay in SKILL.md
 
 ## 1.58.0 — 2026-11-10
 - The driver says at start when a cloud session will push its work branch; README (EN/KO) and docs/skill-design.md describe the cloud push and why it is the one exception to "only CONFIG widens what leaves the repository"
