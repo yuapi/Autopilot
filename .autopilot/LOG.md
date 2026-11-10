@@ -873,3 +873,12 @@
 - 실패 원인: 없음. 과정 실수 2건 — T-111 구현을 task.sh start보다 먼저 함(stash로 순서 바로잡음), T-118 validate 실패를 `| tail -1`이 가려 커밋(다음 커밋에서 고침)
 - 관찰: 지난 회고의 "규칙 강제 확인" 규칙이 결함 5건을 바로 찾음. 새 eval 예제(api)가 1-F 결함을 찾음. 기본 모델 변경으로 eval 비용 5배
 - 배운 것: 강제 확인 줄에 Never 목록 결과 반영, eval --model 지정, 파이프 종료 코드 규칙 추가, 표식 단어 줄은 경계 입력 줄에 합침(15줄). last_retro·last_scan·last_issue_check 갱신
+
+## 2026-11-10T03:50Z | - | release | skill 1.55.1
+- 1.55.1 (patch): eval이 실행 모델·예제별 비용·합계를 보여 줌(T-120). PR #316 → main, #317 → develop
+- tag pending: git 태그 push 403, Release API "not permitted for this session type". 사람이 로컬에서 release.sh --catch-up 실행 필요
+
+## 2026-11-10T03:53Z | T-121 | done | skill 1.55.1
+- 발굴: 심화 발굴(1 정적: 이슈 0·PR 0·scan 0, shellcheck 없음) 2단계 새 시나리오 — 멈춘 뒤 다른 세션에서 재개. 이전 세션 RUN이 남아 거절되는데 안내가 "STOP을 만들라"(이미 있음)
+- 변경: runlock.sh(STOP이 있으면 "멈추라는 요청을 받았고 현재 작업 뒤 끝남, 그 세션이 없으면 RUN을 지우고 다시 호출" 안내, 자동 인수는 하지 않음), tests/test_runlock.sh(+3), CHANGELOG
+- 검증: test_runlock 34 통과, validate PASS

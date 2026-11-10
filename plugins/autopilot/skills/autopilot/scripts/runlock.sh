@@ -60,7 +60,12 @@ case "$cmd" in
       if [ -n "$o" ] && [ "$o" != "$me" ] && [ "$o" != unknown ] && [ "$me" != unknown ] && [ "$a" -lt "$stale_min" ]; then
         started="$(sed -n 's/^started:[[:space:]]*//p' "$RUN" | head -1)"
         echo "[runlock] another autopilot loop is running in this repository (session $o, started ${started:-?}, last active $a min ago)." >&2
-        echo "[runlock] Let it finish, or create .autopilot/STOP to stop it. A marker idle for $stale_min min is taken over." >&2
+        if [ -f .autopilot/STOP ]; then
+          # a person already asked it to stop: saying "create STOP" would send them in a circle
+          echo "[runlock] It was asked to stop (.autopilot/STOP exists) and ends after its current task. If that session is no longer running (closed or crashed), delete .autopilot/RUN and invoke autopilot again to resume now; otherwise wait for it to end. A marker idle for $stale_min min is taken over." >&2
+        else
+          echo "[runlock] Let it finish, or create .autopilot/STOP to stop it. A marker idle for $stale_min min is taken over." >&2
+        fi
         exit 2
       fi
       if [ "$o" = "$me" ]; then ignore_artifacts; set_budget; touch "$RUN"; exit 0; fi
