@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.59.1 — 2026-11-10
 - Ninth eval fixture `branch`: `integration: branch` against a bare origin, graded by new `remote=` (a branch on origin) and `basekept=` (the base on origin untouched) expectations; the eval now counts commits on every local branch, since HEAD may be back on the base in branch and pr modes. Both real runs read `references/integration.md` and scored 9/9
 
 ## 1.59.0 — 2026-11-10
