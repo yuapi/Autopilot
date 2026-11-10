@@ -6,6 +6,7 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+- The words `Final stop` that begin a final-stop summary are listed with the machine-readable tokens to keep untranslated: with `language: ja` and the like, a translated summary was refused by `finalstop.sh`
 
 ## 1.56.1 — 2026-11-10
 - A final stop written by `finalstop.sh` before 1.54 (unmarked) is honored again when the LOG has its `stop` entry: after upgrading, the driver set such a finished repository's STOP aside and started working again

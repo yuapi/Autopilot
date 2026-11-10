@@ -37,7 +37,8 @@ check "uncommitted code → refused" grep -q "uncommitted changes outside .autop
 d="$(newrepo)"; echo "state" > "$d/.autopilot/notes"
 check "uncommitted .autopilot/ state is fine" bash -c "cd '$d' && printf '%s\n' 'Final stop: x' | bash '$FS' >/dev/null 2>&1"
 d="$(newrepo)"
-check "summary not starting with 'Final stop' → refused" grep -q 'must start with "Final stop"' <<<"$(stop "$d" "all done")"
+check "summary not starting with 'Final stop' → refused" grep -q 'must start with "Final stop", untranslated' <<<"$(stop "$d" "最終停止: 作業なし")"
+check "'Final stop' with the rest in another language → accepted" bash -c "cd '$(newrepo)' && printf 'Final stop: 実質的な作業なし\n' | bash '$FS' >/dev/null 2>&1"
 check_not "outside a git repository → exit 1" bash -c "cd '$TMPROOT' && echo 'Final stop' | bash '$FS'"
 # the .gitignore line task.sh start adds is state, not unfinished work
 d="$(newrepo)"; echo ".autopilot/.task" >> "$d/.gitignore"

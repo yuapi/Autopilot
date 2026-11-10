@@ -60,7 +60,7 @@ dirty="$(git status --porcelain -- . ':!.autopilot' ':!.gitignore' 2>/dev/null |
 [ -z "$dirty" ] || problems="${problems:+$problems
 }uncommitted changes outside .autopilot/ (commit or roll back the last task first): $(echo "$dirty" | tr '\n' ' ')"
 case "$summary" in "Final stop"*|"최종 정지"*) ;; *) problems="${problems:+$problems
-}the STOP summary on stdin must start with \"Final stop\" (see SKILL.md)";; esac
+}the STOP summary on stdin must start with \"Final stop\", untranslated (the rest may be in any language; see SKILL.md)";; esac
 
 if [ -n "$problems" ]; then
   echo "[finalstop] refused — this is not a final stop yet:" >&2
