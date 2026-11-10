@@ -6,6 +6,8 @@ Versioning: MAJOR.MINOR.PATCH
 - PATCH: driver fixes, wording, bug fixes
 
 ## Unreleased
+
+## 1.56.0 — 2026-11-10
 - `status.sh` shows a note when the Stop hook or the driver set a hand-written final stop aside (`.autopilot/STOP.refused`), with its first line and how long ago
 
 ## 1.55.2 — 2026-11-10
