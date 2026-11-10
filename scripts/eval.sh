@@ -61,7 +61,7 @@ if [ "$fixture" = all ]; then   # every fixture with the same options, then one 
     if [ "$a" = --fixture ]; then skip=1; continue; fi
     rest+=("$a")
   done
-  summary=(); rc_all=0
+  summary=(); costs=(); rc_all=0
   for f in tests/eval/fixture-*/; do
     f="${f%/}"; f="${f#tests/eval/fixture-}"
     echo "=== fixture $f"
@@ -69,9 +69,21 @@ if [ "$fixture" = all ]; then   # every fixture with the same options, then one 
     printf '%s\n' "$out"
     [ "$rc" -eq 3 ] && exit 3
     [ "$rc" -eq 0 ] || rc_all=1
-    summary+=("$(printf '%-10s %s' "$f" "$(printf '%s\n' "$out" | grep '^Score:' | tail -1)")")
+    costline="$(printf '%s\n' "$out" | grep '^Cost: \$' | tail -1)"
+    summary+=("$(printf '%-10s %s' "$f" "$(printf '%s\n' "$out" | grep '^Score:' | tail -1)")${costline:+ · $(sed 's/^Cost: \(\$[0-9.]*\).*/\1/' <<<"$costline")}")
+    costs+=("$costline")
   done
   echo; echo "=== all fixtures"; printf '  %s\n' "${summary[@]}"
+  if [ "${#costs[@]}" -gt 0 ]; then
+    printf '%s\n' "${costs[@]}" | python3 -c '
+import re, sys
+lines = [l for l in sys.stdin.read().splitlines() if l]
+total = sum(float(re.match(r"Cost: \$([0-9.]+)", l).group(1)) for l in lines if re.match(r"Cost: \$[0-9.]+", l))
+models = sorted({m.strip() for l in lines for m in (l.split(", model: ", 1)[1].split(",") if ", model: " in l else [])})
+print(f"  total cost ${total:.2f}" + (f", model: {chr(44).join(models)}" if models else ""))
+if len(models) > 1:
+    print("  warning: the fixtures ran on different models; pass --model to compare scores and costs")'
+  fi
   exit "$rc_all"
 fi
 FIXTURE_DIR="tests/eval/fixture-$fixture"; EXPECTED="tests/eval/fixture-$fixture.expected"
@@ -258,7 +270,9 @@ if runlog_path and os.path.exists(runlog_path):
 if results:
     cost = sum(float(r.get("total_cost_usd") or 0) for r in results)
     turns = sum(int(r.get("num_turns") or 0) for r in results)
-    print(f"Cost: ${cost:.2f} over {len(results)} run(s), {turns} turns")
+    models = sorted({m for r in results for m in (r.get("modelUsage") or {})})
+    # scores and costs are comparable only for the same model: say which one ran
+    print(f"Cost: ${cost:.2f} over {len(results)} run(s), {turns} turns" + (f", model: {', '.join(models)}" if models else ""))
 elif runlog_path:
     print("Cost: unknown (no JSON result in the claude output)")
 
